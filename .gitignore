@@ -1,0 +1,5 @@
+lib_managed
+target
+project/boot
+.scala_dependencies
+bin
