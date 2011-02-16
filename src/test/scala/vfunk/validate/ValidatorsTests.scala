@@ -27,4 +27,36 @@ class ValidatorsTests extends Specification with JUnit {
         }
     }
 
+    "An And Validator" should {
+
+        "Pass when all its sub-validators pass" in {
+            val and = new And( new Manual, new Manual, new Manual )
+            and.isValid("data") must_== true
+            and.getErrors("data") must_== Nil
+        }
+
+        "Short circuit when the first sub-validator fails" in {
+            val and = new And(
+                new Manual( Err("1", "One") ),
+                new Manual( Err("2", "Two") )
+            )
+
+            and.isValid("data") must_== false
+            and.getErrors("data") must_== Err("1", "One") :: Nil
+        }
+
+        "Fail when any of the sub-validators fail" in {
+            val and = new And(
+                new Manual, new Manual,
+                new Manual( Err("1", "One"), Err("2", "Two") )
+            )
+
+            and.isValid("data") must_== false
+            and.getErrors("data") must_==
+                Err("1", "One") :: Err("2", "Two") :: Nil
+        }
+
+    }
+
 }
+
