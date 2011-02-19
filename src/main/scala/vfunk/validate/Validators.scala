@@ -24,7 +24,9 @@ class And ( private val validators: List[Validator] ) extends Validator {
     def this ( validators: Validator* ) = this( validators.toList )
 
     override def getErrors ( value: String ) = {
-        @tailrec def find ( remaining: List[Validator] ): List[Err] = {
+
+        @tailrec
+        def find ( remaining: List[Validator] ): List[Err] = {
             remaining match {
                 case Nil => Nil
                 case head :: tail => {
@@ -37,6 +39,32 @@ class And ( private val validators: List[Validator] ) extends Validator {
             }
         }
         find( validators )
+    }
+}
+
+/**
+ * A validator that requires any of its sub-validators to pass
+ */
+class Or ( private val validators: List[Validator] ) extends Validator {
+
+    def this ( validators: Validator* ) = this( validators.toList )
+
+    override def getErrors ( value: String ) = {
+
+        @tailrec
+        def find ( remaining: List[Validator], errs: List[Err] ): List[Err] = {
+            remaining match {
+                case Nil => errs
+                case head :: tail => {
+                    val currentErrs = head.getErrors( value )
+                    currentErrs.isEmpty match {
+                        case true => Nil
+                        case false => find( tail, errs ::: currentErrs )
+                    }
+                }
+            }
+        }
+        find( validators, Nil )
     }
 }
 

@@ -45,6 +45,12 @@ class ValidatorsTests extends Specification with JUnit {
             and.getErrors("data") must_== Err("1", "One") :: Nil
         }
 
+        "Pass when empty" in {
+            val and = new And
+            and.isValid("data") must_== true
+            and.getErrors("data") must_== Nil
+        }
+
         "Fail when any of the sub-validators fail" in {
             val and = new And(
                 new Manual, new Manual,
@@ -55,7 +61,41 @@ class ValidatorsTests extends Specification with JUnit {
             and.getErrors("data") must_==
                 Err("1", "One") :: Err("2", "Two") :: Nil
         }
+    }
 
+    "An Or Validator" should {
+
+        "Pass when all its sub-validators pass" in {
+            val or = new Or( new Manual, new Manual, new Manual )
+            or.isValid("data") must_== true
+            or.getErrors("data") must_== Nil
+        }
+
+        "Pass when any of its sub-validators pass" in {
+            val or = new Or(
+                new Manual( Err("1", "One"), Err("2", "Two") ),
+                new Manual,
+                new Manual( Err("3", "Three"), Err("4", "Four") )
+            )
+            or.isValid("data") must_== true
+            or.getErrors("data") must_== Nil
+        }
+
+        "Pass when empty" in {
+            val or = new Or
+            or.isValid("data") must_== true
+            or.getErrors("data") must_== Nil
+        }
+
+        "Fail when all of its sub-validators fail" in {
+            val or = new Or(
+                new Manual( Err("1", "One"), Err("2", "Two") ),
+                new Manual( Err("3", "Three") )
+            )
+            or.isValid("data") must_== false
+            or.getErrors("data") must_==
+                Err("1", "One") :: Err("2", "Two") :: Err("3", "Three") :: Nil
+        }
     }
 
 }
