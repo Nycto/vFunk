@@ -1,5 +1,5 @@
 /**
- * A collection of Validator implementations
+ * Boolean Logic oriented validators
  */
 
 package main.scala.vfunk.validate
@@ -67,5 +67,4 @@ class Or ( private val validators: List[Validator] ) extends Validator {
         find( validators, Nil )
     }
 }
-
 

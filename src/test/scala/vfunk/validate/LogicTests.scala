@@ -8,7 +8,7 @@ import org.specs.runner.{ JUnitSuiteRunner, JUnit }
 import main.scala.vfunk.validate._
 
 @RunWith(classOf[JUnitSuiteRunner])
-class ValidatorsTests extends Specification with JUnit {
+class LogicTests extends Specification with JUnit {
 
     "A Manual Validator" should {
         "Return no errors when given an empty list" in {
