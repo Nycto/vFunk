@@ -59,6 +59,21 @@ class MaxLength ( private val length: Int ) extends Validator {
 }
 
 /**
+ * Validates that the string is exactly the given length
+ */
+class ExactLength ( private val length: Int ) extends Validator {
+    require( length >= 0, "Length must be greater than or equal to 0" )
+    override def getErrors ( value: String ) = {
+        LengthValidator.check(
+            length,
+            value.length == length,
+            "EXACTLENGTH",
+            "Must be exactly %d character%s long"
+        )
+    }
+}
+
+/**
  * Validates that a string isn't empty
  */
 class NotEmpty extends Validator {

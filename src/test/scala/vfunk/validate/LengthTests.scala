@@ -38,6 +38,20 @@ class LengthTests extends Specification with JUnit {
         }
     }
 
+    "An ExactLength Validator" should {
+        val exactLength = new ExactLength(4)
+
+        "pass when a string is the right length" in {
+            exactLength.isValid("data") must_== true
+            exactLength.getErrors("data") must_== Nil
+        }
+
+        "fail when a string not the right length" in {
+            exactLength.isValid("some data") must_== false
+            exactLength.getErrors("some data") must_!= Nil
+        }
+    }
+
     "A NotEmpty Validator" should {
         val notEmpty = new NotEmpty
 
