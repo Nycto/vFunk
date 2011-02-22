@@ -30,3 +30,15 @@ class Alpha extends Validator {
     }
 }
 
+/**
+ * A validator that matches strings that contain numeric characters
+ */
+class Digit extends Validator {
+    override def getErrors ( value: String ) = {
+        value.forall { Character.isDigit(_) } match {
+            case true => Nil
+            case false => List(Err("DIGIT", "Must only contain numbers"))
+        }
+    }
+}
+

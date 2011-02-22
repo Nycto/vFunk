@@ -70,5 +70,27 @@ class StringTests extends Specification with JUnit {
         }}
     }
 
+    "A Digit validator" should {
+
+        val digit = new Digit
+
+        "pass for string: 0123456789" in {
+            digit.isValid("0123456789") must_== true
+            digit.getErrors("0123456789") must_== Nil
+        }
+
+        val invalid = List(
+            "test123", "!\"#$%&'()*+,-/:;<=>?@[\\]^`{|}~",
+            "Has Some Spaces", "abcdefghijklmnopqrstuvwxyz"
+        )
+
+        invalid.foreach { (versus) => {
+            ("fail for string: " + versus) in {
+                digit.isValid(versus) must_== false
+                digit.getErrors(versus) must_!= Nil
+            }
+        }}
+    }
+
 }
 
