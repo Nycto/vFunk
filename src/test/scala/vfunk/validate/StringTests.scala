@@ -41,5 +41,34 @@ class StringTests extends Specification with JUnit {
         }}
     }
 
+    "An Alpha validator" should {
+
+        val alpha = new Alpha
+
+        val valid = List(
+            "string", "abcXYZ", "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+            "abcdefghijklmnopqrstuvwxyz"
+        )
+
+        valid.foreach { (versus) => {
+            ("pass for string: " + versus) in {
+                alpha.isValid(versus) must_== true
+                alpha.getErrors(versus) must_== Nil
+            }
+        }}
+
+        val invalid = List(
+            "test123", "!\"#$%&'()*+,-/:;<=>?@[\\]^`{|}~",
+            "Has Some Spaces", "0123456789"
+        )
+
+        invalid.foreach { (versus) => {
+            ("fail for string: " + versus) in {
+                alpha.isValid(versus) must_== false
+                alpha.getErrors(versus) must_!= Nil
+            }
+        }}
+    }
+
 }
 

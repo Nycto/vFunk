@@ -18,3 +18,15 @@ class AlphaNum extends Validator {
     }
 }
 
+/**
+ * A validator that matches strings that contain alphabetic characters
+ */
+class Alpha extends Validator {
+    override def getErrors ( value: String ) = {
+        value.forall { Character.isLetter(_) } match {
+            case true => Nil
+            case false => List(Err("ALPHA", "Must only contain letters"))
+        }
+    }
+}
+
