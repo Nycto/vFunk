@@ -5,20 +5,41 @@
 package main.scala.vfunk.validate
 
 /**
+ * A helper class for validators that check the length of a string
+ */
+private object LengthValidator {
+
+    /**
+     * Asserts the given condition and formats an error if it doesn't pass
+     */
+    def check (
+        length: Int, condition: => Boolean, code: String, message: String
+    ) = {
+        condition match {
+            case true => Nil
+            case false => List(Err(
+                code,
+                message.format(
+                    length,
+                    if (length > 1) "s" else ""
+                )
+            ))
+        }
+    }
+}
+
+/**
  * Validates that the string is at least the given length
  */
 class MinLength ( private val length: Int ) extends Validator {
     require( length >= 0, "Length must be greater than or equal to 0" )
     override def getErrors ( value: String ) = {
-        ( value.length >= length ) match {
-            case true => Nil
-            case false => List(Err(
-                "MINLENGTH",
-                "Must be at least %d character%s long".format(
-                    length, if (length > 1) "s" else ""
-                )
-            ))
-        }
+        LengthValidator.check(
+            length,
+            value.length >= length,
+            "MINLENGTH",
+            "Must be at least %d character%s long"
+        )
     }
 }
 
@@ -28,15 +49,12 @@ class MinLength ( private val length: Int ) extends Validator {
 class MaxLength ( private val length: Int ) extends Validator {
     require( length >= 0, "Length must be greater than or equal to 0" )
     override def getErrors ( value: String ) = {
-        ( value.length <= length ) match {
-            case true => Nil
-            case false => List(Err(
-                "MAXLENGTH",
-                "Must not be longer than %d character%s".format(
-                    length, if (length > 1) "s" else ""
-                )
-            ))
-        }
+        LengthValidator.check(
+            length,
+            value.length <= length,
+            "MAXLENGTH",
+            "Must not be longer than %d character%s"
+        )
     }
 }
 
