@@ -92,5 +92,38 @@ class StringTests extends Specification with JUnit {
         }}
     }
 
+    "An Equals Validator" should {
+
+        "Pass when strings are exactly equal" in {
+            val equals = new Equals("Some String")
+            equals.isValid("Some String") must_== true
+            equals.getErrors("Some String") must_== Nil
+        }
+
+        "Pass for the default case-sensitive comparison" in {
+            val equals = new Equals("Some String")
+            equals.isValid("some string") must_== true
+            equals.getErrors("some string") must_== Nil
+        }
+
+        "Fail when the strings are different" in {
+            val equals = new Equals("Some String")
+            equals.isValid("another string") must_== false
+            equals.getErrors("another string") must_!= Nil
+        }
+
+        "Pass when strings are exactly equal for case-sensitive checks" in {
+            val equals = new Equals("Some String", true)
+            equals.isValid("Some String") must_== true
+            equals.getErrors("Some String") must_== Nil
+        }
+
+        "Fail when case-sensitivity is flagged" in {
+            val equals = new Equals("Some String", true)
+            equals.isValid("some String") must_== false
+            equals.getErrors("some String") must_!= Nil
+        }
+    }
+
 }
 

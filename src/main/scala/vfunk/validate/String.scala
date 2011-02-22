@@ -42,3 +42,26 @@ class Digit extends Validator {
     }
 }
 
+/**
+ * Validates that the result equals the given value
+ */
+class Equals (
+    private val versus: String, private val caseSensitive: Boolean = false
+) extends Validator {
+
+    /**
+     * The precomputed comparison value
+     */
+    private val compare = if (caseSensitive) versus else versus.toLowerCase
+
+    override def getErrors ( value: String ) = {
+        val against = if (caseSensitive) value else value.toLowerCase
+        (against == compare) match {
+            case true => Nil
+            case false => List(
+                Err("EQUALS", "Must be equal to '%s'".format(versus))
+            )
+        }
+    }
+}
+
