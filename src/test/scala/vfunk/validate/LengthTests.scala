@@ -38,5 +38,19 @@ class LengthTests extends Specification with JUnit {
         }
     }
 
+    "A NotEmpty Validator" should {
+        val notEmpty = new NotEmpty
+
+        "pass when a string is not empty" in {
+            notEmpty.isValid("data") must_== true
+            notEmpty.getErrors("data") must_== Nil
+        }
+
+        "fail when a string is empty" in {
+            notEmpty.isValid("") must_== false
+            notEmpty.getErrors("") must_!= Nil
+        }
+    }
+
 }
 

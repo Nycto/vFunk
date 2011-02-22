@@ -40,3 +40,15 @@ class MaxLength ( private val length: Int ) extends Validator {
     }
 }
 
+/**
+ * Validates that a string isn't empty
+ */
+class NotEmpty extends Validator {
+    override def getErrors ( value: String ) = {
+        ( value.length > 0 ) match {
+            case true => Nil
+            case false => List(Err("NOTEMPTY", "Must not be empty"))
+        }
+    }
+}
+
