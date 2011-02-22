@@ -24,5 +24,19 @@ class LengthTests extends Specification with JUnit {
         }
     }
 
+    "A MaxLength Validator" should {
+        val maxLength = new MaxLength(5)
+
+        "pass when a string is short enough" in {
+            maxLength.isValid("data") must_== true
+            maxLength.getErrors("data") must_== Nil
+        }
+
+        "fail when a string is too long" in {
+            maxLength.isValid("too long") must_== false
+            maxLength.getErrors("too long") must_!= Nil
+        }
+    }
+
 }
 

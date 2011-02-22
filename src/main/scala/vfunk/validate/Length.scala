@@ -22,3 +22,21 @@ class MinLength ( private val length: Int ) extends Validator {
     }
 }
 
+/**
+ * Validates that the string is no longer than the given length
+ */
+class MaxLength ( private val length: Int ) extends Validator {
+    require( length >= 0, "Length must be greater than or equal to 0" )
+    override def getErrors ( value: String ) = {
+        ( value.length <= length ) match {
+            case true => Nil
+            case false => List(Err(
+                "MAXLENGTH",
+                "Must not be longer than %d character%s".format(
+                    length, if (length > 1) "s" else ""
+                )
+            ))
+        }
+    }
+}
+
