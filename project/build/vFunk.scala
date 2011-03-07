@@ -9,6 +9,6 @@ class VFunkProject(info: ProjectInfo) extends DefaultProject(info)
         "http://mockito.googlecode.com/files/mockito-all-1.8.5.jar"
 
     val junit = "junit" % "junit" % "4.8.2" from
-        "https://github.com/downloads/KentBeck/junit/junit-4.8.2.jar"
+        "http://cloud.github.com/downloads/KentBeck/junit/junit-4.8.2.jar"
 }
 
