@@ -98,5 +98,22 @@ class LogicTests extends Specification with JUnit {
         }
     }
 
+    "A Not Validator" should {
+
+        "Pass when its sub-validator fails" in {
+            val not = new Not(
+                new Manual( Err("3", "Three") )
+            )
+            not.isValid("data") must_== true
+            not.getErrors("data") must_== Nil
+        }
+
+        "Fail when its sub-validator passes" in {
+            val not = new Not( new Manual, "Oops" )
+            not.isValid("data") must_== false
+            not.getErrors("data") must_== Err("NOT", "Oops") :: Nil
+        }
+    }
+
 }
 

@@ -68,3 +68,18 @@ class Or ( private val validators: List[Validator] ) extends Validator {
     }
 }
 
+/**
+ * A validator that inverts the results of a contained validator
+ */
+class Not (
+    private val validator: Validator,
+    private val message: String = "Value failed validation"
+) extends Validator {
+    override def getErrors ( value: String ) = {
+        validator.isValid( value ) match {
+            case false => Nil
+            case true => List( Err("NOT", message) )
+        }
+    }
+}
+
