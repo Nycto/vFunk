@@ -65,3 +65,14 @@ class Equals (
     }
 }
 
+/**
+ * Validates that a value doesn't contain any spaces or new lines
+ */
+class NoWhitespace extends Validator {
+    override def getErrors ( value: String ) = {
+        value.exists { Character.isWhitespace(_) } match {
+            case false => Nil
+            case true => List(Err("WHITESPACE", "Must not contain spaces"))
+        }
+    }
+}

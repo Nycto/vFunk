@@ -125,5 +125,32 @@ class StringTests extends Specification with JUnit {
         }
     }
 
+    "A Whitespace validator" should {
+
+        val whitespace = new NoWhitespace
+
+        val valid = List( "string", "test123", "abc123XYZ" )
+
+        valid.foreach { (versus) => {
+            ("pass for string: " + versus) in {
+                whitespace.isValid(versus) must_== true
+                whitespace.getErrors(versus) must_== Nil
+            }
+        }}
+
+        val invalid = List(
+            "Has\nSome\nNew\nLines",
+            "Has\rCarriage\rReturns",
+            "Has Some Spaces"
+        )
+
+        invalid.foreach { (versus) => {
+            ("fail for string: " + versus) in {
+                whitespace.isValid(versus) must_== false
+                whitespace.getErrors(versus) must_!= Nil
+            }
+        }}
+    }
+
 }
 
