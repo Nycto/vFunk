@@ -7,14 +7,6 @@ package main.scala.vfunk.validate
 import scala.annotation.tailrec
 
 /**
- * Returns the given errors
- */
-class Manual ( private val errors: Traversable[Err] ) extends Validator {
-    def this ( errors: Err* ) = this( errors )
-    override def getErrors ( value: String ) = errors.toList
-}
-
-/**
  * A validator that requires that all the validators it contains to pass
  *
  * This will short circuit after the first error is returned

@@ -10,23 +10,6 @@ import main.scala.vfunk.validate._
 @RunWith(classOf[JUnitSuiteRunner])
 class LogicTests extends Specification with JUnit {
 
-    "A Manual Validator" should {
-        "Return no errors when given an empty list" in {
-            val manual = new Manual
-
-            manual.isValid("data") must_== true
-            manual.getErrors("data") must_== Nil
-        }
-
-        "Return the errors it is given" in {
-            val errors = Err("1", "one") :: Err("2", "two") :: Nil
-            val manual = new Manual(errors)
-
-            manual.isValid("data") must_== false
-            manual.getErrors("data") must_== errors
-        }
-    }
-
     "An And Validator" should {
 
         "Pass when all its sub-validators pass" in {
