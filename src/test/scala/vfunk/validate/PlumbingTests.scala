@@ -27,5 +27,20 @@ class PlumbingTests extends Specification with JUnit {
         }
     }
 
+    "An Invoke Validator" should {
+        "Pass when the callback returns no errors" in {
+            val invoke = new Invoke( _ => Nil )
+
+            invoke.isValid("data") must_== true
+            invoke.getErrors("data") must_== Nil
+        }
+
+        "Fail when the callback returns an error" in {
+            val invoke = new Invoke( _ => List(Err("1", "one")) )
+
+            invoke.isValid("data") must_== false
+            invoke.getErrors("data") must_== Err("1", "one") :: Nil
+        }
+    }
 }
 
