@@ -4,6 +4,8 @@
 
 package main.scala.vfunk.validate
 
+import scala.util.matching.Regex
+
 /**
  * A validator that matches strings that contain alpha-numeric characters
  */
@@ -73,6 +75,23 @@ class NoWhitespace extends Validator {
         value.exists { Character.isWhitespace(_) } match {
             case false => Nil
             case true => List(Err("WHITESPACE", "Must not contain spaces"))
+        }
+    }
+}
+
+/**
+ * Validates that the value matches a regular expression
+ */
+class RegExp ( private val regex: Regex ) extends Validator {
+
+    def this ( regex: String ) = this( regex.r )
+
+    override def getErrors ( value: String ) = {
+        regex.findFirstIn( value ) match {
+            case Some(_) => Nil
+            case None => List(
+              Err("REGEX", "Must match the regular expression" + regex)
+            )
         }
     }
 }

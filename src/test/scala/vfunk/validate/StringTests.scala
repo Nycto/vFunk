@@ -152,5 +152,19 @@ class StringTests extends Specification with JUnit {
         }}
     }
 
+    "A RegExp validator" should {
+      val regexp = new RegExp("simple");
+
+      "Pass when the expression matches" in {
+          regexp.isValid("simple") must_== true
+          regexp.getErrors("simple") must_== Nil
+      }
+
+      "Fail when the expression doesn't match" in {
+          regexp.isValid("oops") must_== false
+          regexp.getErrors("oops") must_!= Nil
+      }
+    }
+
 }
 
