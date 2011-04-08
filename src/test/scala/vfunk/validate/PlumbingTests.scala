@@ -42,5 +42,17 @@ class PlumbingTests extends Specification with JUnit {
             invoke.getErrors("data") must_== Err("1", "one") :: Nil
         }
     }
+
+    "An In Validator" should {
+        "Pass when the set contains the value" in {
+            val in = new In( "One", "Two", "Three" )
+            in.isValid("One") must_== true
+            in.getErrors("One") must_== Nil
+        }
+        "Fail when the set doesn't contain the value" in {
+            val in = new In( Set("One", "Two", "Three") )
+            in.isValid("Nope") must_== false
+        }
+    }
 }
 

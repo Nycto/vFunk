@@ -21,3 +21,17 @@ class Invoke ( private val callback: (String) => Traversable[Err] )
     override def getErrors ( value: String ) = callback(value).toList
 }
 
+/**
+ * Checks to see if a value is contained within a Set
+ */
+class In ( private val options: Set[String] ) extends Validator {
+
+    def this ( options: String* ) = this( options.toSet )
+
+    override def getErrors ( value: String ) =
+        options.contains( value ) match {
+            case true => Nil
+            case false => List(Err("OPTION", "Invalid Option"))
+        }
+}
+
