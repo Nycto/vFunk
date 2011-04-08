@@ -90,8 +90,21 @@ class RegExp ( private val regex: Regex ) extends Validator {
         regex.findFirstIn( value ) match {
             case Some(_) => Nil
             case None => List(
-              Err("REGEX", "Must match the regular expression" + regex)
+                Err("REGEX", "Must match the regular expression: " + regex)
             )
         }
     }
 }
+
+/**
+ * Validates that a value contains more than just white
+ */
+class NotBlank extends Validator {
+    override def getErrors ( value: String ) = {
+        value.trim == "" match {
+            case false => Nil
+            case true => List( Err("NOTBLANK", "Must not be blank") )
+        }
+    }
+}
+

@@ -166,5 +166,26 @@ class StringTests extends Specification with JUnit {
       }
     }
 
+    "A NotBlank validator" should {
+
+        val notBlank = new NotBlank
+
+        val valid = List( " This is a string ", "Another\nOne" )
+        valid.foreach { (versus) => {
+            ("pass for string: " + versus) in {
+                notBlank.isValid(versus) must_== true
+                notBlank.getErrors(versus) must_== Nil
+            }
+        }}
+
+        val invalid = List( "", "   ", "\n\r\t" )
+        invalid.foreach { (versus) => {
+            ("fail for string: " + versus) in {
+                notBlank.isValid(versus) must_== false
+                notBlank.getErrors(versus) must_!= Nil
+            }
+        }}
+    }
+
 }
 
