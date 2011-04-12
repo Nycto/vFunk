@@ -12,46 +12,35 @@ class PlumbingTests extends Specification with JUnit {
 
     "A Manual Validator" should {
         "Return no errors when given an empty list" in {
-            val manual = new Manual
-
-            manual.isValid("data") must_== true
-            manual.getErrors("data") must_== Nil
+            val validator = new Manual
+            validator must validateFor("data")
         }
-
         "Return the errors it is given" in {
             val errors = Err("1", "one") :: Err("2", "two") :: Nil
-            val manual = new Manual(errors)
+            val validator = new Manual(errors)
 
-            manual.isValid("data") must_== false
-            manual.getErrors("data") must_== errors
+            validator must notValidateFor("data")
+            validator.getErrors("data") must_== errors
         }
     }
-
     "An Invoke Validator" should {
         "Pass when the callback returns no errors" in {
-            val invoke = new Invoke( _ => Nil )
-
-            invoke.isValid("data") must_== true
-            invoke.getErrors("data") must_== Nil
+            val validator = new Invoke( _ => Nil )
+            validator must validateFor("data")
         }
-
         "Fail when the callback returns an error" in {
-            val invoke = new Invoke( _ => List(Err("1", "one")) )
-
-            invoke.isValid("data") must_== false
-            invoke.getErrors("data") must_== Err("1", "one") :: Nil
+            val validator = new Invoke( _ => List(Err("1", "one")) )
+            validator must notValidateFor("data")
         }
     }
-
     "An In Validator" should {
         "Pass when the set contains the value" in {
-            val in = new In( "One", "Two", "Three" )
-            in.isValid("One") must_== true
-            in.getErrors("One") must_== Nil
+            val validator = new In( "One", "Two", "Three" )
+            validator must validateFor("One")
         }
         "Fail when the set doesn't contain the value" in {
-            val in = new In( Set("One", "Two", "Three") )
-            in.isValid("Nope") must_== false
+            val validator = new In( Set("One", "Two", "Three") )
+            validator must notValidateFor("Nope")
         }
     }
 }

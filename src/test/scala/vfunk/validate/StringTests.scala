@@ -11,181 +11,111 @@ import main.scala.vfunk.validate._
 class StringTests extends Specification with JUnit {
 
     "An AlphaNum validator" should {
+        val validator = new AlphaNum
 
-        val alphanum = new AlphaNum
-
-        val valid = List(
-            "string", "test123", "abc123XYZ",
-            "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-            "abcdefghijklmnopqrstuvwxyz",
-            "0123456789"
-        )
-
-        valid.foreach { (versus) => {
-            ("pass for string: " + versus) in {
-                alphanum.isValid(versus) must_== true
-                alphanum.getErrors(versus) must_== Nil
-            }
-        }}
-
-        val invalid = List(
-            "!\"#$%&'()*+,-/:;<=>?@[\\]^`{|}~",
-            "Has Some Spaces"
-        )
-
-        invalid.foreach { (versus) => {
-            ("fail for string: " + versus) in {
-                alphanum.isValid(versus) must_== false
-                alphanum.getErrors(versus) must_!= Nil
-            }
-        }}
-    }
-
-    "An Alpha validator" should {
-
-        val alpha = new Alpha
-
-        val valid = List(
-            "string", "abcXYZ", "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
-            "abcdefghijklmnopqrstuvwxyz"
-        )
-
-        valid.foreach { (versus) => {
-            ("pass for string: " + versus) in {
-                alpha.isValid(versus) must_== true
-                alpha.getErrors(versus) must_== Nil
-            }
-        }}
-
-        val invalid = List(
-            "test123", "!\"#$%&'()*+,-/:;<=>?@[\\]^`{|}~",
-            "Has Some Spaces", "0123456789"
-        )
-
-        invalid.foreach { (versus) => {
-            ("fail for string: " + versus) in {
-                alpha.isValid(versus) must_== false
-                alpha.getErrors(versus) must_!= Nil
-            }
-        }}
-    }
-
-    "A Digit validator" should {
-
-        val digit = new Digit
-
-        "pass for string: 0123456789" in {
-            digit.isValid("0123456789") must_== true
-            digit.getErrors("0123456789") must_== Nil
+        "pass when the string is AlphaNumeric" in {
+            validator must validateFor(
+                "string", "test123", "abc123XYZ",
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+                "abcdefghijklmnopqrstuvwxyz",
+                "0123456789"
+            );
         }
-
-        val invalid = List(
-            "test123", "!\"#$%&'()*+,-/:;<=>?@[\\]^`{|}~",
-            "Has Some Spaces", "abcdefghijklmnopqrstuvwxyz"
-        )
-
-        invalid.foreach { (versus) => {
-            ("fail for string: " + versus) in {
-                digit.isValid(versus) must_== false
-                digit.getErrors(versus) must_!= Nil
-            }
-        }}
+        "fail when the string contains other characters" in {
+            validator must notValidateFor(
+                "!\"#$%&'()*+,-/:;<=>?@[\\]^`{|}~",
+                "Has Some Spaces"
+            );
+        }
     }
+    "An Alpha validator" should {
+        val validator = new Alpha
 
+        "pass when the string is alphabetical" in {
+            validator must validateFor(
+                "string", "abcXYZ", "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+                "abcdefghijklmnopqrstuvwxyz"
+            );
+        }
+        "fail when the string contains non-alphabetic characters" in {
+            validator must notValidateFor(
+                "test123", "!\"#$%&'()*+,-/:;<=>?@[\\]^`{|}~",
+                "Has Some Spaces", "0123456789"
+            );
+        }
+    }
+    "A Digit validator" should {
+        val validator = new Digit
+
+        "pass when the string is digits" in {
+            validator must validateFor("0123456789")
+        }
+        "fail when the string contains non-digit characters" in {
+            validator must notValidateFor(
+                "test123", "!\"#$%&'()*+,-/:;<=>?@[\\]^`{|}~",
+                "Has Some Spaces", "abcdefghijklmnopqrstuvwxyz"
+            );
+        }
+    }
     "An Equals Validator" should {
+        val caseInsensitive = new Equals("Some String")
+        val caseSensitive = new Equals("Some String", true)
 
         "Pass when strings are exactly equal" in {
-            val equals = new Equals("Some String")
-            equals.isValid("Some String") must_== true
-            equals.getErrors("Some String") must_== Nil
+            caseInsensitive must validateFor("Some String")
         }
-
         "Pass for the default case-sensitive comparison" in {
-            val equals = new Equals("Some String")
-            equals.isValid("some string") must_== true
-            equals.getErrors("some string") must_== Nil
+            caseInsensitive must validateFor("some string")
         }
-
         "Fail when the strings are different" in {
-            val equals = new Equals("Some String")
-            equals.isValid("another string") must_== false
-            equals.getErrors("another string") must_!= Nil
+            caseInsensitive must notValidateFor("another string")
         }
-
         "Pass when strings are exactly equal for case-sensitive checks" in {
-            val equals = new Equals("Some String", true)
-            equals.isValid("Some String") must_== true
-            equals.getErrors("Some String") must_== Nil
+            caseSensitive must validateFor("Some String")
         }
-
         "Fail when case-sensitivity is flagged" in {
-            val equals = new Equals("Some String", true)
-            equals.isValid("some String") must_== false
-            equals.getErrors("some String") must_!= Nil
+            caseSensitive must notValidateFor("some string")
         }
     }
-
     "A Whitespace validator" should {
+        val validator = new NoWhitespace
 
-        val whitespace = new NoWhitespace
-
-        val valid = List( "string", "test123", "abc123XYZ" )
-
-        valid.foreach { (versus) => {
-            ("pass for string: " + versus) in {
-                whitespace.isValid(versus) must_== true
-                whitespace.getErrors(versus) must_== Nil
-            }
-        }}
-
-        val invalid = List(
-            "Has\nSome\nNew\nLines",
-            "Has\rCarriage\rReturns",
-            "Has Some Spaces"
-        )
-
-        invalid.foreach { (versus) => {
-            ("fail for string: " + versus) in {
-                whitespace.isValid(versus) must_== false
-                whitespace.getErrors(versus) must_!= Nil
-            }
-        }}
+        "pass for strings without whitespace" in {
+            validator must validateFor(
+                "string", "test123", "abc123XYZ"
+            )
+        }
+        "fail for strings with whitespace" in {
+            validator must notValidateFor(
+                "Has\nSome\nNew\nLines",
+                "Has\rCarriage\rReturns",
+                "Has Some Spaces"
+            )
+        }
     }
-
     "A RegExp validator" should {
-      val regexp = new RegExp("simple");
+        val validator = new RegExp("simple");
 
-      "Pass when the expression matches" in {
-          regexp.isValid("simple") must_== true
-          regexp.getErrors("simple") must_== Nil
-      }
-
-      "Fail when the expression doesn't match" in {
-          regexp.isValid("oops") must_== false
-          regexp.getErrors("oops") must_!= Nil
-      }
+        "Pass when the expression matches" in {
+            validator must validateFor("simple")
+        }
+        "Fail when the expression doesn't match" in {
+            validator must notValidateFor("oops")
+        }
     }
-
     "A NotBlank validator" should {
+        val validator = new NotBlank
 
-        val notBlank = new NotBlank
-
-        val valid = List( " This is a string ", "Another\nOne" )
-        valid.foreach { (versus) => {
-            ("pass for string: " + versus) in {
-                notBlank.isValid(versus) must_== true
-                notBlank.getErrors(versus) must_== Nil
-            }
-        }}
-
-        val invalid = List( "", "   ", "\n\r\t" )
-        invalid.foreach { (versus) => {
-            ("fail for string: " + versus) in {
-                notBlank.isValid(versus) must_== false
-                notBlank.getErrors(versus) must_!= Nil
-            }
-        }}
+        "Pass when the string isn't blank" in {
+            validator must validateFor(
+                " This is a string ", "Another\nOne"
+            )
+        }
+        "Fail when the expression doesn't match" in {
+            validator must notValidateFor(
+                "", "   ", "\n\r\t"
+            )
+        }
     }
-
 }
 

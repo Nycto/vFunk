@@ -36,22 +36,22 @@ class DefinitionTests extends Specification with JUnit {
     "A Validator" should {
 
         "return as valid when there are errors" in {
-            val valid = new Validator {
+            val validator = new Validator {
                 override def getErrors ( value: String ) = Nil
             }
 
-            valid.isValid("something") must_== true
-            valid.validate("something") must_== Result("something", Nil)
+            validator must validateFor("something")
         }
 
         "return as valid when there are errors" in {
-            val valid = new Validator {
+            val validator = new Validator {
                 override def getErrors ( value: String )
                     = List(Err("test", "error"))
             }
 
-            valid.isValid("something") must_== false
-            valid.validate("something") must_==
+            validator must notValidateFor("something")
+
+            validator.validate("something") must_==
                 Result("something", List(Err("test", "error")))
         }
 
