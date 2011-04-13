@@ -39,4 +39,20 @@ class DataTests extends Specification with JUnit {
             )
         }
     }
+    "An IPv4 Validator" should {
+        val validator = new IPv4
+        "pass for valid IP addresses" in {
+            validator must validateFor(
+                "0.0.0.0", "127.0.0.1", "1.1.1.1",
+                "255.255.255.255"
+            )
+        }
+        "fail for invalid IP addresses" in {
+            validator must notValidateFor(
+                "", "   ", "127.127.127.",
+                "  1.1.1.1   ", "1.1.1", "1.1.1.1."
+            )
+        }
+    }
+
 }

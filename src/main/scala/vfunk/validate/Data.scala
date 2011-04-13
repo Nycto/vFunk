@@ -35,3 +35,25 @@ class Email extends Validator {
     }
 }
 
+/**
+ * Validates an IPv4 address
+ */
+class IPv4 extends Validator {
+    lazy private val regexp = {
+        val byte = """(?:(?:25[0-5])|(?:2[0-4][0-9])|(?:1[0-9]{2})|(?:[1-9]?[0-9]))"""
+        val regex = List(
+            "^",
+            byte,
+            """(?:\.""" + byte + """){3}""",
+            "$"
+        )
+        regex.reduceLeft(_ + _).r
+    }
+
+    override def getErrors ( value: String ) = {
+        regexp.findFirstIn( value ) match {
+            case None => List( Err("IPV4", "Invalid IP address") )
+            case Some(_) => Nil
+        }
+    }
+}
