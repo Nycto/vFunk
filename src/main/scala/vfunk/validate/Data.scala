@@ -59,35 +59,57 @@ class IPv4 extends Validator {
  * Validates an IPv6 address
  */
 class IPv6 extends Validator {
-    lazy private val regexp = {
-        val hex = "[0-9a-fA-F]{1,4}"
-        val hexc = "(?:" + hex + ":)"
-        val chex = "(?::" + hex + ")"
-
-        val byte = """(?:(?:25[0-5])|(?:2[0-4][0-9])|(?:1[0-9]{2})|(?:[1-9]?[0-9]))"""
-        val ipv4 = "(?:" + byte + """(?:\.""" + byte + "){3})"
-
-        val regex = List(
-            "^",
-            "(?:",
-                "(", hexc, "{7}(", hex, "|:))",
-                "|(", hexc, "{6}(:", hex, "|", ipv4, "|:))",
-                "|(", hexc, "{5}((", chex, "{1,2})|:", ipv4, "|:))",
-                "|(", hexc, "{4}((", chex, "{1,3})|(", chex, "?:", ipv4, ")|:))",
-                "|(", hexc, "{3}((", chex, "{1,4})|(", chex, "{0,2}:", ipv4, ")|:))",
-                "|(", hexc, "{2}((", chex, "{1,5})|(", chex, "{0,3}:", ipv4, ")|:))",
-                "|((", hexc, "){1}((", chex, "{1,6})|(", chex, "{0,4}:", ipv4, ")|:))",
-                "|(:((", chex, "{1,7})|(", chex, "{0,5}:", ipv4, ")|:))",
-            ")",
-            "$"
-        )
-        regex.reduceLeft(_ + _).r
-    }
+    private lazy val uncompressed = """(?i)^(?:[a-f0-9]{1,4}:){7}[a-f0-9]{1,4}$""".r
+    private lazy val compressed = """(?i)^(?::|(?:[a-f0-9]{1,4}:)+):(?:(?:[a-f0-9]{1,4}:)*[a-f0-9]{1,4})?$""".r
+    private lazy val IPv4 = new IPv4
+    private lazy val err = Err("IPV6", "Invalid IP Address")
 
     override def getErrors ( value: String ) = {
-        regexp.findFirstIn( value ) match {
-            case None => List( Err("IPV6", "Invalid IP address") )
-            case Some(_) => Nil
+
+        // For localhost
+        if ( value.length <= 2 ) {
+            value == "::" match {
+                case false => List(err)
+                case true => Nil
+            }
+        }
+
+        // Check for IPv4 compatibility
+        else if ( value.contains(".") ) {
+            val lastcolon = value.lastIndexWhere( _ == ':' )
+
+            if ( lastcolon == -1 ) {
+                List(err)
+            }
+            else {
+                val (left, right) = value.splitAt(lastcolon)
+                if ( left.contains(".") )
+                    List(err)
+                else if ( !IPv4.isValid( right.drop(1) ) )
+                    List(err)
+                else
+                    getErrors( left + ":0:0" )
+            }
+        }
+
+        // check uncompressed
+        else if ( !value.contains("::") ) {
+            uncompressed.findFirstIn( value ) match {
+                case None => List(err)
+                case Some(_) => Nil
+            }
+        }
+
+        // check colon-count for compressed format
+        else if ( value.count( _ == ':' ) < 8 ) {
+            compressed.findFirstIn( value ) match {
+                case None => List(err)
+                case Some(_) => Nil
+            }
+        }
+
+        else {
+            List(err)
         }
     }
 }
