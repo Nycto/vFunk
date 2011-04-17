@@ -45,5 +45,16 @@ class FilterStringTests extends Specification with JUnit {
             filter.filter(data) must_== ""
         }
     }
+    "An Alpha filter" should {
+        val filter = new Alpha
+        "Leave a string with only alphabetic characters unchanged" in {
+            val data = "ABCDEFGHIJKLMNOPQRSTUVWXYZbcdefghijklmnopqrstuvwxyz"
+            filter.filter(data) must_== data
+        }
+        "Strip non-alphabetic characters from a string" in {
+            val data = build(0 to 64, 91 to 96, 123 to 255)
+            filter.filter(data) must_== ""
+        }
+    }
 }
 

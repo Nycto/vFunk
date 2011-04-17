@@ -49,3 +49,12 @@ class AlphaNum extends Filter {
     }
 }
 
+/**
+ * Removes any non-alphabetic characters from a string
+ */
+class Alpha extends Filter {
+    override def filter ( value: String ) = {
+        value.filter { StringFilters.isLetter(_)  }
+    }
+}
+
