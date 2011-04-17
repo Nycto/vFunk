@@ -11,3 +11,9 @@ class Identity extends Filter {
     override def filter ( value: String ) = value
 }
 
+/**
+ * A filter that allows you to wrap a callback
+ */
+class Callback ( private val callback: (String) => String ) extends Filter {
+   override def filter ( value: String ) = callback( value )
+}

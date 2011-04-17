@@ -16,5 +16,11 @@ class PlumbingTests extends Specification with JUnit {
             filter.filter("data") must_== "data"
         }
     }
+    "A Callback filter" should {
+        "Apply the given lambda and return the results" in {
+            val filter = new Callback("input: " + _)
+            filter.filter("data") must_== "input: data"
+        }
+    }
 }
 
