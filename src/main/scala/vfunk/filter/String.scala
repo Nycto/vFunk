@@ -58,3 +58,12 @@ class Alpha extends Filter {
     }
 }
 
+/**
+ * Removes any non-digit characters from a string
+ */
+class Digit extends Filter {
+    override def filter ( value: String ) = {
+        value.filter { Character.isDigit(_)  }
+    }
+}
+

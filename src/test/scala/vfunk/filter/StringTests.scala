@@ -56,5 +56,17 @@ class FilterStringTests extends Specification with JUnit {
             filter.filter(data) must_== ""
         }
     }
+    "A Digit filter" should {
+        val filter = new Digit
+        "Leave a string with only digit characters unchanged" in {
+            val data = "0123456789"
+            filter.filter(data) must_== data
+        }
+        "Strip non-digit characters from a string" in {
+            val data = build(0 to 47, 58 to 255)
+            filter.filter(data) must_== ""
+        }
+    }
+
 }
 
