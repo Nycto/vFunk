@@ -22,5 +22,22 @@ class FilterStringTests extends Specification with JUnit {
             filter.filter("\n\r\tdata\n\r\t") must_== "data"
         }
     }
+   "An AlphaNum filter" should {
+        val filter = new AlphaNum
+        "Leave a string with only alphanumeric characters unchanged" in {
+            val data = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
+                "abcdefghijklmnopqrstuvwxyz" +
+                "1234567890";
+
+            filter.filter(data) must_== data
+        }
+        "Strip non-alphanumeric characters from a string" in {
+            val data = ((0 to 47) ++ (58 to 64) ++ (91 to 96) ++ (127 to 255))
+                .map( _.asInstanceOf[Char] )
+                .foldLeft("")(_ + _)
+
+            filter.filter(data) must_== ""
+        }
+    }
 }
 
