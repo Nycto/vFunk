@@ -10,7 +10,16 @@ import main.scala.vfunk.filter._
 @RunWith(classOf[JUnitSuiteRunner])
 class FilterStringTests extends Specification with JUnit {
 
-   "A Trim filter" should {
+    /**
+     * A helper method that builds a string from a list of characters
+     */
+    private def build( list: Range* ) = {
+        list.foldLeft[Traversable[Int]] ( Nil ) ( _ ++ _ )
+            .map( _.asInstanceOf[Char] )
+            .foldLeft("")(_ + _)
+    }
+
+    "A Trim filter" should {
         val filter = new Trim
         "Leave a string without whitespace unchanged" in {
             filter.filter("data") must_== "data"
@@ -22,7 +31,7 @@ class FilterStringTests extends Specification with JUnit {
             filter.filter("\n\r\tdata\n\r\t") must_== "data"
         }
     }
-   "An AlphaNum filter" should {
+    "An AlphaNum filter" should {
         val filter = new AlphaNum
         "Leave a string with only alphanumeric characters unchanged" in {
             val data = "ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
@@ -32,10 +41,7 @@ class FilterStringTests extends Specification with JUnit {
             filter.filter(data) must_== data
         }
         "Strip non-alphanumeric characters from a string" in {
-            val data = ((0 to 47) ++ (58 to 64) ++ (91 to 96) ++ (127 to 255))
-                .map( _.asInstanceOf[Char] )
-                .foldLeft("")(_ + _)
-
+            val data = build(0 to 47, 58 to 64, 91 to 96, 123 to 255)
             filter.filter(data) must_== ""
         }
     }
