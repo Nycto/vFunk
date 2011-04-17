@@ -8,7 +8,7 @@ import org.specs.runner.{ JUnitSuiteRunner, JUnit }
 import main.scala.vfunk.validate._
 
 @RunWith(classOf[JUnitSuiteRunner])
-class DataTests extends Specification with JUnit {
+class ValidationDataTests extends Specification with JUnit {
 
     "An Email Validator" should {
         val validator = new Email

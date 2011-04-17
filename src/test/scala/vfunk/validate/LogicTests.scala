@@ -8,7 +8,7 @@ import org.specs.runner.{ JUnitSuiteRunner, JUnit }
 import main.scala.vfunk.validate._
 
 @RunWith(classOf[JUnitSuiteRunner])
-class LogicTests extends Specification with JUnit {
+class ValidationLogicTests extends Specification with JUnit {
 
     "An And Validator" should {
         "Pass when all its sub-validators pass" in {

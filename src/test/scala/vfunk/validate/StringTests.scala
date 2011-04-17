@@ -8,7 +8,7 @@ import org.specs.runner.{ JUnitSuiteRunner, JUnit }
 import main.scala.vfunk.validate._
 
 @RunWith(classOf[JUnitSuiteRunner])
-class StringTests extends Specification with JUnit {
+class ValidationStringTests extends Specification with JUnit {
 
     "An AlphaNum validator" should {
         val validator = new AlphaNum

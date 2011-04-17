@@ -8,7 +8,7 @@ import org.specs.runner.{ JUnitSuiteRunner, JUnit }
 import main.scala.vfunk.filter._
 
 @RunWith(classOf[JUnitSuiteRunner])
-class PlumbingTests extends Specification with JUnit {
+class FilterPlumbingTests extends Specification with JUnit {
 
    "An Identity filter" should {
         "Return the value it is given" in {

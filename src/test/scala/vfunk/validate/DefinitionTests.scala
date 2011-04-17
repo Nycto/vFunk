@@ -8,7 +8,7 @@ import org.specs.runner.{ JUnitSuiteRunner, JUnit }
 import main.scala.vfunk.validate._
 
 @RunWith(classOf[JUnitSuiteRunner])
-class DefinitionTests extends Specification with JUnit {
+class ValidationDefinitionTests extends Specification with JUnit {
 
     "A Result" should {
 

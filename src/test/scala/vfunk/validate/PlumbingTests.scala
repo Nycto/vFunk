@@ -8,7 +8,7 @@ import org.specs.runner.{ JUnitSuiteRunner, JUnit }
 import main.scala.vfunk.validate._
 
 @RunWith(classOf[JUnitSuiteRunner])
-class PlumbingTests extends Specification with JUnit {
+class ValidationPlumbingTests extends Specification with JUnit {
 
     "A Manual Validator" should {
         "Return no errors when given an empty list" in {
