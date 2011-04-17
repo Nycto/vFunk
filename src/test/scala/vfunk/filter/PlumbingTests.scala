@@ -22,5 +22,19 @@ class PlumbingTests extends Specification with JUnit {
             filter.filter("data") must_== "input: data"
         }
     }
+    "A Chain filter" should {
+        "Return what it is given when it doesn't contain any filter" in {
+            val filter = new Chain
+            filter.filter("data") must_== "data"
+        }
+        "Properly inject the value between filters" in {
+            val filter = new Chain(
+                new Callback(_ + ": one"),
+                new Callback(_ + ", two"),
+                new Callback(_ + ", three")
+            )
+            filter.filter("data") must_== "data: one, two, three"
+        }
+    }
 }
 
