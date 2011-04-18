@@ -67,6 +67,16 @@ class FilterStringTests extends Specification with JUnit {
             filter.filter(data) must_== ""
         }
     }
-
+    "A Printable filter" should {
+        val filter = new Printable
+        "Leave a string with only printable characters unchanged" in {
+            val data = build(32 to 126)
+            filter.filter(data) must_== data
+        }
+        "Strip non-printable characters from a string" in {
+            val data = build(0 to 31, 127 to 255)
+            filter.filter(data) must_== ""
+        }
+    }
 }
 

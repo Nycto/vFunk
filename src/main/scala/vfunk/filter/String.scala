@@ -21,16 +21,17 @@ private object StringFilters {
      *
      * This is more strict than Character.isLetter
      */
-    def isLetter( chr: Char ) = {
-        in(chr, 65, 90) || in(chr, 97, 122)
-    }
+    def isLetter( chr: Char ) = in(chr, 65, 90) || in(chr, 97, 122)
 
     /**
      * Returns whether a character is a strict alpha-numeric character
      */
-    def isLetterOrDigit( chr: Char ) = {
-        isLetter(chr) || Character.isDigit(chr)
-    }
+    def isLetterOrDigit( chr: Char ) = isLetter(chr) || Character.isDigit(chr)
+
+    /**
+     * Whether a character is considered printable
+     */
+    def isPrintable( chr: Char ) = in(chr, 32, 126)
 }
 
 /**
@@ -64,6 +65,15 @@ class Alpha extends Filter {
 class Digit extends Filter {
     override def filter ( value: String ) = {
         value.filter { Character.isDigit(_)  }
+    }
+}
+
+/**
+ * Removes any non-printable characters from a string
+ */
+class Printable extends Filter {
+    override def filter ( value: String ) = {
+        value.filter { StringFilters.isPrintable(_)  }
     }
 }
 
