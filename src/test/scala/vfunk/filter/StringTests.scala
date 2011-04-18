@@ -5,6 +5,8 @@ import org.specs._
 import org.specs.matcher._
 import org.specs.runner.{ JUnitSuiteRunner, JUnit }
 
+import scala.collection.immutable.HashSet
+
 import main.scala.vfunk.filter._
 
 @RunWith(classOf[JUnitSuiteRunner])
@@ -76,6 +78,24 @@ class FilterStringTests extends Specification with JUnit {
         "Strip non-printable characters from a string" in {
             val data = build(0 to 31, 127 to 255)
             filter.filter(data) must_== ""
+        }
+    }
+    "A Characters filter" should {
+        "Leave a string with only valid characters unchanged" in {
+            val filter = new Characters(HashSet('a', 'b', 'c', 'd'))
+            filter.filter("dbac") must_== "dbac"
+        }
+        "Remove invalid characters from a string" in {
+            val filter = new Characters("Valid")
+            filter.filter("This is a string") must_== "iiai"
+        }
+        "Be constructable with a list of characters" in {
+            val filter = new Characters('v', 'a', 'l', 'i', 'd')
+            filter.filter("This is a string") must_== "iiai"
+        }
+        "Be constructable with a range of characters" in {
+            val filter = new Characters('a' to 'm')
+            filter.filter("This is a string") must_== "hiiaig"
         }
     }
 }

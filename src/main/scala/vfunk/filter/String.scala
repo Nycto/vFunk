@@ -4,6 +4,9 @@
 
 package main.scala.vfunk.filter
 
+import scala.collection.immutable.HashSet
+import scala.collection.immutable.NumericRange
+
 /**
  * A helper class for testing character values
  */
@@ -74,6 +77,20 @@ class Digit extends Filter {
 class Printable extends Filter {
     override def filter ( value: String ) = {
         value.filter { StringFilters.isPrintable(_)  }
+    }
+}
+
+/**
+ * Removes any character not in the given list
+ */
+class Characters ( private val valid: Set[Char] ) extends Filter {
+
+    def this ( valid: String ) = this( HashSet( valid.toList:_* ) )
+    def this ( valid: Char* ) = this( HashSet( valid:_* ) )
+    def this ( valid: NumericRange[Char] ) = this( HashSet( valid:_* ) )
+
+    override def filter ( value: String ) = {
+        value.filter { valid.contains(_)  }
     }
 }
 
