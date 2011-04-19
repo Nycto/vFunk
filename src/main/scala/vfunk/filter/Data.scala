@@ -22,3 +22,10 @@ class URL extends Characters (
         ('0' to '9') ++ ("-._~:/?#[]@!$&'()*+,;=".toList)
 ) {}
 
+/**
+ * Filters out invalid IPv4 characters
+ */
+class IPv4 extends Characters (
+    HashSet[Char]() ++ ('0' to '9') ++ List('.')
+) {}
+

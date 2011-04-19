@@ -28,5 +28,12 @@ class FilterDataTests extends Specification with JUnit {
                 "_abcdefghijklmnopqrstuvwxyz~"
         }
     }
+    "An IPv4 filter" should {
+        val filter = new IPv4
+        "Remove invalid IPv4 characters from a string" in {
+            val data = FilterHelper.build(0 to 255)
+            filter.filter(data) must_== ".0123456789"
+        }
+    }
 }
 
