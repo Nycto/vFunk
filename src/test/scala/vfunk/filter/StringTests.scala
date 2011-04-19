@@ -1,4 +1,4 @@
-package test.scala.vfunk.validate
+package test.scala.vfunk.filter
 
 import org.junit.runner.RunWith
 import org.specs._
@@ -11,15 +11,6 @@ import main.scala.vfunk.filter._
 
 @RunWith(classOf[JUnitSuiteRunner])
 class FilterStringTests extends Specification with JUnit {
-
-    /**
-     * A helper method that builds a string from a list of characters
-     */
-    private def build( list: Range* ) = {
-        list.foldLeft[Traversable[Int]] ( Nil ) ( _ ++ _ )
-            .map( _.asInstanceOf[Char] )
-            .foldLeft("")(_ + _)
-    }
 
     "A Trim filter" should {
         val filter = new Trim
@@ -43,7 +34,9 @@ class FilterStringTests extends Specification with JUnit {
             filter.filter(data) must_== data
         }
         "Strip non-alphanumeric characters from a string" in {
-            val data = build(0 to 47, 58 to 64, 91 to 96, 123 to 255)
+            val data = FilterHelper.build(
+                0 to 47, 58 to 64, 91 to 96, 123 to 255
+            )
             filter.filter(data) must_== ""
         }
     }
@@ -54,7 +47,7 @@ class FilterStringTests extends Specification with JUnit {
             filter.filter(data) must_== data
         }
         "Strip non-alphabetic characters from a string" in {
-            val data = build(0 to 64, 91 to 96, 123 to 255)
+            val data = FilterHelper.build(0 to 64, 91 to 96, 123 to 255)
             filter.filter(data) must_== ""
         }
     }
@@ -65,18 +58,18 @@ class FilterStringTests extends Specification with JUnit {
             filter.filter(data) must_== data
         }
         "Strip non-digit characters from a string" in {
-            val data = build(0 to 47, 58 to 255)
+            val data =  FilterHelper.build(0 to 47, 58 to 255)
             filter.filter(data) must_== ""
         }
     }
     "A Printable filter" should {
         val filter = new Printable
         "Leave a string with only printable characters unchanged" in {
-            val data = build(32 to 126)
+            val data =  FilterHelper.build(32 to 126)
             filter.filter(data) must_== data
         }
         "Strip non-printable characters from a string" in {
-            val data = build(0 to 31, 127 to 255)
+            val data = FilterHelper.build(0 to 31, 127 to 255)
             filter.filter(data) must_== ""
         }
     }
