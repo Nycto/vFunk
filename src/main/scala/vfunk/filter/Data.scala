@@ -14,3 +14,11 @@ class EMail extends Characters (
         ('0' to '9') ++ ("!#$%&'*+-/=?^_`{|}~@".toList)
 ) {}
 
+/**
+ * Filters out invalid URL characters
+ */
+class URL extends Characters (
+    HashSet[Char]() ++ ('a' to 'z') ++ ('A' to 'Z') ++
+        ('0' to '9') ++ ("-._~:/?#[]@!$&'()*+,;=".toList)
+) {}
+

@@ -11,12 +11,21 @@ import main.scala.vfunk.filter._
 class FilterDataTests extends Specification with JUnit {
 
     "An EMail filter" should {
-        val email = new EMail
+        val filter = new EMail
         "Remove invalid email characters from a string" in {
             val data = FilterHelper.build(0 to 255)
-            email.filter(data) must_== "!#$%&'*+-/0123456789" +
+            filter.filter(data) must_== "!#$%&'*+-/0123456789" +
                 "=?@ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
                 "^_`abcdefghijklmnopqrstuvwxyz{|}~"
+        }
+    }
+    "A URL filter" should {
+        val filter = new URL
+        "Remove invalid URL characters from a string" in {
+            val data = FilterHelper.build(0 to 255)
+            filter.filter(data) must_== "!#$&'()*+,-./0123456789:;=?@" +
+                "ABCDEFGHIJKLMNOPQRSTUVWXYZ[]" +
+                "_abcdefghijklmnopqrstuvwxyz~"
         }
     }
 }
