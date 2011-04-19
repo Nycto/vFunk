@@ -29,3 +29,11 @@ class IPv4 extends Characters (
     HashSet[Char]() ++ ('0' to '9') ++ List('.')
 ) {}
 
+/**
+ * Filters out invalid IPv6 characters
+ */
+class IPv6 extends Characters (
+    HashSet[Char]() ++ ('0' to '9') ++ List('.', ':')
+        ++ ('a' to 'f') ++ ('A' to 'F')
+) {}
+

@@ -35,5 +35,12 @@ class FilterDataTests extends Specification with JUnit {
             filter.filter(data) must_== ".0123456789"
         }
     }
+    "An IPv6 filter" should {
+        val filter = new IPv6
+        "Remove invalid IPv6 characters from a string" in {
+            val data = FilterHelper.build(0 to 255)
+            filter.filter(data) must_== ".0123456789:ABCDEFabcdef"
+        }
+    }
 }
 
