@@ -47,7 +47,7 @@ class Digit extends Validator {
 /**
  * Validates that the result equals the given value
  */
-class Equals (
+class Same (
     private val versus: String, private val caseSensitive: Boolean = false
 ) extends Validator {
 
@@ -61,7 +61,7 @@ class Equals (
         (against == compare) match {
             case true => Nil
             case false => List(
-                Err("EQUALS", "Must be equal to '%s'".format(versus))
+                Err("SAME", "Must be equal to '%s'".format(versus))
             )
         }
     }

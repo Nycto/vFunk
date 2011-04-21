@@ -57,9 +57,9 @@ class ValidationStringTests extends Specification with JUnit {
             );
         }
     }
-    "An Equals Validator" should {
-        val caseInsensitive = new Equals("Some String")
-        val caseSensitive = new Equals("Some String", true)
+    "A Same Validator" should {
+        val caseInsensitive = new Same("Some String")
+        val caseSensitive = new Same("Some String", true)
 
         "Pass when strings are exactly equal" in {
             caseInsensitive must validateFor("Some String")
