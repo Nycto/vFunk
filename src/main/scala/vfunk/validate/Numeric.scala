@@ -1,5 +1,5 @@
 /**
- * Specific Data type filters
+ * Numeric comparison validators
  */
 
 package main.scala.vfunk.validate
