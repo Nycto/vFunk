@@ -7,11 +7,11 @@ package main.scala.vfunk.validate
 /**
  * A base class for validators that compare numeric values
  */
-protected class NumericCompare (
-    against: Number,
-    private val predicate: (Double, Double) => Boolean,
-    private val err: Err
-) extends Validator {
+protected abstract class NumericCompare ( against: Number )
+    extends Validator {
+
+    protected def predicate(actual: Double, vs: Double): Boolean
+    protected val err: Err
     private val vs = against.doubleValue
     override def getErrors ( value: String ) = {
         try {
@@ -29,36 +29,54 @@ protected class NumericCompare (
 /**
  * Validates whether two values are numerically equal
  */
-class Equals ( vs: Number ) extends NumericCompare (
-    vs, _ == _, Err("EQUALS", "Must equal " + vs)
-) {}
+class Equals ( vs: Number ) extends NumericCompare(vs) {
+    override protected def predicate(actual: Double, vs: Double) = {
+        actual == vs
+    }
+    protected lazy val err = Err("EQUALS", "Must equal " + vs)
+}
 
 /**
  * Validates that a value is less than a given
  */
-class LessThan ( vs: Number ) extends NumericCompare (
-    vs, _ < _, Err("LESSTHAN", "Must be less than " + vs)
-) {}
+class LessThan ( vs: Number ) extends NumericCompare (vs) {
+    override protected def predicate(actual: Double, vs: Double) = {
+        actual < vs
+    }
+    protected lazy val err = Err("LESSTHAN", "Must be less than " + vs)
+}
 
 /**
  * Validates that a value is less than or equal to a given
  */
-class LessThanEquals ( vs: Number ) extends NumericCompare (
-    vs, _ <= _, Err("LESSTHANEQUALS", "Must be less than or equal to " + vs)
-) {}
+class LessThanEquals ( vs: Number ) extends NumericCompare (vs) {
+    override protected def predicate(actual: Double, vs: Double) = {
+        actual <= vs
+    }
+    protected lazy val err = Err(
+        "LESSTHANEQUALS", "Must be less than or equal to " + vs
+    )
+}
 
 /**
  * Validates that a value is greater than a given
  */
-class GreaterThan ( vs: Number ) extends NumericCompare (
-    vs, _ > _, Err("GREATERTHAN", "Must be greater than " + vs)
-) {}
+class GreaterThan ( vs: Number ) extends NumericCompare (vs) {
+    override protected def predicate(actual: Double, vs: Double) = {
+        actual > vs
+    }
+    protected lazy val err = Err("GREATERTHAN", "Must be greater than " + vs)
+}
 
 /**
  * Validates that a value is greater than or equal to a given
  */
-class GreaterThanEquals ( vs: Number ) extends NumericCompare (
-    vs, _ >= _,
-    Err("GREATERTHANEQUALS", "Must be greater than or equal to " + vs)
-) {}
+class GreaterThanEquals ( vs: Number ) extends NumericCompare (vs) {
+    override protected def predicate(actual: Double, vs: Double) = {
+        actual >= vs
+    }
+    protected lazy val err = Err(
+        "GREATERTHANEQUALS", "Must be greater than or equal to " + vs
+    )
+}
 
