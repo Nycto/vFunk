@@ -50,4 +50,14 @@ class ValidationNumericTests extends Specification with JUnit {
             validator must notValidateFor( "abc" )
         }
     }
+    "An Even validator" should {
+        val validator = new Even
+        "Properly validate numbers" in {
+            validator must validateFor( "0", "4", "-20", "100" )
+            validator must notValidateFor( "-5", "9", "3", "71" )
+        }
+        "Fail for non-numbers" in {
+            validator must notValidateFor( "abc" )
+        }
+    }
 }

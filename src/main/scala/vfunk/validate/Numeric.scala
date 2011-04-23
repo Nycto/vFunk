@@ -34,3 +34,10 @@ class Odd extends NumericValidator (
     value => (value % 2).abs == 1, Err("ODD", "Must be odd")
 ) {}
 
+/**
+ * Validates that a value is a number
+ */
+class Even extends NumericValidator (
+    _ % 2 == 0, Err("EVEN", "Must be even")
+) {}
+
