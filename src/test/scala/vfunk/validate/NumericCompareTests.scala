@@ -8,7 +8,7 @@ import org.specs.runner.{ JUnitSuiteRunner, JUnit }
 import main.scala.vfunk.validate._
 
 @RunWith(classOf[JUnitSuiteRunner])
-class ValidationNumericTests extends Specification with JUnit {
+class ValidationNumericComparisonTests extends Specification with JUnit {
 
     val intEquals = List("5");
     val intLess = List("4.99999", "4", "-100");
