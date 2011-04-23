@@ -47,3 +47,10 @@ class LessThanEquals ( vs: Number ) extends NumericCompare (
     vs, _ <= _, Err("LESSTHANEQUALS", "Must be less than or equal to " + vs)
 ) {}
 
+/**
+ * Validates that a value is greater than a given
+ */
+class GreaterThan ( vs: Number ) extends NumericCompare (
+    vs, _ > _, Err("GREATERTHAN", "Must be greater than " + vs)
+) {}
+
