@@ -8,10 +8,11 @@ package main.scala.vfunk.validate
  * A base class for validators that compare numeric values
  */
 protected class NumericCompare (
-    private val vs: Number,
-    private val predicate: (Double, Number) => Boolean,
+    against: Number,
+    private val predicate: (Double, Double) => Boolean,
     private val err: Err
 ) extends Validator {
+    private val vs = against.doubleValue
     override def getErrors ( value: String ) = {
         try {
             predicate(value.toDouble, vs) match {
@@ -30,5 +31,12 @@ protected class NumericCompare (
  */
 class Equals ( vs: Number ) extends NumericCompare (
     vs, _ == _, Err("EQUALS", "Must equal " + vs)
+) {}
+
+/**
+ * Validates that a value is less than a given
+ */
+class LessThan ( vs: Number ) extends NumericCompare (
+    vs, _ < _, Err("LESSTHAN", "Must be less than " + vs)
 ) {}
 
