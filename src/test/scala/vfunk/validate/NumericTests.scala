@@ -40,4 +40,14 @@ class ValidationNumericTests extends Specification with JUnit {
             )
         }
     }
+    "An Odd validator" should {
+        val validator = new Odd
+        "Properly validate numbers" in {
+            validator must validateFor( "-5", "9", "3", "71" )
+            validator must notValidateFor( "0", "4", "-20", "100" )
+        }
+        "Fail for non-numbers" in {
+            validator must notValidateFor( "abc" )
+        }
+    }
 }
