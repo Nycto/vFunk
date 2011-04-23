@@ -54,3 +54,11 @@ class GreaterThan ( vs: Number ) extends NumericCompare (
     vs, _ > _, Err("GREATERTHAN", "Must be greater than " + vs)
 ) {}
 
+/**
+ * Validates that a value is greater than or equal to a given
+ */
+class GreaterThanEquals ( vs: Number ) extends NumericCompare (
+    vs, _ >= _,
+    Err("GREATERTHANEQUALS", "Must be greater than or equal to " + vs)
+) {}
+
