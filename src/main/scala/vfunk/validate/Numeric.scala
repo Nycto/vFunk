@@ -7,7 +7,7 @@ package main.scala.vfunk.validate
 /**
  * A base validator for numeric tests
  */
-protected abstract class NumericValidator extends Validator {
+protected trait NumericValidator extends Validator {
     protected def predicate(value: Double): Boolean
     protected val err: Err
     override def getErrors ( value: String ) = {
