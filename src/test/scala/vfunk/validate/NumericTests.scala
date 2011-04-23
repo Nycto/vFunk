@@ -46,4 +46,17 @@ class ValidationNumericTests extends Specification with JUnit {
         }
 
     }
+    "A LessThanEquals validator" should {
+        "Properly compare integers" in {
+            val validator = new LessThanEquals(5)
+            validator must validateFor( intLess ++ intEquals )
+            validator must notValidateFor( intGreater ++ err )
+        }
+        "Properly compare floats" in {
+            val validator = new LessThanEquals(3.1415)
+            validator must validateFor( floatLess ++ floatEquals )
+            validator must notValidateFor( floatGreater++ err )
+        }
+
+    }
 }
