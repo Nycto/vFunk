@@ -10,39 +10,40 @@ import main.scala.vfunk.validate._
 @RunWith(classOf[JUnitSuiteRunner])
 class ValidationNumericTests extends Specification with JUnit {
 
+    val intEquals = List("5");
+    val intLess = List("4.99999", "4", "-100");
+    val intGreater = List("5.000001", "6", "10000000000");
+
+    val floatEquals = List("3.1415")
+    val floatLess = List("3.1414", "-100", "3")
+    val floatGreater = List("3.1416", "1000000000", "4")
+
+    val err = List("abc123")
+
     "An Equals validator" should {
         "Properly compare integers" in {
             val validator = new Equals(5)
-            validator must validateFor("5")
-            validator must notValidateFor(
-                "6", "4.99999", "5.00001", "abc123"
-            )
+            validator must validateFor( intEquals )
+            validator must notValidateFor( intLess ++ intGreater ++ err )
         }
         "Properly compare floats" in {
             val validator = new Equals(3.1415)
-            validator must validateFor("3.1415")
-            validator must notValidateFor(
-                "3", "3.1416", "3.141", "abc123"
-            )
+            validator must validateFor( floatEquals )
+            validator must notValidateFor( floatLess ++ floatGreater ++ err )
         }
 
     }
     "A LessThan validator" should {
         "Properly compare integers" in {
             val validator = new LessThan(5)
-            validator must validateFor("4", "4.99999")
-            validator must notValidateFor(
-                "6", "5.00001", "abc123", "5"
-            )
+            validator must validateFor( intLess )
+            validator must notValidateFor( intEquals ++ intGreater ++ err )
         }
         "Properly compare floats" in {
             val validator = new LessThan(3.1415)
-            validator must validateFor("3", "3.1414", "-5")
-            validator must notValidateFor(
-                "4", "3.1416", "1000000", "abc123", "3.1415"
-            )
+            validator must validateFor( floatLess )
+            validator must notValidateFor( floatEquals ++ floatGreater++ err )
         }
 
     }
-
 }

@@ -5,9 +5,17 @@ import org.specs._
 import org.specs.matcher._
 
 /**
+ * Companion that provides builder functionality
+ */
+object validateFor {
+    def apply ( against: String* ) = new validateFor( against )
+    def apply ( against: List[String] ) = new validateFor( against )
+}
+
+/**
  * A helper class for testing what a validator passes for
  */
-case class validateFor ( against: String* ) extends Matcher[Validator]() {
+class validateFor ( against: Seq[String] ) extends Matcher[Validator]() {
     def apply ( actual: => Validator ) = {
         val mismatch = against.foldRight [Option[String]] ( None ) {
             (versus, error) => {
@@ -26,9 +34,17 @@ case class validateFor ( against: String* ) extends Matcher[Validator]() {
 }
 
 /**
+ * Companion that provides builder functionality
+ */
+object notValidateFor {
+    def apply ( against: String* ) = new notValidateFor( against )
+    def apply ( against: List[String] ) = new notValidateFor( against )
+}
+
+/**
  * A helper class for testing what a validator passes for
  */
-case class notValidateFor ( against: String* ) extends Matcher[Validator]() {
+class notValidateFor ( against: Seq[String] ) extends Matcher[Validator]() {
     def apply ( actual: => Validator ) = {
         val mismatch = against.foldRight [Option[String]] ( None ) {
             (versus, error) => {
