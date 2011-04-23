@@ -7,15 +7,16 @@ package main.scala.vfunk.validate
 /**
  * A helper class for validators that check the length of a string
  */
-private object LengthValidator {
+protected abstract class LengthValidator ( private val length: Int )
+    extends Validator {
 
-    /**
-     * Asserts the given condition and formats an error if it doesn't pass
-     */
-    def check (
-        length: Int, condition: => Boolean, code: String, message: String
-    ) = {
-        condition match {
+    require( length >= 0, "Length must be greater than or equal to 0" )
+    protected def predicate ( actual: Int, vs: Int ): Boolean
+    protected val code: String
+    protected val message: String
+
+    override def getErrors ( value: String ) = {
+        predicate( value.length, length ) match {
             case true => Nil
             case false => List(Err(
                 code,
@@ -31,57 +32,36 @@ private object LengthValidator {
 /**
  * Validates that the string is at least the given length
  */
-class MinLength ( private val length: Int ) extends Validator {
-    require( length >= 0, "Length must be greater than or equal to 0" )
-    override def getErrors ( value: String ) = {
-        LengthValidator.check(
-            length,
-            value.length >= length,
-            "MINLENGTH",
-            "Must be at least %d character%s long"
-        )
-    }
+class MinLength ( length: Int ) extends LengthValidator ( length ) {
+    override protected def predicate ( actual: Int, vs: Int ) = actual >= vs
+    protected lazy val code = "MINLENGTH"
+    protected lazy val message = "Must be at least %d character%s long"
 }
 
 /**
  * Validates that the string is no longer than the given length
  */
-class MaxLength ( private val length: Int ) extends Validator {
-    require( length >= 0, "Length must be greater than or equal to 0" )
-    override def getErrors ( value: String ) = {
-        LengthValidator.check(
-            length,
-            value.length <= length,
-            "MAXLENGTH",
-            "Must not be longer than %d character%s"
-        )
-    }
+class MaxLength ( length: Int ) extends LengthValidator ( length ) {
+    override protected def predicate ( actual: Int, vs: Int ) = actual <= vs
+    protected lazy val code = "MAXLENGTH"
+    protected lazy val message = "Must not be longer than %d character%s"
 }
 
 /**
  * Validates that the string is exactly the given length
  */
-class ExactLength ( private val length: Int ) extends Validator {
-    require( length >= 0, "Length must be greater than or equal to 0" )
-    override def getErrors ( value: String ) = {
-        LengthValidator.check(
-            length,
-            value.length == length,
-            "EXACTLENGTH",
-            "Must be exactly %d character%s long"
-        )
-    }
+class ExactLength ( length: Int ) extends LengthValidator ( length ) {
+    override protected def predicate ( actual: Int, vs: Int ) = actual == vs
+    protected lazy val code = "EXACTLENGTH"
+    protected lazy val message = "Must be exactly %d character%s long"
 }
 
 /**
  * Validates that a string isn't empty
  */
-class NotEmpty extends Validator {
-    override def getErrors ( value: String ) = {
-        ( value.length > 0 ) match {
-            case true => Nil
-            case false => List(Err("NOTEMPTY", "Must not be empty"))
-        }
-    }
+class NotEmpty extends LengthValidator (0) {
+    override protected def predicate ( actual: Int, vs: Int ) = actual > vs
+    protected lazy val code = "NOTEMPTY"
+    protected lazy val message = "Must not be empty"
 }
 
