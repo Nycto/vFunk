@@ -1,8 +1,8 @@
-package test.scala.vfunk.validate
+package test.roundeights.vfunk.validate
 
 import org.specs2.mutable._
 
-import main.scala.vfunk.validate._
+import com.roundeights.vfunk.validate._
 
 class ValidationLogicTests extends Specification {
 

@@ -1,6 +1,6 @@
-package test.scala.vfunk.validate
+package test.roundeights.vfunk.validate
 
-import main.scala.vfunk.validate._
+import com.roundeights.vfunk.validate._
 
 import org.specs2.mutable._
 import org.specs2.matcher._

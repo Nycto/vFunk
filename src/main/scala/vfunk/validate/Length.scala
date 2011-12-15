@@ -2,7 +2,7 @@
  * Validators that check the length of a string
  */
 
-package main.scala.vfunk.validate
+package com.roundeights.vfunk.validate
 
 /**
  * A helper class for validators that check the length of a string

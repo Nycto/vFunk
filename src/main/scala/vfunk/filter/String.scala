@@ -2,7 +2,7 @@
  * Plumbing level filters
  */
 
-package main.scala.vfunk.filter
+package com.roundeights.vfunk.filter
 
 import scala.collection.immutable.HashSet
 import scala.collection.immutable.NumericRange

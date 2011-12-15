@@ -1,8 +1,8 @@
-package test.scala.vfunk.validate
+package test.roundeights.vfunk.validate
 
 import org.specs2.mutable._
 
-import main.scala.vfunk.filter._
+import com.roundeights.vfunk.filter._
 
 class FilterPlumbingTests extends Specification {
 

@@ -1,4 +1,4 @@
-package test.scala.vfunk.filter
+package test.roundeights.vfunk.filter
 
 /**
  * A helper class for testing what a validator passes for

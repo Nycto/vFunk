@@ -1,10 +1,10 @@
-package test.scala.vfunk.filter
+package test.roundeights.vfunk.filter
 
 import org.specs2.mutable._
 
 import scala.collection.immutable.HashSet
 
-import main.scala.vfunk.filter._
+import com.roundeights.vfunk.filter._
 
 class FilterStringTests extends Specification {
 

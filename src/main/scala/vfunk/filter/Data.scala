@@ -2,7 +2,7 @@
  * Specific Data type filters
  */
 
-package main.scala.vfunk.filter
+package com.roundeights.vfunk.filter
 
 import scala.collection.immutable.HashSet
 

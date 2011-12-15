@@ -2,7 +2,7 @@
  * Numeric validators
  */
 
-package main.scala.vfunk.validate
+package com.roundeights.vfunk.validate
 
 /**
  * A base validator for numeric tests

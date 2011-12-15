@@ -2,7 +2,7 @@
  * Validators target specifically at strings
  */
 
-package main.scala.vfunk.validate
+package com.roundeights.vfunk.validate
 
 import scala.util.matching.Regex
 

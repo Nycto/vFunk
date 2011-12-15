@@ -2,7 +2,7 @@
  * Boolean Logic oriented validators
  */
 
-package main.scala.vfunk.validate
+package com.roundeights.vfunk.validate
 
 import scala.annotation.tailrec
 

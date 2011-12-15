@@ -2,11 +2,11 @@
  * Definitions for forms
  */
 
-package main.scala.vfunk.form
+package com.roundeights.vfunk.form
 
-import main.scala.vfunk.validate.Validator
-import main.scala.vfunk.validate.{Result => ValidateResult}
-import main.scala.vfunk.filter.Filter
+import com.roundeights.vfunk.validate.Validator
+import com.roundeights.vfunk.validate.{Result => ValidateResult}
+import com.roundeights.vfunk.filter.Filter
 
 import scala.collection.immutable.HashMap
 

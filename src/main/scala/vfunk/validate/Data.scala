@@ -2,7 +2,7 @@
  * Validators for specific types of Data
  */
 
-package main.scala.vfunk.validate
+package com.roundeights.vfunk.validate
 
 /**
  * Validates an email address

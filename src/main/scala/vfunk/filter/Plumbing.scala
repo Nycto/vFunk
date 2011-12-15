@@ -2,7 +2,7 @@
  * Plumbing level filters
  */
 
-package main.scala.vfunk.filter
+package com.roundeights.vfunk.filter
 
 /**
  * A filter that simply returns the value it is given
