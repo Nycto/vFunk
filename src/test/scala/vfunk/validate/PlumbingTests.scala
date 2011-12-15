@@ -1,14 +1,10 @@
 package test.scala.vfunk.validate
 
-import org.junit.runner.RunWith
-import org.specs._
-import org.specs.matcher._
-import org.specs.runner.{ JUnitSuiteRunner, JUnit }
+import org.specs2.mutable._
 
 import main.scala.vfunk.validate._
 
-@RunWith(classOf[JUnitSuiteRunner])
-class ValidationPlumbingTests extends Specification with JUnit {
+class ValidationPlumbingTests extends Specification {
 
     "A Manual Validator" should {
         "Return no errors when given an empty list" in {
@@ -23,6 +19,7 @@ class ValidationPlumbingTests extends Specification with JUnit {
             validator.getErrors("data") must_== errors
         }
     }
+
     "An Invoke Validator" should {
         "Pass when the callback returns no errors" in {
             val validator = new Invoke( _ => Nil )
@@ -33,6 +30,7 @@ class ValidationPlumbingTests extends Specification with JUnit {
             validator must notValidateFor("data")
         }
     }
+
     "An In Validator" should {
         "Pass when the set contains the value" in {
             val validator = new In( "One", "Two", "Three" )
@@ -43,5 +41,6 @@ class ValidationPlumbingTests extends Specification with JUnit {
             validator must notValidateFor("Nope")
         }
     }
+
 }
 

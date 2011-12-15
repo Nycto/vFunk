@@ -1,14 +1,10 @@
 package test.scala.vfunk.validate
 
-import org.junit.runner.RunWith
-import org.specs._
-import org.specs.matcher._
-import org.specs.runner.{ JUnitSuiteRunner, JUnit }
+import org.specs2.mutable._
 
 import main.scala.vfunk.validate._
 
-@RunWith(classOf[JUnitSuiteRunner])
-class ValidationDefinitionTests extends Specification with JUnit {
+class ValidationDefinitionTests extends Specification {
 
     "A Result" should {
 
@@ -58,3 +54,4 @@ class ValidationDefinitionTests extends Specification with JUnit {
     }
 
 }
+

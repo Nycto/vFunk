@@ -1,14 +1,10 @@
 package test.scala.vfunk.validate
 
-import org.junit.runner.RunWith
-import org.specs._
-import org.specs.matcher._
-import org.specs.runner.{ JUnitSuiteRunner, JUnit }
+import org.specs2.mutable._
 
 import main.scala.vfunk.validate._
 
-@RunWith(classOf[JUnitSuiteRunner])
-class ValidationLogicTests extends Specification with JUnit {
+class ValidationLogicTests extends Specification {
 
     "An And Validator" should {
         "Pass when all its sub-validators pass" in {
@@ -67,6 +63,7 @@ class ValidationLogicTests extends Specification with JUnit {
                 Err("1", "One") :: Err("2", "Two") :: Err("3", "Three") :: Nil
         }
     }
+
     "A Not Validator" should {
         "Pass when its sub-validator fails" in {
             val validator = new Not( new Manual( Err("3", "Three") ) )
@@ -78,5 +75,6 @@ class ValidationLogicTests extends Specification with JUnit {
             validator must notValidateFor("data")
         }
     }
+
 }
 

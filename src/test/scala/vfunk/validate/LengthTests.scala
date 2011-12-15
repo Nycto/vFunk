@@ -1,14 +1,10 @@
 package test.scala.vfunk.validate
 
-import org.junit.runner.RunWith
-import org.specs._
-import org.specs.matcher._
-import org.specs.runner.{ JUnitSuiteRunner, JUnit }
+import org.specs2.mutable._
 
 import main.scala.vfunk.validate._
 
-@RunWith(classOf[JUnitSuiteRunner])
-class ValidationLengthTests extends Specification with JUnit {
+class ValidationLengthTests extends Specification {
 
     "A MinLength Validator" should {
         val validator = new MinLength(5)
@@ -49,5 +45,6 @@ class ValidationLengthTests extends Specification with JUnit {
             validator must notValidateFor("")
         }
     }
+
 }
 

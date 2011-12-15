@@ -1,16 +1,12 @@
 package test.scala.vfunk.filter
 
-import org.junit.runner.RunWith
-import org.specs._
-import org.specs.matcher._
-import org.specs.runner.{ JUnitSuiteRunner, JUnit }
+import org.specs2.mutable._
 
 import scala.collection.immutable.HashSet
 
 import main.scala.vfunk.filter._
 
-@RunWith(classOf[JUnitSuiteRunner])
-class FilterStringTests extends Specification with JUnit {
+class FilterStringTests extends Specification {
 
     "A Trim filter" should {
         val filter = new Trim
@@ -24,6 +20,7 @@ class FilterStringTests extends Specification with JUnit {
             filter.filter("\n\r\tdata\n\r\t") must_== "data"
         }
     }
+
     "An AlphaNum filter" should {
         val filter = new AlphaNum
         "Leave a string with only alphanumeric characters unchanged" in {
@@ -40,6 +37,7 @@ class FilterStringTests extends Specification with JUnit {
             filter.filter(data) must_== ""
         }
     }
+
     "An Alpha filter" should {
         val filter = new Alpha
         "Leave a string with only alphabetic characters unchanged" in {
@@ -51,6 +49,7 @@ class FilterStringTests extends Specification with JUnit {
             filter.filter(data) must_== ""
         }
     }
+
     "A Digit filter" should {
         val filter = new Digit
         "Leave a string with only digit characters unchanged" in {
@@ -62,6 +61,7 @@ class FilterStringTests extends Specification with JUnit {
             filter.filter(data) must_== ""
         }
     }
+
     "A Printable filter" should {
         val filter = new Printable
         "Leave a string with only printable characters unchanged" in {
@@ -73,6 +73,7 @@ class FilterStringTests extends Specification with JUnit {
             filter.filter(data) must_== ""
         }
     }
+
     "A Characters filter" should {
         "Leave a string with only valid characters unchanged" in {
             val filter = new Characters(HashSet('a', 'b', 'c', 'd'))
@@ -91,5 +92,6 @@ class FilterStringTests extends Specification with JUnit {
             filter.filter("This is a string") must_== "hiiaig"
         }
     }
+
 }
 

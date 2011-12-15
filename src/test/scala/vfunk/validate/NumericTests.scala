@@ -1,14 +1,11 @@
 package test.scala.vfunk.validate
 
-import org.junit.runner.RunWith
-import org.specs._
-import org.specs.matcher._
-import org.specs.runner.{ JUnitSuiteRunner, JUnit }
+import org.specs2.mutable._
 
 import main.scala.vfunk.validate._
 
-@RunWith(classOf[JUnitSuiteRunner])
-class ValidationNumericTests extends Specification with JUnit {
+class ValidationNumericTests extends Specification {
+
     "An IsNumeric validator" should {
         val validator = new IsNumeric
         "Properly detect numbers" in {
@@ -40,6 +37,7 @@ class ValidationNumericTests extends Specification with JUnit {
             )
         }
     }
+
     "An Odd validator" should {
         val validator = new Odd
         "Properly validate numbers" in {
@@ -50,6 +48,7 @@ class ValidationNumericTests extends Specification with JUnit {
             validator must notValidateFor( "abc" )
         }
     }
+
     "An Even validator" should {
         val validator = new Even
         "Properly validate numbers" in {
@@ -60,4 +59,5 @@ class ValidationNumericTests extends Specification with JUnit {
             validator must notValidateFor( "abc" )
         }
     }
+
 }

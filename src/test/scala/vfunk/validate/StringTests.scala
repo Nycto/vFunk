@@ -1,14 +1,10 @@
 package test.scala.vfunk.validate
 
-import org.junit.runner.RunWith
-import org.specs._
-import org.specs.matcher._
-import org.specs.runner.{ JUnitSuiteRunner, JUnit }
+import org.specs2.mutable._
 
 import main.scala.vfunk.validate._
 
-@RunWith(classOf[JUnitSuiteRunner])
-class ValidationStringTests extends Specification with JUnit {
+class ValidationStringTests extends Specification {
 
     "An AlphaNum validator" should {
         val validator = new AlphaNum
@@ -28,6 +24,7 @@ class ValidationStringTests extends Specification with JUnit {
             );
         }
     }
+
     "An Alpha validator" should {
         val validator = new Alpha
 
@@ -44,6 +41,7 @@ class ValidationStringTests extends Specification with JUnit {
             );
         }
     }
+
     "A Digit validator" should {
         val validator = new Digit
 
@@ -57,6 +55,7 @@ class ValidationStringTests extends Specification with JUnit {
             );
         }
     }
+
     "A Same Validator" should {
         val caseInsensitive = new Same("Some String")
         val caseSensitive = new Same("Some String", true)
@@ -77,6 +76,7 @@ class ValidationStringTests extends Specification with JUnit {
             caseSensitive must notValidateFor("some string")
         }
     }
+
     "A Whitespace validator" should {
         val validator = new NoWhitespace
 
@@ -93,6 +93,7 @@ class ValidationStringTests extends Specification with JUnit {
             )
         }
     }
+
     "A RegExp validator" should {
         val validator = new RegExp("simple");
 
@@ -103,6 +104,7 @@ class ValidationStringTests extends Specification with JUnit {
             validator must notValidateFor("oops")
         }
     }
+
     "A NotBlank validator" should {
         val validator = new NotBlank
 
@@ -117,5 +119,6 @@ class ValidationStringTests extends Specification with JUnit {
             )
         }
     }
+
 }
 

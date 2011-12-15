@@ -1,14 +1,10 @@
 package test.scala.vfunk.validate
 
-import org.junit.runner.RunWith
-import org.specs._
-import org.specs.matcher._
-import org.specs.runner.{ JUnitSuiteRunner, JUnit }
+import org.specs2.mutable._
 
 import main.scala.vfunk.validate._
 
-@RunWith(classOf[JUnitSuiteRunner])
-class ValidationDataTests extends Specification with JUnit {
+class ValidationDataTests extends Specification  {
 
     "An Email Validator" should {
         val validator = new Email
@@ -39,6 +35,7 @@ class ValidationDataTests extends Specification with JUnit {
             )
         }
     }
+
     "An IPv4 Validator" should {
         val validator = new IPv4
         "pass for valid IP addresses" in {
@@ -144,6 +141,7 @@ class ValidationDataTests extends Specification with JUnit {
                 "1111::3333:4444:5555:6666:123.123.123.123"
             )
         }
+
         "fail for invalid IP addresses" in {
             validator must notValidateFor(
                 "", "   ", "127.127.127.", "::0:a:b:c:d:e:f ",
@@ -356,4 +354,5 @@ class ValidationDataTests extends Specification with JUnit {
             )
         }
     }
+
 }

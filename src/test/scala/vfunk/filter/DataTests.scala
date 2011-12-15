@@ -1,14 +1,10 @@
 package test.scala.vfunk.filter
 
-import org.junit.runner.RunWith
-import org.specs._
-import org.specs.matcher._
-import org.specs.runner.{ JUnitSuiteRunner, JUnit }
+import org.specs2.mutable._
 
 import main.scala.vfunk.filter._
 
-@RunWith(classOf[JUnitSuiteRunner])
-class FilterDataTests extends Specification with JUnit {
+class FilterDataTests extends Specification {
 
     "An EMail filter" should {
         val filter = new EMail
@@ -19,6 +15,7 @@ class FilterDataTests extends Specification with JUnit {
                 "^_`abcdefghijklmnopqrstuvwxyz{|}~"
         }
     }
+
     "A URL filter" should {
         val filter = new URL
         "Remove invalid URL characters from a string" in {
@@ -28,6 +25,7 @@ class FilterDataTests extends Specification with JUnit {
                 "_abcdefghijklmnopqrstuvwxyz~"
         }
     }
+
     "An IPv4 filter" should {
         val filter = new IPv4
         "Remove invalid IPv4 characters from a string" in {
@@ -35,6 +33,7 @@ class FilterDataTests extends Specification with JUnit {
             filter.filter(data) must_== ".0123456789"
         }
     }
+
     "An IPv6 filter" should {
         val filter = new IPv6
         "Remove invalid IPv6 characters from a string" in {
@@ -42,5 +41,6 @@ class FilterDataTests extends Specification with JUnit {
             filter.filter(data) must_== ".0123456789:ABCDEFabcdef"
         }
     }
+
 }
 

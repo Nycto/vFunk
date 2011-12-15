@@ -1,14 +1,10 @@
 package test.scala.vfunk.validate
 
-import org.junit.runner.RunWith
-import org.specs._
-import org.specs.matcher._
-import org.specs.runner.{ JUnitSuiteRunner, JUnit }
+import org.specs2.mutable._
 
 import main.scala.vfunk.validate._
 
-@RunWith(classOf[JUnitSuiteRunner])
-class ValidationNumericComparisonTests extends Specification with JUnit {
+class ValidationNumericComparisonTests extends Specification {
 
     val intEquals = List("5");
     val intLess = List("4.99999", "4", "-100");
@@ -32,6 +28,7 @@ class ValidationNumericComparisonTests extends Specification with JUnit {
             validator must notValidateFor( floatLess ++ floatGreater ++ err )
         }
     }
+
     "A LessThan validator" should {
         "Properly compare integers" in {
             val validator = new LessThan(5)
@@ -44,6 +41,7 @@ class ValidationNumericComparisonTests extends Specification with JUnit {
             validator must notValidateFor( floatEquals ++ floatGreater++ err )
         }
     }
+
     "A LessThanEquals validator" should {
         "Properly compare integers" in {
             val validator = new LessThanEquals(5)
@@ -56,6 +54,7 @@ class ValidationNumericComparisonTests extends Specification with JUnit {
             validator must notValidateFor( floatGreater++ err )
         }
     }
+
     "A GreaterThan validator" should {
         "Properly compare integers" in {
             val validator = new GreaterThan(5)
@@ -68,6 +67,7 @@ class ValidationNumericComparisonTests extends Specification with JUnit {
             validator must notValidateFor( floatLess ++ floatEquals ++ err )
         }
     }
+
     "A GreaterThanEquals validator" should {
         "Properly compare integers" in {
             val validator = new GreaterThanEquals(5)
@@ -80,4 +80,6 @@ class ValidationNumericComparisonTests extends Specification with JUnit {
             validator must notValidateFor( floatLess ++ err )
         }
     }
+
 }
+
