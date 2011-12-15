@@ -13,5 +13,6 @@ trait Filter {
      * Applies a transformation and returns the result
      */
     def filter ( value: String ): String
+
 }
 

@@ -13,8 +13,12 @@ import scala.annotation.tailrec
  */
 class And ( private val validators: List[Validator] ) extends Validator {
 
+    /**
+     * Constructor for fluently building validators
+     */
     def this ( validators: Validator* ) = this( validators.toList )
 
+    /** {@inheritDoc */
     override def getErrors ( value: String ) = {
 
         @tailrec
@@ -30,8 +34,10 @@ class And ( private val validators: List[Validator] ) extends Validator {
                 }
             }
         }
+
         find( validators )
     }
+
 }
 
 /**
@@ -39,8 +45,12 @@ class And ( private val validators: List[Validator] ) extends Validator {
  */
 class Or ( private val validators: List[Validator] ) extends Validator {
 
+    /**
+     * Constructor for fluently building validators
+     */
     def this ( validators: Validator* ) = this( validators.toList )
 
+    /** {@inheritDoc */
     override def getErrors ( value: String ) = {
 
         @tailrec
@@ -67,11 +77,14 @@ class Not (
     private val validator: Validator,
     private val message: String = "Value failed validation"
 ) extends Validator {
+
+    /** {@inheritDoc */
     override def getErrors ( value: String ) = {
         validator.isValid( value ) match {
             case false => Nil
             case true => List( Err("NOT", message) )
         }
     }
+
 }
 

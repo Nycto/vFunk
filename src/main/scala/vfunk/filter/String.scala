@@ -35,49 +35,61 @@ private object StringFilters {
      * Whether a character is considered printable
      */
     def isPrintable( chr: Char ) = in(chr, 32, 126)
+
 }
 
 /**
  * A filter that trims the white space from the given string
  */
 class Trim extends Filter {
+
+    /** {@inheritDoc */
     override def filter ( value: String ) = value.trim
+
 }
 
 /**
  * Removes any non-alphanumeric characters from a string
  */
 class AlphaNum extends Filter {
-    override def filter ( value: String ) = {
-        value.filter { StringFilters.isLetterOrDigit(_)  }
-    }
+
+    /** {@inheritDoc */
+    override def filter ( value: String )
+        = value.filter { StringFilters.isLetterOrDigit(_)  }
+
 }
 
 /**
  * Removes any non-alphabetic characters from a string
  */
 class Alpha extends Filter {
-    override def filter ( value: String ) = {
-        value.filter { StringFilters.isLetter(_)  }
-    }
+
+    /** {@inheritDoc */
+    override def filter ( value: String )
+        = value.filter { StringFilters.isLetter(_)  }
+
 }
 
 /**
  * Removes any non-digit characters from a string
  */
 class Digit extends Filter {
-    override def filter ( value: String ) = {
-        value.filter { Character.isDigit(_)  }
-    }
+
+    /** {@inheritDoc */
+    override def filter ( value: String )
+        = value.filter { Character.isDigit(_)  }
+
 }
 
 /**
  * Removes any non-printable characters from a string
  */
 class Printable extends Filter {
-    override def filter ( value: String ) = {
-        value.filter { StringFilters.isPrintable(_)  }
-    }
+
+    /** {@inheritDoc */
+    override def filter ( value: String )
+        = value.filter { StringFilters.isPrintable(_)  }
+
 }
 
 /**
@@ -85,12 +97,23 @@ class Printable extends Filter {
  */
 class Characters ( private val valid: Set[Char] ) extends Filter {
 
+    /**
+     * Creates a character filter from a string
+     */
     def this ( valid: String ) = this( HashSet( valid.toList:_* ) )
+
+    /**
+     * Creates a character filter from a list of characters
+     */
     def this ( valid: Char* ) = this( HashSet( valid:_* ) )
+
+    /**
+     * Creates a character filter from a range of characters
+     */
     def this ( valid: NumericRange[Char] ) = this( HashSet( valid:_* ) )
 
-    override def filter ( value: String ) = {
-        value.filter { valid.contains(_)  }
-    }
+    /** {@inheritDoc */
+    override def filter ( value: String ) = value.filter { valid.contains(_)  }
+
 }
 

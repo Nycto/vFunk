@@ -7,14 +7,16 @@ package main.scala.vfunk.validate
 /**
  * A helper class for validators that check the length of a string
  */
-protected abstract class LengthValidator ( private val length: Int )
-    extends Validator {
+protected abstract class LengthValidator (
+    private val length: Int,
+    private val code: String,
+    private val message: String,
+    private val predicate: (Int, Int) => Boolean
+) extends Validator {
 
     require( length >= 0, "Length must be greater than or equal to 0" )
-    protected def predicate ( actual: Int, vs: Int ): Boolean
-    protected val code: String
-    protected val message: String
 
+    /** {@inheritDoc} */
     override def getErrors ( value: String ) = {
         predicate( value.length, length ) match {
             case true => Nil
@@ -27,41 +29,46 @@ protected abstract class LengthValidator ( private val length: Int )
             ))
         }
     }
+
 }
 
 /**
  * Validates that the string is at least the given length
  */
-class MinLength ( length: Int ) extends LengthValidator ( length ) {
-    override protected def predicate ( actual: Int, vs: Int ) = actual >= vs
-    protected lazy val code = "MINLENGTH"
-    protected lazy val message = "Must be at least %d character%s long"
-}
+class MinLength ( length: Int ) extends LengthValidator (
+    length,
+    "MINLENGTH",
+    "Must be at least %d character%s long",
+    ( actual: Int, vs: Int ) => actual >= vs
+)
 
 /**
  * Validates that the string is no longer than the given length
  */
-class MaxLength ( length: Int ) extends LengthValidator ( length ) {
-    override protected def predicate ( actual: Int, vs: Int ) = actual <= vs
-    protected lazy val code = "MAXLENGTH"
-    protected lazy val message = "Must not be longer than %d character%s"
-}
+class MaxLength ( length: Int ) extends LengthValidator (
+    length,
+    "MAXLENGTH",
+    "Must not be longer than %d character%s",
+    ( actual: Int, vs: Int ) => actual <= vs
+)
 
 /**
  * Validates that the string is exactly the given length
  */
-class ExactLength ( length: Int ) extends LengthValidator ( length ) {
-    override protected def predicate ( actual: Int, vs: Int ) = actual == vs
-    protected lazy val code = "EXACTLENGTH"
-    protected lazy val message = "Must be exactly %d character%s long"
-}
+class ExactLength ( length: Int ) extends LengthValidator (
+    length,
+    "EXACTLENGTH",
+    "Must be exactly %d character%s long",
+    ( actual: Int, vs: Int ) => actual == vs
+)
 
 /**
  * Validates that a string isn't empty
  */
-class NotEmpty extends LengthValidator (0) {
-    override protected def predicate ( actual: Int, vs: Int ) = actual > vs
-    protected lazy val code = "NOTEMPTY"
-    protected lazy val message = "Must not be empty"
-}
+class NotEmpty extends LengthValidator (
+    0,
+    "NOTEMPTY",
+    "Must not be empty",
+    ( actual: Int, vs: Int ) => actual > vs
+)
 

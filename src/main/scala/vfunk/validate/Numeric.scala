@@ -7,9 +7,12 @@ package main.scala.vfunk.validate
 /**
  * A base validator for numeric tests
  */
-protected trait NumericValidator extends Validator {
-    protected def predicate(value: Double): Boolean
-    protected val err: Err
+protected abstract class NumericValidator (
+    private val err: Err,
+    private val predicate: (Double) => Boolean
+) extends Validator {
+
+    /** {@inheritDoc */
     override def getErrors ( value: String ) = {
         try {
             predicate( value.toDouble ) match {
@@ -21,29 +24,30 @@ protected trait NumericValidator extends Validator {
             case e:NumberFormatException => List(err)
         }
     }
+
 }
 
 /**
  * Validates that a value is a number
  */
-class IsNumeric extends NumericValidator {
-    override protected def predicate(value: Double) = true
-    protected lazy val err = Err("NUMERIC", "Must be a number")
-}
+class IsNumeric extends NumericValidator (
+    Err("NUMERIC", "Must be a number"),
+    (value: Double) => true
+)
 
 /**
  * Validates that a value is a number
  */
-class Odd extends NumericValidator {
-    override protected def predicate(value: Double) = (value % 2).abs == 1
-    protected lazy val err = Err("ODD", "Must be odd")
-}
+class Odd extends NumericValidator (
+    Err("ODD", "Must be odd"),
+    (value: Double) => (value % 2).abs == 1
+)
 
 /**
  * Validates that a value is a number
  */
-class Even extends NumericValidator {
-    override protected def predicate(value: Double) = (value % 2).abs == 0
-    protected lazy val err = Err("EVEN", "Must be even")
-}
+class Even extends NumericValidator (
+    Err("EVEN", "Must be even"),
+    (value: Double) => (value % 2).abs == 0
+)
 

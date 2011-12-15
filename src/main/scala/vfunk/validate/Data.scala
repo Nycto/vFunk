@@ -15,55 +15,89 @@ class Email extends Validator {
      * This doesn't handle IP email addresses, but that is such an edge
      * case that I don't think it's really worth it.
      */
-    lazy private val regexp = {
-        val regex = List(
-            "(?i)",
-            "^",
-            """[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*""",
-            "@",
-            """(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?""",
-            "$"
-        )
-        regex.reduceLeft(_ + _).r
-    }
+    lazy private val regexp = List(
+        "(?i)",
+        "^",
+        """[a-z0-9!#$%&'*+/=?^_`{|}~-]+""",
+        """(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*""",
+        "@",
+        """(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+""",
+        """[a-z0-9]""",
+        """(?:[a-z0-9-]*[a-z0-9])?""",
+        "$"
+    ).mkString.r
 
+    /** {@inheritDoc} */
     override def getErrors ( value: String ) = {
         regexp.findFirstIn( value ) match {
             case None => List( Err("EMAIL", "Invalid e-mail address") )
             case Some(_) => Nil
         }
     }
+
 }
 
 /**
  * Validates an IPv4 address
  */
 class IPv4 extends Validator {
+
+    /**
+     * The regex to use for matching IPs
+     */
     lazy private val regexp = {
         val byte = """(?:(?:25[0-5])|(?:2[0-4][0-9])|(?:1[0-9]{2})|(?:[1-9]?[0-9]))"""
-        val regex = List(
-            "^", byte, """(?:\.""" + byte + """){3}""", "$"
-        )
-        regex.reduceLeft(_ + _).r
+        List( "^", byte, """(?:\.""" + byte + """){3}""", "$").mkString.r
     }
 
+    /** {@inheritDoc} */
     override def getErrors ( value: String ) = {
         regexp.findFirstIn( value ) match {
             case None => List( Err("IPV4", "Invalid IP address") )
             case Some(_) => Nil
         }
     }
+
 }
 
 /**
  * Validates an IPv6 address
  */
 class IPv6 extends Validator {
-    private lazy val uncompressed = """(?i)^(?:[a-f0-9]{1,4}:){7}[a-f0-9]{1,4}$""".r
-    private lazy val compressed = """(?i)^(?::|(?:[a-f0-9]{1,4}:)+):(?:(?:[a-f0-9]{1,4}:)*[a-f0-9]{1,4})?$""".r
+
+    /**
+     * A validator for uncompressed IPs
+     */
+    private lazy val uncompressed = List(
+        """(?i)""",
+        """^""",
+        """(?:[a-f0-9]{1,4}:){7}""",
+        """[a-f0-9]{1,4}""",
+        """$"""
+    ).mkString.r
+
+    /**
+     * A validator for uncompressed addresses
+     */
+    private lazy val compressed = List(
+        """(?i)""",
+        """^""",
+        """(?::|(?:[a-f0-9]{1,4}:)+):""",
+        """(?:(?:[a-f0-9]{1,4}:)*[a-f0-9]{1,4})?""",
+        """$"""
+    ).mkString.r
+
+    /**
+     * The validator for IPv4 addresses, which are valid IPv6 addresses
+     */
     private lazy val IPv4 = new IPv4
+
+    /**
+     * The error to return when an invalid IP is encountered
+     */
     private lazy val err = Err("IPV6", "Invalid IP Address")
 
+    /** {@inheritDoc} */
     override def getErrors ( value: String ) = {
 
         // For localhost
@@ -112,5 +146,6 @@ class IPv6 extends Validator {
             List(err)
         }
     }
+
 }
 

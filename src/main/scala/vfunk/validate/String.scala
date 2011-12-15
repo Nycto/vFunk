@@ -10,6 +10,8 @@ import scala.util.matching.Regex
  * A validator that matches strings that contain alpha-numeric characters
  */
 class AlphaNum extends Validator {
+
+    /** {@inheritDoc */
     override def getErrors ( value: String ) = {
         value.forall { Character.isLetterOrDigit(_) } match {
             case true => Nil
@@ -18,30 +20,37 @@ class AlphaNum extends Validator {
             )
         }
     }
+
 }
 
 /**
  * A validator that matches strings that contain alphabetic characters
  */
 class Alpha extends Validator {
+
+    /** {@inheritDoc */
     override def getErrors ( value: String ) = {
         value.forall { Character.isLetter(_) } match {
             case true => Nil
             case false => List(Err("ALPHA", "Must only contain letters"))
         }
     }
+
 }
 
 /**
  * A validator that matches strings that contain numeric characters
  */
 class Digit extends Validator {
+
+    /** {@inheritDoc */
     override def getErrors ( value: String ) = {
         value.forall { Character.isDigit(_) } match {
             case true => Nil
             case false => List(Err("DIGIT", "Must only contain numbers"))
         }
     }
+
 }
 
 /**
@@ -56,6 +65,7 @@ class Same (
      */
     private val compare = if (caseSensitive) versus else versus.toLowerCase
 
+    /** {@inheritDoc */
     override def getErrors ( value: String ) = {
         val against = if (caseSensitive) value else value.toLowerCase
         (against == compare) match {
@@ -65,18 +75,22 @@ class Same (
             )
         }
     }
+
 }
 
 /**
  * Validates that a value doesn't contain any spaces or new lines
  */
 class NoWhitespace extends Validator {
+
+    /** {@inheritDoc */
     override def getErrors ( value: String ) = {
         value.exists { Character.isWhitespace(_) } match {
             case false => Nil
             case true => List(Err("WHITESPACE", "Must not contain spaces"))
         }
     }
+
 }
 
 /**
@@ -84,8 +98,12 @@ class NoWhitespace extends Validator {
  */
 class RegExp ( private val regex: Regex ) extends Validator {
 
+    /**
+     * Alternate constructor that builds a regex validator from a string
+     */
     def this ( regex: String ) = this( regex.r )
 
+    /** {@inheritDoc */
     override def getErrors ( value: String ) = {
         regex.findFirstIn( value ) match {
             case Some(_) => Nil
@@ -94,17 +112,21 @@ class RegExp ( private val regex: Regex ) extends Validator {
             )
         }
     }
+
 }
 
 /**
  * Validates that a value contains more than just white
  */
 class NotBlank extends Validator {
+
+    /** {@inheritDoc */
     override def getErrors ( value: String ) = {
         value.trim == "" match {
             case false => Nil
             case true => List( Err("NOTBLANK", "Must not be blank") )
         }
     }
+
 }
 

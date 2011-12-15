@@ -14,6 +14,7 @@ import scala.collection.immutable.HashMap
  * A field definition
  */
 trait Field {
+
     /**
      * Returns the name of this field
      */
@@ -23,6 +24,7 @@ trait Field {
      * Runs validation against this form
      */
     def validate ( value: String ): FieldResult
+
 }
 
 /**
@@ -40,6 +42,7 @@ class TextField (
         val filtered = filter.filter( value )
         FieldResult( this, value, filtered, validator.validate(filtered) )
     }
+
 }
 
 /**
@@ -54,6 +57,7 @@ case class FieldResult (
  * A form
  */
 class Form ( fieldList: Traversable[Field] ) {
+
     /**
      * The list of fields mapped by their field name
      */
@@ -67,12 +71,16 @@ class Form ( fieldList: Traversable[Field] ) {
      * Validates a map against this form
      */
     // def validate ( Map[String,String] ) = {}
+
 }
 
 /**
  * The results of a validation run
  */
-abstract class FormResults ( private val fields: HashMap[String,FieldResult] ) {
+abstract class FormResults (
+    private val fields: HashMap[String,FieldResult]
+) {
+
     /**
      * Returns whether this form is valid
      */
@@ -87,6 +95,7 @@ abstract class FormResults ( private val fields: HashMap[String,FieldResult] ) {
      * Returns the original value from a form
      */
     def original ( field: String ): String
+
 }
 
 
