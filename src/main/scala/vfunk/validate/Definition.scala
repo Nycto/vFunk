@@ -2,7 +2,7 @@
  * Structural code for defining the Validation interface
  */
 
-package com.roundeights.vfunk.validate
+package com.roundeights.vfunk
 
 /**
  * A validation error

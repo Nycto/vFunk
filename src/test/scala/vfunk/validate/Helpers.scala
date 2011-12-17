@@ -1,6 +1,6 @@
 package test.roundeights.vfunk.validate
 
-import com.roundeights.vfunk.validate._
+import com.roundeights.vfunk._
 
 import org.specs2.mutable._
 import org.specs2.matcher._

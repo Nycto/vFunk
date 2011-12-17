@@ -4,6 +4,8 @@
 
 package com.roundeights.vfunk.validate
 
+import com.roundeights.vfunk.{Validator, Err}
+
 /**
  * A base class for validators that compare numeric values
  */

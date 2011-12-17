@@ -1,6 +1,6 @@
 package com.roundeights.vfunk
 
-import com.roundeights.vfunk.validate.{Validator, Validated, Err, Manual}
+import com.roundeights.vfunk.validate.Manual
 import com.roundeights.vfunk.filter.Identity
 
 /**

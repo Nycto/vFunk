@@ -2,7 +2,7 @@ package test.roundeights.vfunk.validate
 
 import org.specs2.mutable._
 
-import com.roundeights.vfunk.validate._
+import com.roundeights.vfunk._
 
 class ValidationDefinitionTests extends Specification {
 

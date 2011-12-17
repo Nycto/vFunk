@@ -4,6 +4,8 @@
 
 package com.roundeights.vfunk.validate
 
+import com.roundeights.vfunk.{Validator, Err}
+
 /**
  * A helper class for validators that check the length of a string
  */

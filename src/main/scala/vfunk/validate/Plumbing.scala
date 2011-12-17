@@ -4,6 +4,8 @@
 
 package com.roundeights.vfunk.validate
 
+import com.roundeights.vfunk.{Validator, Err}
+
 /**
  * Returns the given errors
  */

@@ -3,6 +3,7 @@ package test.roundeights.vfunk.validate
 import org.specs2.mutable._
 
 import com.roundeights.vfunk.validate._
+import com.roundeights.vfunk.Err
 
 class ValidationPlumbingTests extends Specification {
 

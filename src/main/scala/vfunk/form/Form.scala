@@ -1,7 +1,5 @@
 package com.roundeights.vfunk
 
-import com.roundeights.vfunk.validate.{Validator, Validated}
-
 /**
  * A companion for the Form class
  */
