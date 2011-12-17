@@ -2,7 +2,7 @@
  * Structural code for defining the Filter interface
  */
 
-package com.roundeights.vfunk.filter
+package com.roundeights.vfunk
 
 /**
  * Applies a transformation to a string, resulting in another string

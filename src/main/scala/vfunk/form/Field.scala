@@ -1,7 +1,7 @@
 package com.roundeights.vfunk
 
 import com.roundeights.vfunk.validate.{Validator, Validated, Err, Manual}
-import com.roundeights.vfunk.filter.{Filter, Identity}
+import com.roundeights.vfunk.filter.Identity
 
 /**
  * A field definition

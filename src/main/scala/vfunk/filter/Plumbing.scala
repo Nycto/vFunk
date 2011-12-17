@@ -4,6 +4,8 @@
 
 package com.roundeights.vfunk.filter
 
+import com.roundeights.vfunk.Filter
+
 /**
  * A filter that simply returns the value it is given
  */

@@ -4,7 +4,8 @@
 
 package com.roundeights.vfunk.filter
 
-import scala.collection.immutable.HashSet
+import com.roundeights.vfunk.Filter
+
 import scala.collection.immutable.NumericRange
 
 /**
@@ -100,17 +101,17 @@ class Characters ( private val valid: Set[Char] ) extends Filter {
     /**
      * Creates a character filter from a string
      */
-    def this ( valid: String ) = this( HashSet( valid.toList:_* ) )
+    def this ( valid: String ) = this( Set( valid.toList:_* ) )
 
     /**
      * Creates a character filter from a list of characters
      */
-    def this ( valid: Char* ) = this( HashSet( valid:_* ) )
+    def this ( valid: Char* ) = this( Set( valid:_* ) )
 
     /**
      * Creates a character filter from a range of characters
      */
-    def this ( valid: NumericRange[Char] ) = this( HashSet( valid:_* ) )
+    def this ( valid: NumericRange[Char] ) = this( Set( valid:_* ) )
 
     /** {@inheritDoc */
     override def filter ( value: String ) = value.filter { valid.contains(_)  }

@@ -1,7 +1,6 @@
 package com.roundeights.vfunk
 
 import com.roundeights.vfunk.validate.{Validator, Validated}
-import com.roundeights.vfunk.filter.Filter
 
 /**
  * A companion for the Form class
