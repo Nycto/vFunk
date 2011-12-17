@@ -7,7 +7,9 @@ package com.roundeights.vfunk.validate
 /**
  * Returns the given errors
  */
-class Manual ( private val errors: Traversable[Err] ) extends Validator {
+class Manual (
+    private val errors: Traversable[Err] = List()
+) extends Validator {
 
     /**
      * Alternate constructor for more fluently creating a validator
