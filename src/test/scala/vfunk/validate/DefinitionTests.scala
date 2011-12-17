@@ -6,10 +6,10 @@ import com.roundeights.vfunk.validate._
 
 class ValidationDefinitionTests extends Specification {
 
-    "A Result" should {
+    "A Validated" should {
 
         "return as valid when there are no errors" in {
-            val result = Result("something", Nil);
+            val result = Validated("something", Nil);
 
             result.isValid must_== true
             result.value must_== "something"
@@ -18,8 +18,9 @@ class ValidationDefinitionTests extends Specification {
         }
 
         "return as invalid when there are errors" in {
-            val errors = Err("Code", "Message") :: Err("Code2", "Another") :: Nil
-            val result = Result("something", errors);
+            val errors
+                = Err("Code", "Message") :: Err("Code2", "Another") :: Nil
+            val result = Validated("something", errors);
 
             result.isValid must_== false
             result.value must_== "something"
@@ -48,7 +49,7 @@ class ValidationDefinitionTests extends Specification {
             validator must notValidateFor("something")
 
             validator.validate("something") must_==
-                Result("something", List(Err("test", "error")))
+                Validated("something", List(Err("test", "error")))
         }
 
     }

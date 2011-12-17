@@ -12,7 +12,7 @@ case class Err ( val code: String, val message: String )
 /**
  * The result of a validation pass
  */
-case class Result ( val value: String, val errors: List[Err] ) {
+case class Validated ( val value: String, val errors: List[Err] ) {
 
     /**
      * Returns whether this value is valid
@@ -38,8 +38,8 @@ trait Validator {
     /**
      * Validates a value and returns detailed results
      */
-    def validate ( value: String ): Result
-        = Result( value, getErrors(value) )
+    def validate ( value: String ): Validated
+        = Validated( value, getErrors(value) )
 
     /**
      * Returns whether a value is valid or not

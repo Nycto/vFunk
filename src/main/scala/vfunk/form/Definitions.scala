@@ -4,8 +4,7 @@
 
 package com.roundeights.vfunk.form
 
-import com.roundeights.vfunk.validate.Validator
-import com.roundeights.vfunk.validate.{Result => ValidateResult}
+import com.roundeights.vfunk.validate.{Validator, Validated}
 import com.roundeights.vfunk.filter.Filter
 
 import scala.collection.immutable.HashMap
@@ -50,7 +49,7 @@ class TextField (
  */
 case class FieldResult (
     val field: Field, val original: String,
-    val value: String, val valid: ValidateResult
+    val value: String, val valid: Validated
 )
 
 /**
