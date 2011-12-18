@@ -1,5 +1,7 @@
 package com.roundeights.vfunk
 
+import scala.collection.SortedMap
+
 /**
  * A companion for the Form class
  */
@@ -20,13 +22,15 @@ object Form {
 /**
  * A form
  */
-case class Form ( val fields: Map[String, Field] ) extends Traversable[Field] {
+case class Form (
+    val fields: SortedMap[String, Field]
+) extends Traversable[Field] {
 
     /**
      * Creates a form from a list of fields
      */
     def this ( fields: Traversable[Field] ) = this(
-        fields.foldLeft ( Map[String, Field]() ) {
+        fields.foldLeft ( SortedMap[String, Field]() ) {
             (accum, field) => accum + ((field.name, field))
         }
     )
@@ -69,7 +73,7 @@ case class Form ( val fields: Map[String, Field] ) extends Traversable[Field] {
  * The results of a validation run
  */
 case class FormResults (
-    val results: Map[String,FieldResult] = Map()
+    val results: SortedMap[String,FieldResult] = SortedMap()
 ) extends Traversable[FieldResult] {
 
     /** {@inheritDoc} */
@@ -98,6 +102,23 @@ case class FormResults (
      */
     def original ( field: String ): Option[String]
         = results.get( field ).map( _.original )
+
+    /**
+     * Combines all the errors in this form into a single list
+     */
+    def errors: List[Err] = results.foldLeft( List[Err]() ) {
+        (accum, pair) => pair._2.errors ::: accum
+    }
+
+    /**
+     * Returns the first error
+     */
+    def firstError: Option[Err] = errors.headOption
+
+    /**
+     * Returns the first error message
+     */
+    def firstMessage: Option[String] = firstError.map( _.message )
 
 }
 

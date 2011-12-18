@@ -3,53 +3,87 @@ package test.roundeights.vfunk
 import org.specs2.mutable._
 
 import com.roundeights.vfunk._
-import com.roundeights.vfunk.validate._
-import com.roundeights.vfunk.filter._
 
 class FormTest extends Specification  {
 
     "A Form" should {
 
         val form = Form(
-            TextField( "identity" ),
+            TextField( "one" ),
             TextField(
-                "live",
-                new Callback( _ match {
+                "two",
+                Filter callback( _ match {
                     case "correct" => "filtered"
                     case _ => "fail"
                 } ),
-                new In( "filtered" )
-            )
+                Validate in( "filtered" )
+            ),
+            TextField( "three", Filter.numeric, Validate >= 0 )
         )
 
-        "validate a map of valid values" in {
-            val result = form.process(
-                "identity" -> "unchanged",
-                "live" -> "correct"
-            )
+        val valid = form.process(
+            "one" -> "unchanged",
+            "two" -> "correct",
+            "three" -> "123"
+        )
 
-            result.isValid must_== true
+        val invalid = form.process(
+            "one" -> "unchanged",
+            "two" -> "wrong",
+            "three" -> "-5"
+        )
 
-            result("identity") must_== Some("unchanged")
-            result("live") must_== Some("filtered")
-
-            result.original("identity") must_== Some("unchanged")
-            result.original("live") must_== Some("correct")
+        "provide access to whether a form is valid" in {
+            valid.isValid must_== true
+            invalid.isValid must_== false
         }
 
-        "validate a map of invalid values" in {
-            val result = form.process(
-                "identity" -> "unchanged",
-                "live" -> "wrong"
+        "provide access to the filtered values" in {
+            valid("one") must_== Some("unchanged")
+            valid("two") must_== Some("filtered")
+            valid("three") must_== Some("123")
+
+            invalid("one") must_== Some("unchanged")
+            invalid("two") must_== Some("fail")
+            invalid("three") must_== Some("-5")
+        }
+
+        "provide access to the original values" in {
+            valid.original("one") must_== Some("unchanged")
+            valid.original("two") must_== Some("correct")
+            valid.original("three") must_== Some("123")
+
+            invalid.original("one") must_== Some("unchanged")
+            invalid.original("two") must_== Some("wrong")
+            invalid("three") must_== Some("-5")
+        }
+
+        "provide access to list of errors produced" in {
+            valid.errors must_== Nil
+
+            invalid.errors must_== List(
+                Err("OPTION", "Invalid Option"),
+                Err("GREATERTHANEQUALS", "Must be greater than or equal to 0")
             )
+        }
 
-            result.isValid must_== false
+        "provide access to list of errors produced" in {
+            valid.errors must_== Nil
 
-            result("identity") must_== Some("unchanged")
-            result("live") must_== Some("fail")
+            invalid.errors must_== List(
+                Err("OPTION", "Invalid Option"),
+                Err("GREATERTHANEQUALS", "Must be greater than or equal to 0")
+            )
+        }
 
-            result.original("identity") must_== Some("unchanged")
-            result.original("live") must_== Some("wrong")
+        "provide access to first error" in {
+            valid.firstError must_== None
+            invalid.firstError must_== Some( Err("OPTION", "Invalid Option") )
+        }
+
+        "provide access to first error message" in {
+            valid.firstMessage must_== None
+            invalid.firstMessage must_== Some("Invalid Option")
         }
 
     }
