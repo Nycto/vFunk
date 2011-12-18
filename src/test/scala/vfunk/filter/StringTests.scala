@@ -93,5 +93,17 @@ class FilterStringTests extends Specification {
         }
     }
 
+    "A Numeric filter" should {
+        val filter = new Numeric
+        "Leave a string with only digit characters unchanged" in {
+            val data = "-01234.56789"
+            filter.filter(data) must_== data
+        }
+        "Strip non-digit characters from a string" in {
+            val data =  FilterHelper.build(0 to 44, 47 to 47, 58 to 255)
+            filter.filter(data) must_== ""
+        }
+    }
+
 }
 

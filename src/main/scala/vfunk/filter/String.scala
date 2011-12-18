@@ -118,3 +118,11 @@ class Characters ( private val valid: Set[Char] ) extends Filter {
 
 }
 
+/**
+ * Filters out any non-numeric characters. Meaning 0-9, dash (-) and period (.)
+ */
+class Numeric extends Characters (
+    Set[Char]() ++ ('0' to '9') ++ (".-".toList)
+)
+
+
