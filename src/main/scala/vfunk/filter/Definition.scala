@@ -23,6 +23,7 @@ object Filter {
     def alphaNum = new AlphaNum
     def alpha = new Alpha
     def digit = new Digit
+    def hex = new Hex
     def printable = new Printable
     def characters ( chars: Set[Char] ) = new Characters( chars )
     def characters ( chars: String ) = new Characters( chars )
