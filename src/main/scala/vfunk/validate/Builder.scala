@@ -32,10 +32,19 @@ object Validate {
     def even = new Even
 
     def equals ( vs: Number ) = new Equals( vs )
+    def == ( vs: Number ) = new Equals( vs )
+
     def lessThan ( vs: Number ) = new LessThan( vs )
+    def < ( vs: Number ) = new LessThan( vs )
+
     def lessThanEquals ( vs: Number ) = new LessThanEquals( vs )
+    def <= ( vs: Number ) = new LessThanEquals( vs )
+
     def greaterThan ( vs: Number ) = new GreaterThan( vs )
+    def > ( vs: Number ) = new GreaterThan( vs )
+
     def greaterThanEquals ( vs: Number ) = new GreaterThanEquals( vs )
+    def >= ( vs: Number ) = new GreaterThanEquals( vs )
 
     def manual( errors: List[Err] ) = new Manual( errors )
     def manual( errors: Err* ) = new Manual( errors )
