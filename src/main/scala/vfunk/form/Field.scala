@@ -69,6 +69,11 @@ case class FieldResult (
      */
     def firstError: Option[Err] = validated.firstError
 
+    /**
+     * Returns the first error message
+     */
+    def firstMessage: Option[String] = firstError.map( _.message )
+
 }
 
 
