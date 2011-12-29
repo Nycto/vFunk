@@ -104,6 +104,12 @@ case class FormResults (
         = results.get( field ).map( _.original )
 
     /**
+     * Returns the results of the first invalid field
+     */
+    def firstInvalid: Option[FieldResult]
+         = results.find( ! _._2.isValid ).map( _._2 )
+
+    /**
      * Combines all the errors in this form into a single list
      */
     def errors: List[Err] = results.foldLeft( List[Err]() ) {

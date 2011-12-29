@@ -97,6 +97,11 @@ class FormTest extends Specification  {
             )
         }
 
+        "provide access to the first invalid field result" in {
+            valid.firstInvalid must_== None
+            invalid.firstInvalid must_== Some( invalid.results("two") )
+        }
+
     }
 
 }
