@@ -1,6 +1,6 @@
 package com.roundeights.vfunk
 
-import scala.collection.SortedMap
+import scala.collection.immutable.ListMap
 
 /**
  * A companion for the Form class
@@ -23,14 +23,14 @@ object Form {
  * A form
  */
 case class Form (
-    val fields: SortedMap[String, Field]
+    val fields: ListMap[String, Field]
 ) extends Traversable[Field] {
 
     /**
      * Creates a form from a list of fields
      */
     def this ( fields: Traversable[Field] ) = this(
-        fields.foldLeft ( SortedMap[String, Field]() ) {
+        fields.foldLeft ( ListMap[String, Field]() ) {
             (accum, field) => accum + ((field.name, field))
         }
     )
@@ -73,7 +73,7 @@ case class Form (
  * The results of a validation run
  */
 case class FormResults (
-    val results: SortedMap[String,FieldResult] = SortedMap()
+    val results: ListMap[String,FieldResult] = ListMap()
 ) extends Traversable[FieldResult] {
 
     /** {@inheritDoc} */

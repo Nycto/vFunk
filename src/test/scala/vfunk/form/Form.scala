@@ -33,6 +33,13 @@ class FormTest extends Specification  {
             "three" -> "-5"
         )
 
+        "Preserve the order of its fields" in {
+            val fields = form.toList
+            fields(0).name must_== "one"
+            fields(1).name must_== "two"
+            fields(2).name must_== "three"
+        }
+
         "provide access to whether a form is valid" in {
             valid.isValid must_== true
             invalid.isValid must_== false
@@ -62,8 +69,8 @@ class FormTest extends Specification  {
             valid.errors must_== Nil
 
             invalid.errors must_== List(
-                Err("OPTION", "Invalid Option"),
-                Err("GREATERTHANEQUALS", "Must be greater than or equal to 0")
+                Err("GREATERTHANEQUALS", "Must be greater than or equal to 0"),
+                Err("OPTION", "Invalid Option")
             )
         }
 
@@ -71,19 +78,23 @@ class FormTest extends Specification  {
             valid.errors must_== Nil
 
             invalid.errors must_== List(
-                Err("OPTION", "Invalid Option"),
-                Err("GREATERTHANEQUALS", "Must be greater than or equal to 0")
+                Err("GREATERTHANEQUALS", "Must be greater than or equal to 0"),
+                Err("OPTION", "Invalid Option")
             )
         }
 
         "provide access to first error" in {
             valid.firstError must_== None
-            invalid.firstError must_== Some( Err("OPTION", "Invalid Option") )
+            invalid.firstError must_== Some(
+                Err("GREATERTHANEQUALS", "Must be greater than or equal to 0")
+            )
         }
 
         "provide access to first error message" in {
             valid.firstMessage must_== None
-            invalid.firstMessage must_== Some("Invalid Option")
+            invalid.firstMessage must_== Some(
+                "Must be greater than or equal to 0"
+            )
         }
 
     }
