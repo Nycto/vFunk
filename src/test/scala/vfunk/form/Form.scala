@@ -46,13 +46,25 @@ class FormTest extends Specification  {
         }
 
         "provide access to the filtered values" in {
-            valid("one") must_== Some("unchanged")
-            valid("two") must_== Some("filtered")
-            valid("three") must_== Some("123")
+            valid("one") must_== "unchanged"
+            valid("two") must_== "filtered"
+            valid("three") must_== "123"
 
-            invalid("one") must_== Some("unchanged")
-            invalid("two") must_== Some("fail")
-            invalid("three") must_== Some("-5")
+            invalid("one") must_== "unchanged"
+            invalid("two") must_== "fail"
+            invalid("three") must_== "-5"
+        }
+
+        "provide access to the optional filtered values" in {
+            valid.get("one") must_== Some("unchanged")
+            valid.get("two") must_== Some("filtered")
+            valid.get("three") must_== Some("123")
+            valid.get("four") must_== None
+
+            invalid.get("one") must_== Some("unchanged")
+            invalid.get("two") must_== Some("fail")
+            invalid.get("three") must_== Some("-5")
+            invalid.get("four") must_== None
         }
 
         "provide access to the original values" in {
@@ -62,7 +74,7 @@ class FormTest extends Specification  {
 
             invalid.original("one") must_== Some("unchanged")
             invalid.original("two") must_== Some("wrong")
-            invalid("three") must_== Some("-5")
+            invalid.original("three") must_== Some("-5")
         }
 
         "provide access to list of errors produced" in {

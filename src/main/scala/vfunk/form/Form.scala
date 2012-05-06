@@ -94,7 +94,12 @@ case class FormResults (
     /**
      * Returns the value of a field
      */
-    def apply ( field: String ): Option[String]
+    def apply ( field: String ): String = results( field ).value
+
+    /**
+     * Returns the value of a field as an option
+     */
+    def get ( field: String ): Option[String]
         = results.get( field ).map( _.value )
 
     /**
