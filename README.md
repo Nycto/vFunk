@@ -85,3 +85,10 @@ Forms
 Forms are a list of fields joined together. They are useful for processing an
 entire map of values at once.
 
+License
+-------
+
+vFunk is released under the MIT License, which is pretty spiffy. You should
+have received a copy of the MIT License along with this program. If not, see
+<http://www.opensource.org/licenses/mit-license.php>.
+
