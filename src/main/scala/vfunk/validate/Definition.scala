@@ -10,6 +10,20 @@ package com.roundeights.vfunk
 case class Err ( val code: String, val message: String )
 
 /**
+ * Thrown when a required validation does not pass
+ */
+case class InvalidValueException (
+    val validated: Validated
+) extends Exception {
+
+    /** {@inheritDoc} */
+    override def toString = "InvalidValueException(%s)".format(
+        validated.errors.mkString(", ")
+    )
+
+}
+
+/**
  * The result of a validation pass
  */
 case class Validated ( val value: String, val errors: List[Err] ) {
@@ -23,6 +37,12 @@ case class Validated ( val value: String, val errors: List[Err] ) {
      * Returns the first error, if there is one
      */
     lazy val firstError: Option[Err] = errors.headOption
+
+    /**
+     * Requires that this result be valid, otherwise throw an exception
+     */
+    def require: Unit = if ( !isValid ) throw InvalidValueException( this )
+
 }
 
 /**

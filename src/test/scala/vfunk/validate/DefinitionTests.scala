@@ -8,24 +8,31 @@ class ValidationDefinitionTests extends Specification {
 
     "A Validated" should {
 
-        "return as valid when there are no errors" in {
-            val result = Validated("something", Nil);
+        val errors = Err("Code", "Message") :: Err("Code2", "Another") :: Nil
+        val invalid = Validated("something", errors);
+        val valid = Validated("something", Nil);
 
-            result.isValid must_== true
-            result.value must_== "something"
-            result.errors must_== Nil
-            result.firstError must_== None
+        "return as valid when there are no errors" in {
+            valid.isValid must_== true
+            valid.value must_== "something"
+            valid.errors must_== Nil
+            valid.firstError must_== None
         }
 
         "return as invalid when there are errors" in {
-            val errors
-                = Err("Code", "Message") :: Err("Code2", "Another") :: Nil
-            val result = Validated("something", errors);
+            invalid.isValid must_== false
+            invalid.value must_== "something"
+            invalid.errors must_== errors
+            invalid.firstError must_== Some( Err("Code", "Message") )
+        }
 
-            result.isValid must_== false
-            result.value must_== "something"
-            result.errors must_== errors
-            result.firstError must_== Some( Err("Code", "Message") )
+        "not throw an exception when a required value validates" in {
+            valid.require
+            ok
+        }
+
+        "throw an exception when a required value does not validate" in {
+            invalid.require must throwAn[InvalidValueException]
         }
 
     }
