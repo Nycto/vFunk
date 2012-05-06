@@ -25,6 +25,9 @@ object Filter {
     def digit = new Digit
     def hex = new Hex
     def printable = new Printable
+    def replace ( search: String, replace: String )
+        = new Replace(search, replace)
+    def replace ( params: (String, String) ) = new Replace(params)
     def numeric = new Numeric
     def characters ( chars: Set[Char] ) = new Characters( chars )
     def characters ( chars: String ) = new Characters( chars )

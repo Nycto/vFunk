@@ -94,6 +94,22 @@ class Printable extends Filter {
 }
 
 /**
+ * Performs a literal search and replace on the incoming string
+ */
+class Replace ( val search: String, val replace: String ) extends Filter {
+
+    /**
+     * An alternate constructor for building from a tuple
+     */
+    def this ( params: (String, String) ) = this( params._1, params._2 )
+
+    /** {@inheritDoc */
+    override def filter ( value: String )
+        = value.replaceAllLiterally( search, replace )
+
+}
+
+/**
  * Removes any character not in the given list
  */
 class Characters ( private val valid: Set[Char] ) extends Filter {

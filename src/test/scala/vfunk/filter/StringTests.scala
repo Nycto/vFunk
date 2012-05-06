@@ -74,6 +74,18 @@ class FilterStringTests extends Specification {
         }
     }
 
+    "A Replace filter" should {
+        val filter = new Replace("search" -> "replace")
+        "Leave a string untouched when it doesn't contain the search string" in {
+            val data = "This is a string"
+            filter.filter(data) must_== data
+        }
+        "Change a string when it contains the search string" in {
+            val data = "This search is a search string"
+            filter.filter(data) must_== "This replace is a replace string"
+        }
+    }
+
     "A Characters filter" should {
         "Leave a string with only valid characters unchanged" in {
             val filter = new Characters(HashSet('a', 'b', 'c', 'd'))
