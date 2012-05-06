@@ -41,7 +41,11 @@ case class Validated ( val value: String, val errors: List[Err] ) {
     /**
      * Requires that this result be valid, otherwise throw an exception
      */
-    def require: Unit = if ( !isValid ) throw InvalidValueException( this )
+    def require: Validated = {
+        if ( !isValid )
+            throw InvalidValueException( this )
+        this
+    }
 
 }
 

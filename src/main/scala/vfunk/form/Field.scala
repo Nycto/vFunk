@@ -74,6 +74,14 @@ case class FieldResult (
      */
     def firstMessage: Option[String] = firstError.map( _.message )
 
+    /**
+     * Requires that this result be valid, otherwise throw an exception
+     */
+    def require: FieldResult = {
+        validated.require
+        this
+    }
+
 }
 
 
