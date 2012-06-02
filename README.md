@@ -5,6 +5,8 @@ vFunk is a simple data filtering and validation library for Scala. It is
 designed to make user input processing simple and composable. It is primarily
 targeted at processing Strings.
 
+[![Build Status](https://secure.travis-ci.org/Nycto/vFunk.png?branch=master)](http://travis-ci.org/Nycto/vFunk)
+
 Filters
 -------
 
