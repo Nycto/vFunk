@@ -43,6 +43,18 @@ class FieldTest extends Specification  {
             result.firstError must_== Some( Err("OPTION", "Invalid Option") )
         }
 
+        "Produce an Either" in {
+            field.process("correct").either must_== Right("filtered")
+            field.process("wrong").either must_== Left(
+                Validated( "fail", List(Err("OPTION", "Invalid Option")) )
+            )
+        }
+
+        "Produce an Option" in {
+            field.process("correct").option must_== Some("filtered")
+            field.process("wrong").option must_== None
+        }
+
     }
 
 }

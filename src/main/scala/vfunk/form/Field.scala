@@ -82,6 +82,22 @@ case class FieldResult (
         this
     }
 
+    /**
+     * Generates an Either based on the validation of this field
+     */
+    def either: Either[Validated,String] = isValid match {
+        case true => Right( value )
+        case false => Left( validated )
+    }
+
+    /**
+     * Generates an Option based on the validation of this field
+     */
+    def option: Option[String] = isValid match {
+        case true => Some( value )
+        case false => None
+    }
+
 }
 
 
