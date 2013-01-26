@@ -74,7 +74,7 @@ case class Form (
  */
 case class FormResults (
     val results: ListMap[String,FieldResult] = ListMap()
-) extends Traversable[FieldResult] {
+) extends Traversable[FieldResult] with Errable {
 
     /** {@inheritDoc} */
     def foreach[U] ( callback: FieldResult => U ): Unit
@@ -86,10 +86,9 @@ case class FormResults (
     def + ( newElem: (String, FieldResult) ): FormResults
         = FormResults( results + newElem )
 
-    /**
-     * Returns whether this form is valid
-     */
-    def isValid: Boolean = results.forall( result => result._2.isValid )
+    /** {@inheritDoc} */
+    override def isValid: Boolean
+        = results.forall( result => result._2.isValid )
 
     /**
      * Returns the value of a field
@@ -114,22 +113,10 @@ case class FormResults (
     def firstInvalid: Option[FieldResult]
          = results.find( ! _._2.isValid ).map( _._2 )
 
-    /**
-     * Combines all the errors in this form into a single list
-     */
-    def errors: List[Err] = results.foldLeft( List[Err]() ) {
-        (accum, pair) => pair._2.errors ::: accum
+    /** {@inheritDoc} */
+    override def errors: Seq[Err] = results.foldLeft( List[Err]() ) {
+        (accum, pair) => pair._2.errors.toList ::: accum
     }
-
-    /**
-     * Returns the first error
-     */
-    def firstError: Option[Err] = errors.headOption
-
-    /**
-     * Returns the first error message
-     */
-    def firstMessage: Option[String] = firstError.map( _.message )
 
 }
 

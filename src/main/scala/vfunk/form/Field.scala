@@ -47,40 +47,15 @@ case class FieldResult (
     val original: String,
     val value: String,
     val validated: Validated
-) {
+) extends Errable {
 
     /**
      * Returns the name of the field
      */
     def name: String = field.name
 
-    /**
-     * Returns whether this field validated
-     */
-    def isValid: Boolean = validated.isValid
-
-    /**
-     * Returns the errors for this field
-     */
-    def errors: List[Err] = validated.errors
-
-    /**
-     * Returns the first error
-     */
-    def firstError: Option[Err] = validated.firstError
-
-    /**
-     * Returns the first error message
-     */
-    def firstMessage: Option[String] = firstError.map( _.message )
-
-    /**
-     * Requires that this result be valid, otherwise throw an exception
-     */
-    def require: FieldResult = {
-        validated.require
-        this
-    }
+    /** {@inheritDoc} */
+    def errors: Seq[Err] = validated.errors
 
     /**
      * Generates an Either based on the validation of this field

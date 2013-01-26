@@ -13,41 +13,62 @@ case class Err ( val code: String, val message: String )
  * Thrown when a required validation does not pass
  */
 case class InvalidValueException (
-    val validated: Validated
-) extends Exception {
+    val validated: Errable
+) extends Exception with Errable {
 
     /** {@inheritDoc} */
     override def toString = "InvalidValueException(%s)".format(
         validated.errors.mkString(", ")
     )
 
+    /** {@inheritDoc} */
+    def errors: Seq[Err] = validated.errors
+
 }
 
 /**
- * The result of a validation pass
+ * An interface for objects that can contain errors
  */
-case class Validated ( val value: String, val errors: List[Err] ) {
+trait Errable {
 
     /**
-     * Returns whether this value is valid
+     * Returns the errors for this field
      */
-    lazy val isValid: Boolean = errors.isEmpty
+    def errors: Seq[Err]
 
     /**
-     * Returns the first error, if there is one
+     * Returns whether this field validated
      */
-    lazy val firstError: Option[Err] = errors.headOption
+    def isValid: Boolean = errors.isEmpty
+
+    /**
+     * Returns the first error
+     */
+    def firstError: Option[Err] = errors.headOption
+
+    /**
+     * Returns the first error message
+     */
+    def firstMessage: Option[String] = firstError.map( _.message )
 
     /**
      * Requires that this result be valid, otherwise throw an exception
      */
-    def require: Validated = {
+    def require: Errable = {
         if ( !isValid )
             throw InvalidValueException( this )
         this
     }
 
 }
+
+/**
+ * The result of a validation pass
+ */
+case class Validated (
+    val value: String,
+    override val errors: Seq[Err]
+) extends Errable
 
 /**
  * Validates that a value matches a given rule
