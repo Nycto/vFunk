@@ -54,7 +54,7 @@ trait Errable {
     /**
      * Requires that this result be valid, otherwise throw an exception
      */
-    def require: Errable = {
+    def require: this.type = {
         if ( !isValid )
             throw InvalidValueException( this )
         this
