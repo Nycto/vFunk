@@ -57,6 +57,7 @@ object Validate {
     def alphaNum = new AlphaNum
     def alpha = new Alpha
     def digit = new Digit
+    def hex = new Hex
 
     def same ( versus: String, caseSensitive: Boolean = false )
         = new Same(versus, caseSensitive)

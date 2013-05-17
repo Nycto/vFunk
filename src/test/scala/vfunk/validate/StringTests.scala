@@ -120,5 +120,21 @@ class ValidationStringTests extends Specification {
         }
     }
 
+    "A Hex validator" should {
+        val validator = new Hex
+
+        "Pass when the string is blank" in {
+            validator must validateFor( "" )
+        }
+        "Pass when the string only contains hex characters" in {
+            validator must validateFor( "123abc", "789DEF" )
+        }
+        "Fail when the expression doesn't match" in {
+            validator must notValidateFor(
+                "   ", "Some String"
+            )
+        }
+    }
+
 }
 

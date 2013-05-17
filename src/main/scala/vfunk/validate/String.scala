@@ -132,3 +132,17 @@ class NotBlank extends Validator {
 
 }
 
+/**
+ * Validates that a string only contains hex characters
+ */
+class Hex extends Validator {
+
+    /** {@inheritDoc */
+    override def getErrors ( value: String ) = {
+        value.forall { "0123456789abcdefABCDEF".indexOf(_) >= 0 } match {
+            case true => Nil
+            case false => List( Err("HEX", "Must be a hex string") )
+        }
+    }
+}
+
