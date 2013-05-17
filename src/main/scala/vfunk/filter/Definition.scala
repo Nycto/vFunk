@@ -32,6 +32,8 @@ object Filter {
     def characters ( chars: Set[Char] ) = new Characters( chars )
     def characters ( chars: String ) = new Characters( chars )
     def characters ( chars: Char* ) = new Characters( chars:_* )
+    def lower = new Callback( _.toLowerCase )
+    def upper = new Callback( _.toUpperCase )
 
 }
 
