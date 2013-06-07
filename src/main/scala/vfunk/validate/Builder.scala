@@ -14,6 +14,7 @@ object Validate {
     def minLength ( length: Int ) = new MinLength( length )
     def maxLength ( length: Int ) = new MaxLength( length )
     def exactLength ( length: Int ) = new ExactLength( length )
+    def length ( length: Int ) = exactLength( length )
     def notEmpty = new NotEmpty
 
     def and( validators: List[Validator] ) = new And( validators )
