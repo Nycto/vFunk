@@ -130,9 +130,23 @@ class ValidationStringTests extends Specification {
             validator must validateFor( "123abc", "789DEF" )
         }
         "Fail when the expression doesn't match" in {
-            validator must notValidateFor(
-                "   ", "Some String"
-            )
+            validator must notValidateFor( "   ", "Some String" )
+        }
+    }
+
+    "A Characters validator" should {
+        val validator = new Characters( 'a' to 'z' )
+
+        "Pass when the string is blank" in {
+            validator must validateFor( "" )
+        }
+
+        "Pass when the string only contains valid characters" in {
+            validator must validateFor( "abcxyz" )
+        }
+
+        "Fail when the expression doesn't match" in {
+            validator must notValidateFor( "123", "Some String" )
         }
     }
 

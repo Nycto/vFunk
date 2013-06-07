@@ -146,3 +146,24 @@ class Hex extends Validator {
     }
 }
 
+/**
+ * Validates that a string only contains the given characters
+ */
+class Characters ( private val valid: Set[Char] ) extends Validator {
+
+    /** Generates a characters validator from a strings */
+    def this ( valid: String ) = this( valid.toSet )
+
+    /** Generates a characters validator from a range of characters */
+    def this ( valid: Seq[Char]* )
+        = this( valid.foldLeft( Set[Char]() )( _ ++ _.toSet ) )
+
+    /** {@inheritDoc */
+    override def getErrors ( value: String ) = {
+        value.forall { valid.contains(_) } match {
+            case true => Nil
+            case false => List( Err("CHARS", "Contains invalid characters") )
+        }
+    }
+}
+

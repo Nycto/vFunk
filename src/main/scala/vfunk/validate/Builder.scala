@@ -59,6 +59,10 @@ object Validate {
     def digit = new Digit
     def hex = new Hex
 
+    def chars( allowed: Set[Char] ) = new Characters( allowed )
+    def chars( allowed: Seq[Char]* ) = new Characters( allowed:_* )
+    def chars( allowed: String ) = new Characters( allowed )
+
     def same ( versus: String, caseSensitive: Boolean = false )
         = new Same(versus, caseSensitive)
 
