@@ -6,6 +6,17 @@ import com.roundeights.vfunk._
 
 class ValidationDefinitionTests extends Specification {
 
+    "An InvalidValueException" should {
+
+        "Produce a readable message" in {
+            new InvalidValueException(
+                Err("Code", "Message") :: Err("Code2", "Another") :: Nil
+            ).getMessage must_== "Message, Another"
+
+            new InvalidValueException(Nil).getMessage must_== "Invalid"
+        }
+    }
+
     "A Validated" should {
 
         val errors = Err("Code", "Message") :: Err("Code2", "Another") :: Nil

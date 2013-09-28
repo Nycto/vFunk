@@ -16,14 +16,24 @@ case class InvalidValueException (
     val validated: Errable
 ) extends Exception with Errable {
 
-    /** {@inheritDoc} */
-    override def toString = "InvalidValueException(%s)".format(
-        validated.errors.mkString(", ")
-    )
+    /** Construct an exception from a list of errors */
+    def this ( errs: Seq[Err] ) = this(new Errable {
+        override def errors: Seq[Err] = errs
+    })
 
     /** {@inheritDoc} */
-    def errors: Seq[Err] = validated.errors
+    override def errors: Seq[Err] = validated.errors
 
+    /** {@inheritDoc} */
+    override def getMessage: String = {
+        errors.map(_.message).mkString(", ") match {
+            case "" => "Invalid"
+            case msg => msg
+        }
+    }
+
+    /** {@inheritDoc} */
+    override def toString = "InvalidValueException(%s)".format( errors )
 }
 
 /**
