@@ -43,5 +43,24 @@ class ValidationPlumbingTests extends Specification {
         }
     }
 
+    "An ErrMessage validator" should {
+
+        "Pass when an inner validator passes" in {
+            val validator = new ErrMessage( new Manual, "..." )
+            validator must validateFor("One")
+        }
+
+        "Fail with the new message when the inner validator fails" in {
+            val validator = new ErrMessage( new Manual(Err("12", "!")), "Err!" )
+            validator.getErrors("Value") must_== List(Err("12", "Err!"))
+        }
+
+        "Fail with the first error code when the inner validator fails" in {
+            val errors = Err("1", "one") :: Err("2", "two") :: Nil
+            val validator = new ErrMessage( new Manual(errors), "Err!" )
+            validator.getErrors("Value") must_== List(Err("1", "Err!"))
+        }
+    }
+
 }
 

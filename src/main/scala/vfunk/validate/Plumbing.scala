@@ -13,14 +13,11 @@ class Manual (
     private val errors: Traversable[Err] = List()
 ) extends Validator {
 
-    /**
-     * Alternate constructor for more fluently creating a validator
-     */
+    /** Alternate constructor for more fluently creating a validator */
     def this ( errors: Err* ) = this( errors )
 
     /** {@inheritDoc */
     override def getErrors ( value: String ) = errors.toList
-
 }
 
 /**
@@ -32,7 +29,6 @@ class Invoke (
 
     /** {@inheritDoc */
     override def getErrors ( value: String ) = callback(value).toList
-
 }
 
 /**
@@ -40,9 +36,7 @@ class Invoke (
  */
 class In ( private val options: Set[String] ) extends Validator {
 
-    /**
-     * Alternate constructor for creating a validator from a list of strings
-     */
+    /** Alternate constructor for creating a validator from a list of strings */
     def this ( options: String* ) = this( options.toSet )
 
     /** {@inheritDoc */
@@ -52,6 +46,23 @@ class In ( private val options: Set[String] ) extends Validator {
             case false => List(Err("OPTION", "Invalid Option"))
         }
     }
+}
 
+/**
+ * Changes the error message returned by a given validator
+ */
+class ErrMessage (
+    private val inner: Validator,
+    private val error: String
+) extends Validator {
+
+    /** {@inheritDoc */
+    override def getErrors ( value: String ) = {
+        inner.getErrors( value ) match {
+            case Nil => Nil
+            case List( Err(code, _) ) => List(Err(code, error))
+            case List( Err(code, _), _@_* ) => List(Err(code, error))
+        }
+    }
 }
 

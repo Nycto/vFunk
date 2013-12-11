@@ -75,6 +75,9 @@ object Validate {
     def contains( chars: Set[Char] ) = new Contains( chars )
     def contains( chars: Seq[Char]* ) = new Contains( chars:_* )
     def contains( chars: String ) = new Contains( chars )
+
+    def errMessage( validator: Validator, error: String )
+        = new ErrMessage(validator, error)
 }
 
 
