@@ -167,3 +167,24 @@ class Characters ( private val valid: Set[Char] ) extends Validator {
     }
 }
 
+/**
+ * Validates that the string contains at least one of the given characters
+ */
+class Contains ( private val valid: Set[Char] ) extends Validator {
+
+    /** Generates a characters validator from a strings */
+    def this ( valid: String ) = this( valid.toSet )
+
+    /** Generates a characters validator from a range of characters */
+    def this ( valid: Seq[Char]* )
+        = this( valid.foldLeft( Set[Char]() )( _ ++ _.toSet ) )
+
+    /** {@inheritDoc */
+    override def getErrors ( value: String ) = {
+        value.exists( valid.contains(_) ) match {
+            case true => Nil
+            case false => List(Err("CONTAINS", "Missing required characters"))
+        }
+    }
+}
+

@@ -150,5 +150,21 @@ class ValidationStringTests extends Specification {
         }
     }
 
+    "A Contains validator" should {
+        val validator = new Contains( 'a' to 'z' )
+
+        "Fail when the string is blank" in {
+            validator must notValidateFor( "" )
+        }
+
+        "Pass when the string contains one of the valid chars" in {
+            validator must validateFor( "abcxyz", "1234a789" )
+        }
+
+        "Fail when characcters are missing" in {
+            validator must notValidateFor( "123", "ABCXYZ" )
+        }
+    }
+
 }
 

@@ -72,6 +72,9 @@ object Validate {
     def regExp ( regex: String ) = new RegExp( regex )
     def notBlank = new NotBlank
 
+    def contains( chars: Set[Char] ) = new Contains( chars )
+    def contains( chars: Seq[Char]* ) = new Contains( chars:_* )
+    def contains( chars: String ) = new Contains( chars )
 }
 
 
