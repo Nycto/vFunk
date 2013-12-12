@@ -85,21 +85,18 @@ case class Validated (
  */
 trait Validator {
 
-    /**
-     * Returns the validation errors for a value
-     */
+    /** Returns the validation errors for a value */
     def getErrors ( value: String ): List[Err]
 
-    /**
-     * Validates a value and returns detailed results
-     */
+    /** Validates a value and returns detailed results */
     def validate ( value: String ): Validated
         = Validated( value, getErrors(value) )
 
-    /**
-     * Returns whether a value is valid or not
-     */
+    /** Returns whether a value is valid or not */
     def isValid ( value: String ): Boolean
         = validate( value ).isValid
+
+    /** Wraps this validator in a custom error message */
+    def message ( msg: String ) = Validate.errMessage( this, msg )
 }
 
