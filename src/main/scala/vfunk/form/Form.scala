@@ -54,6 +54,20 @@ case class Form (
 }
 
 /**
+ * Thrown when a required validation does not pass
+ */
+case class InvalidFormException (
+    val formResults: FormResults
+) extends ValidationException {
+
+    /** {@inheritDoc} */
+    override def errors: Seq[Err] = formResults.errors
+
+    /** {@inheritDoc} */
+    override def toString = "InvalidFormException(%s)".format(formResults)
+}
+
+/**
  * The results of a validation run
  */
 case class FormResults (
@@ -100,6 +114,13 @@ case class FormResults (
             else
                 accum + ( pair._1 -> pair._2.errors.map(_.message) )
         }
+    }
+
+    /** {@inheritDoc} */
+    override def require: this.type = {
+        if ( !isValid )
+            throw InvalidFormException( this )
+        this
     }
 }
 

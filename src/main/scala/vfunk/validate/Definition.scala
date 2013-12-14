@@ -9,20 +9,9 @@ package com.roundeights.vfunk
  */
 case class Err ( val code: String, val message: String )
 
-/**
- * Thrown when a required validation does not pass
- */
-case class InvalidValueException (
-    val validated: Errable
-) extends Exception with Errable {
 
-    /** Construct an exception from a list of errors */
-    def this ( errs: Seq[Err] ) = this(new Errable {
-        override def errors: Seq[Err] = errs
-    })
-
-    /** {@inheritDoc} */
-    override def errors: Seq[Err] = validated.errors
+/** The base class for validation exceptions */
+trait ValidationException extends Exception with Errable {
 
     /** {@inheritDoc} */
     override def getMessage: String = {
@@ -31,6 +20,23 @@ case class InvalidValueException (
             case msg => msg
         }
     }
+}
+
+
+/**
+ * Thrown when a required validation does not pass
+ */
+case class InvalidValueException (
+    val validated: Errable
+) extends ValidationException {
+
+    /** Construct an exception from a list of errors */
+    def this ( errs: Seq[Err] ) = this(new Errable {
+        override def errors: Seq[Err] = errs
+    })
+
+    /** {@inheritDoc} */
+    override def errors: Seq[Err] = validated.errors
 
     /** {@inheritDoc} */
     override def toString = "InvalidValueException(%s)".format( errors )

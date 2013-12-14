@@ -121,6 +121,10 @@ class FormTest extends Specification  {
                 "three" -> List("Must be greater than or equal to 0")
             )
         }
+
+        "Throw an InvalidFormException" in {
+            invalid.require must throwA[InvalidFormException]
+        }
     }
 
 }
