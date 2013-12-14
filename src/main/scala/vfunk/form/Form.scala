@@ -7,16 +7,11 @@ import scala.collection.immutable.ListMap
  */
 object Form {
 
-    /**
-     * Creates a form from a list of fields
-     */
+    /** Creates a form from a list of fields */
     def apply ( fields: Traversable[Field] ): Form = new Form( fields )
 
-    /**
-     * Creates a form from a list of fields
-     */
+    /** Creates a form from a list of fields */
     def apply ( fields: Field* ): Form = new Form( fields )
-
 }
 
 /**
@@ -26,28 +21,20 @@ case class Form (
     val fields: ListMap[String, Field]
 ) extends Traversable[Field] {
 
-    /**
-     * Creates a form from a list of fields
-     */
+    /** Creates a form from a list of fields */
     def this ( fields: Traversable[Field] ) = this(
         fields.foldLeft ( ListMap[String, Field]() ) {
             (accum, field) => accum + ((field.name, field))
         }
     )
 
-    /**
-     * Creates a form from a list of fields
-     */
+    /** Creates a form from a list of fields */
     def this ( fields: Field* ) = this( fields )
 
-    /**
-     * Creates a new form including a new field
-     */
+    /** Creates a new form including a new field */
     def + ( field: Field ) = new Form( fields + ((field.name, field)) )
 
-    /**
-     * Validates a map against this form
-     */
+    /** Validates a map against this form */
     def process ( values: Map[String,String] ): FormResults = {
         fields.foldLeft( FormResults() ) {
             (accum, pair) => accum + ((
@@ -57,16 +44,13 @@ case class Form (
         }
     }
 
-    /**
-     * Validates a list of tuples
-     */
+    /** Validates a list of tuples */
     def process ( values: (String, String)* ): FormResults
         = process( Map( values:_* ) )
 
     /** {@inheritDoc} */
     def foreach[U] ( callback: Field => U ): Unit
         = fields.foreach( pair => callback( pair._2 ) )
-
 }
 
 /**
@@ -80,9 +64,7 @@ case class FormResults (
     def foreach[U] ( callback: FieldResult => U ): Unit
         = results.foreach( value => callback( value._2 ) )
 
-    /**
-     * Adds a new result to thie map
-     */
+    /** Adds a new result to thie map */
     def + ( newElem: (String, FieldResult) ): FormResults
         = FormResults( results + newElem )
 
@@ -90,34 +72,35 @@ case class FormResults (
     override def isValid: Boolean
         = results.forall( result => result._2.isValid )
 
-    /**
-     * Returns the value of a field
-     */
+    /** Returns the value of a field */
     def apply ( field: String ): String = results( field ).value
 
-    /**
-     * Returns the value of a field as an option
-     */
+    /** Returns the value of a field as an option */
     def get ( field: String ): Option[String]
         = results.get( field ).map( _.value )
 
-    /**
-     * Returns the original value from a form
-     */
+    /** Returns the original value from a form */
     def original ( field: String ): Option[String]
         = results.get( field ).map( _.original )
 
-    /**
-     * Returns the results of the first invalid field
-     */
+    /** Returns the results of the first invalid field */
     def firstInvalid: Option[FieldResult]
-         = results.find( ! _._2.isValid ).map( _._2 )
+        = results.find( ! _._2.isValid ).map( _._2 )
 
     /** {@inheritDoc} */
     override def errors: Seq[Err] = results.foldLeft( List[Err]() ) {
         (accum, pair) => pair._2.errors.toList ::: accum
     }
 
+    /** Returns a map of field names to error messages */
+    def fieldErrors: Map[String,Seq[String]] = {
+        results.foldLeft( Map[String,Seq[String]]() ) { (accum, pair) =>
+            if ( pair._2.isValid )
+                accum
+            else
+                accum + ( pair._1 -> pair._2.errors.map(_.message) )
+        }
+    }
 }
 
 

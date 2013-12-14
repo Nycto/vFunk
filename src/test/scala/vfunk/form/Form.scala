@@ -114,6 +114,13 @@ class FormTest extends Specification  {
             invalid.firstInvalid must_== Some( invalid.results("two") )
         }
 
+        "Provide a map of error messages indexed by field" in {
+            valid.fieldErrors must_== Map()
+            invalid.fieldErrors must_== Map(
+                "two" -> List("Invalid Option"),
+                "three" -> List("Must be greater than or equal to 0")
+            )
+        }
     }
 
 }
