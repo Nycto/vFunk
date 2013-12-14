@@ -32,7 +32,10 @@ case class Form (
     def this ( fields: Field* ) = this( fields )
 
     /** Creates a new form including a new field */
-    def + ( field: Field ) = new Form( fields + ((field.name, field)) )
+    def add( field: Field ): Form = new Form( fields + ((field.name, field)) )
+
+    /** Creates a new form including a new field */
+    def + ( field: Field ): Form = add(field)
 
     /** Validates a map against this form */
     def process ( values: Map[String,String] ): FormResults = {
