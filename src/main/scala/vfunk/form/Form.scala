@@ -110,14 +110,18 @@ case class FormResults (
     }
 
     /** Returns a map of field names to error messages */
-    def fieldErrors: Map[String,Seq[String]] = {
-        results.foldLeft( Map[String,Seq[String]]() ) { (accum, pair) =>
+    def fieldErrors: Map[String,Seq[Err]] = {
+        results.foldLeft( Map[String,Seq[Err]]() ) { (accum, pair) =>
             if ( pair._2.isValid )
                 accum
             else
-                accum + ( pair._1 -> pair._2.errors.map(_.message) )
+                accum + ( pair._1 -> pair._2.errors )
         }
     }
+
+    /** Returns a map of field names to error messages */
+    def fieldMessages: Map[String,Seq[String]]
+        = fieldErrors.mapValues( _.view.map(_.message) )
 
     /** {@inheritDoc} */
     override def require: this.type = {

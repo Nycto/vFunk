@@ -115,10 +115,19 @@ class FormTest extends Specification  {
         }
 
         "Provide a map of error messages indexed by field" in {
-            valid.fieldErrors must_== Map()
-            invalid.fieldErrors must_== Map(
+            valid.fieldMessages must_== Map()
+            invalid.fieldMessages must_== Map(
                 "two" -> List("Invalid Option"),
                 "three" -> List("Must be greater than or equal to 0")
+            )
+        }
+
+        "Provide a map of error messages indexed by field" in {
+            valid.fieldErrors must_== Map()
+            invalid.fieldErrors must_== Map(
+                "two" -> List( Err("OPTION", "Invalid Option") ),
+                "three" -> List(Err(
+                    "GREATERTHANEQUALS", "Must be greater than or equal to 0"))
             )
         }
 
