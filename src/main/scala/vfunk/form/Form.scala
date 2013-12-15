@@ -111,6 +111,10 @@ case class FormResults (
         ))
     }
 
+    /** Adds an error to this result set */
+    def addError ( field: String, code: String, message: String ): FormResults
+        = addError( field, Err(code, message) )
+
     /** Returns the results of the first invalid field */
     def firstInvalid: Option[FieldResult]
         = results.find( ! _._2.isValid ).map( _._2 )
