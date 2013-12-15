@@ -134,8 +134,33 @@ class FormTest extends Specification  {
         "Throw an InvalidFormException" in {
             invalid.require must throwA[InvalidFormException]
         }
-    }
 
+        "Allow errors to be added to specific fields" in {
+            valid.addError("one", Err("ONE", "First")).fieldErrors must_== Map(
+                "one" -> List( Err("ONE", "First") )
+            )
+
+            invalid.addError("one", Err("ONE", "First"))
+                .addError("one", Err("TWO", "Second"))
+                .addError("two", Err("THREE", "Third"))
+                .fieldErrors must_== Map(
+                    "one" -> List(
+                        Err("TWO", "Second"),
+                        Err("ONE", "First") ),
+                    "two" -> List(
+                        Err("THREE", "Third"),
+                        Err("OPTION", "Invalid Option") ),
+                    "three" -> List(
+                        Err("GREATERTHANEQUALS",
+                            "Must be greater than or equal to 0"))
+                )
+        }
+
+        "Throw when trying to add an error to a field that isn't defined" in {
+            valid.addError("oops", Err("ONE", "First")) must
+                throwA[NoSuchElementException]
+        }
+    }
 }
 
 

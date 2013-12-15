@@ -49,30 +49,22 @@ case class FieldResult (
     val validated: Validated
 ) extends Errable {
 
-    /**
-     * Returns the name of the field
-     */
+    /** Returns the name of the field */
     def name: String = field.name
+
+    /** Adds a new error to this result */
+    def +: ( err: Err ): FieldResult
+        = FieldResult( field, original, value, err +: validated )
 
     /** {@inheritDoc} */
     def errors: Seq[Err] = validated.errors
 
-    /**
-     * Generates an Either based on the validation of this field
-     */
-    def either: Either[Validated,String] = isValid match {
-        case true => Right( value )
-        case false => Left( validated )
-    }
+    /** Generates an Either based on the validation of this field */
+    def either: Either[Validated,String]
+        = if (isValid) Right( value ) else Left( validated )
 
-    /**
-     * Generates an Option based on the validation of this field
-     */
-    def option: Option[String] = isValid match {
-        case true => Some( value )
-        case false => None
-    }
-
+    /** Generates an Option based on the validation of this field */
+    def option: Option[String] = if (isValid) Some(value) else None
 }
 
 

@@ -84,7 +84,11 @@ trait Errable {
 case class Validated (
     val value: String,
     override val errors: Seq[Err]
-) extends Errable
+) extends Errable {
+
+    /** Adds a new error to this result */
+    def +: ( err: Err ): Validated = Validated(value, err +: errors)
+}
 
 /**
  * Validates that a value matches a given rule

@@ -100,6 +100,17 @@ case class FormResults (
     def original ( field: String ): Option[String]
         = results.get( field ).map( _.original )
 
+    /** Adds an error to this result set */
+    def addError ( field: String, err: Err ): FormResults = {
+        val updated = err +: results( field )
+        FormResults( results.foldLeft( ListMap[String,FieldResult]() )(
+            (accum, pair) => pair match {
+                case (name, _) if field == name => accum + (name -> updated)
+                case pair => accum + pair
+            }
+        ))
+    }
+
     /** Returns the results of the first invalid field */
     def firstInvalid: Option[FieldResult]
         = results.find( ! _._2.isValid ).map( _._2 )
