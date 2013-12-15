@@ -37,7 +37,11 @@ class Equals ( vs: Number ) extends NumericCompare(
     vs,
     Err("EQUALS", "Must equal " + vs),
     (actual: Double, vs: Double) => actual == vs
-)
+) {
+
+    /** {@inheritDoc} */
+    override def toString = "Validate(== %s)".format( vs )
+}
 
 /**
  * Validates that a value is less than a given
@@ -46,7 +50,11 @@ class LessThan ( vs: Number ) extends NumericCompare (
     vs,
     Err("LESSTHAN", "Must be less than " + vs),
     (actual: Double, vs: Double) => actual < vs
-)
+) {
+
+    /** {@inheritDoc} */
+    override def toString = "Validate(< %s)".format( vs )
+}
 
 /**
  * Validates that a value is less than or equal to a given
@@ -55,7 +63,11 @@ class LessThanEquals ( vs: Number ) extends NumericCompare (
     vs,
     Err("LESSTHANEQUALS", "Must be less than or equal to " + vs),
     (actual: Double, vs: Double) => actual <= vs
-)
+) {
+
+    /** {@inheritDoc} */
+    override def toString = "Validate(<= %s)".format( vs )
+}
 
 /**
  * Validates that a value is greater than a given
@@ -64,7 +76,11 @@ class GreaterThan ( vs: Number ) extends NumericCompare (
     vs,
     Err("GREATERTHAN", "Must be greater than " + vs),
     (actual: Double, vs: Double) => actual > vs
-)
+) {
+
+    /** {@inheritDoc} */
+    override def toString = "Validate(> %s)".format( vs )
+}
 
 /**
  * Validates that a value is greater than or equal to a given
@@ -73,5 +89,9 @@ class GreaterThanEquals ( vs: Number ) extends NumericCompare (
     vs,
     Err("GREATERTHANEQUALS", "Must be greater than or equal to " + vs),
     (actual: Double, vs: Double) => actual >= vs
-)
+) {
+
+    /** {@inheritDoc} */
+    override def toString = "Validate(>= %s)".format( vs )
+}
 

@@ -14,6 +14,8 @@ class Identity extends Filter {
     /** {@inheritDoc */
     override def filter ( value: String ) = value
 
+    /** {@inheritDoc} */
+    override def toString = "Filter(Identity)"
 }
 
 /**
@@ -24,6 +26,8 @@ class Callback ( private val callback: (String) => String ) extends Filter {
     /** {@inheritDoc */
     override def filter ( value: String ) = callback( value )
 
+    /** {@inheritDoc} */
+    override def toString = "Filter(Callback(%s))".format(callback)
 }
 
 /**
@@ -32,9 +36,7 @@ class Callback ( private val callback: (String) => String ) extends Filter {
  */
 class Chain ( private val chain: Traversable[Filter] ) extends Filter {
 
-    /**
-     * Alternate constructor for more fluently creating a filter
-     */
+    /** Alternate constructor for more fluently creating a filter */
     def this ( filters: Filter* ) = this( filters )
 
     /** {@inheritDoc */
@@ -42,4 +44,6 @@ class Chain ( private val chain: Traversable[Filter] ) extends Filter {
         chain.foldLeft (value) { (accum, filter) => filter.filter(accum) }
     }
 
+    /** {@inheritDoc} */
+    override def toString = "Filters(%s)".format( chain.mkString(",") )
 }

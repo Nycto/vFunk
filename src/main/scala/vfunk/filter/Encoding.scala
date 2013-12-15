@@ -11,6 +11,10 @@ import com.roundeights.vfunk.Filter
  */
 class Hex extends Characters (
     Set[Char]() ++ ('a' to 'f') ++ ('A' to 'F') ++ ('0' to '9')
-)
+) {
+
+    /** {@inheritDoc} */
+    override def toString = "Filter(Hex)"
+}
 
 

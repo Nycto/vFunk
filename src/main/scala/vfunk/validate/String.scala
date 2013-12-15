@@ -23,6 +23,8 @@ class AlphaNum extends Validator {
         }
     }
 
+    /** {@inheritDoc} */
+    override def toString = "Validate(AlphaNum)"
 }
 
 /**
@@ -38,6 +40,8 @@ class Alpha extends Validator {
         }
     }
 
+    /** {@inheritDoc} */
+    override def toString = "Validate(Alpha)"
 }
 
 /**
@@ -53,6 +57,8 @@ class Digit extends Validator {
         }
     }
 
+    /** {@inheritDoc} */
+    override def toString = "Validate(Digit)"
 }
 
 /**
@@ -78,6 +84,8 @@ class Same (
         }
     }
 
+    /** {@inheritDoc} */
+    override def toString = "Validate(== '%s')".format(versus)
 }
 
 /**
@@ -93,6 +101,8 @@ class NoWhitespace extends Validator {
         }
     }
 
+    /** {@inheritDoc} */
+    override def toString = "Validate(NoWhitespace)"
 }
 
 /**
@@ -100,9 +110,7 @@ class NoWhitespace extends Validator {
  */
 class RegExp ( private val regex: Regex ) extends Validator {
 
-    /**
-     * Alternate constructor that builds a regex validator from a string
-     */
+    /** Alternate constructor that builds a regex validator from a string */
     def this ( regex: String ) = this( regex.r )
 
     /** {@inheritDoc */
@@ -115,6 +123,8 @@ class RegExp ( private val regex: Regex ) extends Validator {
         }
     }
 
+    /** {@inheritDoc} */
+    override def toString = "Validate(RegExp(%s))".format( regex )
 }
 
 /**
@@ -130,6 +140,8 @@ class NotBlank extends Validator {
         }
     }
 
+    /** {@inheritDoc} */
+    override def toString = "Validate(NotBlank)"
 }
 
 /**
@@ -144,6 +156,9 @@ class Hex extends Validator {
             case false => List( Err("HEX", "Must be a hex string") )
         }
     }
+
+    /** {@inheritDoc} */
+    override def toString = "Validate(Hex)"
 }
 
 /**
@@ -165,6 +180,9 @@ class Characters ( private val valid: Set[Char] ) extends Validator {
             case false => List( Err("CHARS", "Contains invalid characters") )
         }
     }
+
+    /** {@inheritDoc} */
+    override def toString = "Validate(Characeters(%s))".format( valid.mkString )
 }
 
 /**
@@ -186,5 +204,8 @@ class Contains ( private val valid: Set[Char] ) extends Validator {
             case false => List(Err("CONTAINS", "Missing required characters"))
         }
     }
+
+    /** {@inheritDoc} */
+    override def toString = "Validate(Contains(%s))".format( valid.mkString )
 }
 

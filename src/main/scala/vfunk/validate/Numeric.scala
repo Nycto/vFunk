@@ -35,7 +35,11 @@ protected abstract class NumericValidator (
 class IsNumeric extends NumericValidator (
     Err("NUMERIC", "Must be a number"),
     (value: Double) => true
-)
+) {
+
+    /** {@inheritDoc} */
+    override def toString = "Validate(IsNumeric)"
+}
 
 /**
  * Validates that a value is a number
@@ -43,7 +47,11 @@ class IsNumeric extends NumericValidator (
 class Odd extends NumericValidator (
     Err("ODD", "Must be odd"),
     (value: Double) => (value % 2).abs == 1
-)
+) {
+
+    /** {@inheritDoc} */
+    override def toString = "Validate(Odd)"
+}
 
 /**
  * Validates that a value is a number
@@ -51,5 +59,9 @@ class Odd extends NumericValidator (
 class Even extends NumericValidator (
     Err("EVEN", "Must be even"),
     (value: Double) => (value % 2).abs == 0
-)
+) {
+
+    /** {@inheritDoc} */
+    override def toString = "Validate(Even)"
+}
 

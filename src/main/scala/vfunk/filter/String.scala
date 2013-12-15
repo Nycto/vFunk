@@ -47,6 +47,8 @@ class Trim extends Filter {
     /** {@inheritDoc */
     override def filter ( value: String ) = value.trim
 
+    /** {@inheritDoc} */
+    override def toString = "Filter(Trim)"
 }
 
 /**
@@ -58,6 +60,8 @@ class AlphaNum extends Filter {
     override def filter ( value: String )
         = value.filter { StringFilters.isLetterOrDigit(_)  }
 
+    /** {@inheritDoc} */
+    override def toString = "Filter(AlphaNum)"
 }
 
 /**
@@ -69,6 +73,8 @@ class Alpha extends Filter {
     override def filter ( value: String )
         = value.filter { StringFilters.isLetter(_)  }
 
+    /** {@inheritDoc} */
+    override def toString = "Filter(Alpha)"
 }
 
 /**
@@ -80,6 +86,8 @@ class Digit extends Filter {
     override def filter ( value: String )
         = value.filter { Character.isDigit(_)  }
 
+    /** {@inheritDoc} */
+    override def toString = "Filter(Digit)"
 }
 
 /**
@@ -91,6 +99,8 @@ class Printable extends Filter {
     override def filter ( value: String )
         = value.filter { StringFilters.isPrintable(_)  }
 
+    /** {@inheritDoc} */
+    override def toString = "Filter(Printable)"
 }
 
 /**
@@ -107,6 +117,9 @@ class Replace ( val search: String, val replace: String ) extends Filter {
     override def filter ( value: String )
         = value.replaceAllLiterally( search, replace )
 
+    /** {@inheritDoc} */
+    override def toString
+        = "Filter(Replace('%s','%s'))".format( search, replace )
 }
 
 /**
@@ -114,24 +127,20 @@ class Replace ( val search: String, val replace: String ) extends Filter {
  */
 class Characters ( private val valid: Set[Char] ) extends Filter {
 
-    /**
-     * Creates a character filter from a string
-     */
+    /** Creates a character filter from a string */
     def this ( valid: String ) = this( Set( valid.toList:_* ) )
 
-    /**
-     * Creates a character filter from a list of characters
-     */
+    /** Creates a character filter from a list of characters */
     def this ( valid: Char* ) = this( Set( valid:_* ) )
 
-    /**
-     * Creates a character filter from a range of characters
-     */
+    /** Creates a character filter from a range of characters */
     def this ( valid: NumericRange[Char] ) = this( Set( valid:_* ) )
 
     /** {@inheritDoc */
     override def filter ( value: String ) = value.filter { valid.contains(_)  }
 
+    /** {@inheritDoc} */
+    override def toString = "Filter(Chars(%s))".format( valid.mkString )
 }
 
 /**
@@ -139,6 +148,10 @@ class Characters ( private val valid: Set[Char] ) extends Filter {
  */
 class Numeric extends Characters (
     Set[Char]() ++ ('0' to '9') ++ (".-".toList)
-)
+) {
+
+    /** {@inheritDoc} */
+    override def toString = "Filter(Numeric)"
+}
 
 

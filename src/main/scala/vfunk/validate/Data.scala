@@ -37,6 +37,8 @@ class Email extends Validator {
         }
     }
 
+    /** {@inheritDoc} */
+    override def toString = "Validate(Email)"
 }
 
 /**
@@ -60,6 +62,8 @@ class IPv4 extends Validator {
         }
     }
 
+    /** {@inheritDoc} */
+    override def toString = "Validate(IPv4)"
 }
 
 /**
@@ -67,9 +71,7 @@ class IPv4 extends Validator {
  */
 class IPv6 extends Validator {
 
-    /**
-     * A validator for uncompressed IPs
-     */
+    /** A validator for uncompressed IPs */
     private lazy val uncompressed = List(
         """(?i)""",
         """^""",
@@ -78,9 +80,7 @@ class IPv6 extends Validator {
         """$"""
     ).mkString.r
 
-    /**
-     * A validator for uncompressed addresses
-     */
+    /** A validator for uncompressed addresses */
     private lazy val compressed = List(
         """(?i)""",
         """^""",
@@ -89,14 +89,10 @@ class IPv6 extends Validator {
         """$"""
     ).mkString.r
 
-    /**
-     * The validator for IPv4 addresses, which are valid IPv6 addresses
-     */
+    /** The validator for IPv4 addresses, which are valid IPv6 addresses */
     private lazy val IPv4 = new IPv4
 
-    /**
-     * The error to return when an invalid IP is encountered
-     */
+    /** The error to return when an invalid IP is encountered */
     private lazy val err = Err("IPV6", "Invalid IP Address")
 
     /** {@inheritDoc} */
@@ -149,5 +145,7 @@ class IPv6 extends Validator {
         }
     }
 
+    /** {@inheritDoc} */
+    override def toString = "Validate(IPv4)"
 }
 

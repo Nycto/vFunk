@@ -18,6 +18,10 @@ class Manual (
 
     /** {@inheritDoc */
     override def getErrors ( value: String ) = errors.toList
+
+    /** {@inheritDoc} */
+    override def toString
+        = "Validate(Errors(%s))".format( errors.mkString(", ") )
 }
 
 /**
@@ -29,6 +33,9 @@ class Invoke (
 
     /** {@inheritDoc */
     override def getErrors ( value: String ) = callback(value).toList
+
+    /** {@inheritDoc} */
+    override def toString = "Validate(Invoke(%s))".format( callback )
 }
 
 /**
@@ -45,7 +52,11 @@ class In ( private val options: Set[String] ) extends Validator {
             case true => Nil
             case false => List(Err("OPTION", "Invalid Option"))
         }
+
     }
+
+    /** {@inheritDoc} */
+    override def toString = "Validate(In(%s))".format( options.mkString(", ") )
 }
 
 /**
@@ -64,5 +75,8 @@ class ErrMessage (
             case List( Err(code, _), _@_* ) => List(Err(code, error))
         }
     }
+
+    /** {@inheritDoc} */
+    override def toString = inner.toString
 }
 

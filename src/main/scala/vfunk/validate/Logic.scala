@@ -15,9 +15,7 @@ import scala.annotation.tailrec
  */
 class And ( private val validators: List[Validator] ) extends Validator {
 
-    /**
-     * Constructor for fluently building validators
-     */
+    /** Constructor for fluently building validators */
     def this ( validators: Validator* ) = this( validators.toList )
 
     /** {@inheritDoc */
@@ -40,6 +38,9 @@ class And ( private val validators: List[Validator] ) extends Validator {
         find( validators )
     }
 
+    /** {@inheritDoc} */
+    override def toString
+        = "Validate(And(%s))".format( validators.mkString(", ") )
 }
 
 /**
@@ -47,9 +48,7 @@ class And ( private val validators: List[Validator] ) extends Validator {
  */
 class Or ( private val validators: List[Validator] ) extends Validator {
 
-    /**
-     * Constructor for fluently building validators
-     */
+    /** Constructor for fluently building validators */
     def this ( validators: Validator* ) = this( validators.toList )
 
     /** {@inheritDoc */
@@ -70,6 +69,10 @@ class Or ( private val validators: List[Validator] ) extends Validator {
         }
         find( validators, Nil )
     }
+
+    /** {@inheritDoc} */
+    override def toString
+        = "Validate(Or(%s))".format( validators.mkString(", ") )
 }
 
 /**
@@ -88,5 +91,7 @@ class Not (
         }
     }
 
+    /** {@inheritDoc} */
+    override def toString = "Validate(Not(%s))".format( validator )
 }
 

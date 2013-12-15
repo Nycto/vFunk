@@ -42,7 +42,12 @@ class MinLength ( length: Int ) extends LengthValidator (
     "MINLENGTH",
     "Must be at least %d character%s long",
     ( actual: Int, vs: Int ) => actual >= vs
-)
+) {
+
+    /** {@inheritDoc} */
+    override def toString = "Validate(MinLength(%s))".format(length)
+}
+
 
 /**
  * Validates that the string is no longer than the given length
@@ -52,7 +57,11 @@ class MaxLength ( length: Int ) extends LengthValidator (
     "MAXLENGTH",
     "Must not be longer than %d character%s",
     ( actual: Int, vs: Int ) => actual <= vs
-)
+) {
+
+    /** {@inheritDoc} */
+    override def toString = "Validate(MaxLength(%s))".format(length)
+}
 
 /**
  * Validates that the string is exactly the given length
@@ -62,7 +71,11 @@ class ExactLength ( length: Int ) extends LengthValidator (
     "EXACTLENGTH",
     "Must be exactly %d character%s long",
     ( actual: Int, vs: Int ) => actual == vs
-)
+) {
+
+    /** {@inheritDoc} */
+    override def toString = "Validate(ExactLength(%s))".format(length)
+}
 
 /**
  * Validates that a string isn't empty
@@ -72,5 +85,9 @@ class NotEmpty extends LengthValidator (
     "NOTEMPTY",
     "Must not be empty",
     ( actual: Int, vs: Int ) => actual > vs
-)
+) {
+
+    /** {@inheritDoc} */
+    override def toString = "Validate(NotEmpty)"
+}
 
