@@ -55,6 +55,11 @@ class FieldTest extends Specification  {
             field.process("wrong").option must_== None
         }
 
+        "Require a value" in {
+            field.require("correct").option must_== Some("filtered")
+            field.require("wrong") must throwA[InvalidFormException]
+        }
+
     }
 
 }

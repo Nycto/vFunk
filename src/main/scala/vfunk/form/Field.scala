@@ -8,16 +8,21 @@ import com.roundeights.vfunk.filter.Identity
  */
 trait Field {
 
-    /**
-     * Returns the name of this field
-     */
+    /** Returns the name of this field */
     def name(): String
 
-    /**
-     * The filteration and validation against this field
-     */
+    /** The filteration and validation against this field */
     def process ( value: String ): FieldResult
 
+    /** Requires that this field is valid */
+    def require ( value: String ): FieldResult = {
+        val validated = process(value)
+        if ( !validated.isValid ) {
+            throw new InvalidFormException(
+                FormResults() + ( name() -> validated ) )
+        }
+        validated
+    }
 }
 
 /**
