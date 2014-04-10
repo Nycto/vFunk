@@ -2,6 +2,7 @@ package com.roundeights.vfunk
 
 import com.roundeights.vfunk.validate.Manual
 import com.roundeights.vfunk.filter.Identity
+import scala.concurrent.Future
 
 /**
  * A field definition
@@ -18,8 +19,7 @@ trait Field {
     def require ( value: String ): FieldResult = {
         val validated = process(value)
         if ( !validated.isValid ) {
-            throw new InvalidFormException(
-                FormResults() + ( name() -> validated ) )
+            throw new InvalidFormException( name() -> validated )
         }
         validated
     }
@@ -70,6 +70,12 @@ case class FieldResult (
 
     /** Generates an Option based on the validation of this field */
     def option: Option[String] = if (isValid) Some(value) else None
+
+    /** Presents this results as a future */
+    def future: Future[String] = isValid match {
+        case true => Future.successful( value )
+        case false => Future.failed( new InvalidFormException(name -> this) )
+    }
 }
 
 

@@ -60,6 +60,16 @@ class FieldTest extends Specification  {
             field.require("wrong") must throwA[InvalidFormException]
         }
 
+        "Require a value" in {
+            field.require("correct").option must_== Some("filtered")
+            field.require("wrong") must throwA[InvalidFormException]
+        }
+
+        "Produce a future" in {
+            field.process("correct").future must ===("filtered").await
+            field.process("wrong").future.failed must
+                beAnInstanceOf[InvalidFormException].await
+        }
     }
 
 }

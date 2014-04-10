@@ -63,6 +63,10 @@ case class InvalidFormException (
     val formResults: FormResults
 ) extends ValidationException {
 
+    /** Alternate constructor from a list of results */
+    def this ( fields: (String, FieldResult)* )
+        = this( new FormResults( fields: _* ) )
+
     /** {@inheritDoc} */
     override def errors: Seq[Err] = formResults.errors
 
@@ -76,6 +80,9 @@ case class InvalidFormException (
 case class FormResults (
     val results: ListMap[String,FieldResult] = ListMap()
 ) extends Traversable[FieldResult] with Errable {
+
+    /** Constructs from a list of field tuples */
+    def this ( fields: (String, FieldResult)* ) = this( ListMap(fields:_*) )
 
     /** {@inheritDoc} */
     def foreach[U] ( callback: FieldResult => U ): Unit
