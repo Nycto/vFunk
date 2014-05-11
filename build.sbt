@@ -20,5 +20,5 @@ credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
 
 // Application dependencies
 libraryDependencies ++= Seq(
-    "org.specs2" %% "specs2" % "2.3.4" % "test"
+    "org.specs2" %% "specs2" % "2.3.11" % "test"
 )
