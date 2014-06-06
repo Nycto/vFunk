@@ -1,11 +1,7 @@
-/**
- * Structural code for defining the Filter interface
- */
-
 package com.roundeights.vfunk
 
 /**
- * A builder for generating filters
+ * Builders for generating filters
  */
 object Filter {
 
@@ -34,7 +30,6 @@ object Filter {
     def characters ( chars: Char* ) = new Characters( chars:_* )
     def lower = new Callback( _.toLowerCase )
     def upper = new Callback( _.toUpperCase )
-
 }
 
 /**
