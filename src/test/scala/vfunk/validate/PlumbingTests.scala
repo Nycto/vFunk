@@ -17,7 +17,7 @@ class ValidationPlumbingTests extends Specification {
             val validator = new Manual(errors)
 
             validator must notValidateFor("data")
-            validator.getErrors("data") must_== errors
+            validator.getErrors("data") must ===(errors).await
         }
     }
 
@@ -52,13 +52,13 @@ class ValidationPlumbingTests extends Specification {
 
         "Fail with the new message when the inner validator fails" in {
             val validator = new ErrMessage( new Manual(Err("12", "!")), "Err!" )
-            validator.getErrors("Value") must_== List(Err("12", "Err!"))
+            validator.getErrors("Value") must ===(List(Err("12", "Err!"))).await
         }
 
         "Fail with the first error code when the inner validator fails" in {
             val errors = Err("1", "one") :: Err("2", "two") :: Nil
             val validator = new ErrMessage( new Manual(errors), "Err!" )
-            validator.getErrors("Value") must_== List(Err("1", "Err!"))
+            validator.getErrors("Value") must ===(List(Err("1", "Err!"))).await
         }
     }
 

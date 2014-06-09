@@ -2,7 +2,7 @@ package com.roundeights.vfunk
 
 import com.roundeights.vfunk.validate.Manual
 import com.roundeights.vfunk.filter.Identity
-import scala.concurrent.Future
+import scala.concurrent.{Future, ExecutionContext}
 
 /**
  * A field definition
@@ -13,16 +13,30 @@ trait Field {
     def name(): String
 
     /** The filteration and validation against this field */
-    def process ( value: String ): FieldResult
+    def process
+        ( value: String )
+        ( implicit ctx: ExecutionContext )
+    : Future[FieldResult]
 
     /** Requires that this field is valid */
-    def require ( value: String ): FieldResult = {
-        val validated = process(value)
-        if ( !validated.isValid ) {
-            throw new InvalidFormException( name() -> validated )
-        }
-        validated
+    def require
+        ( value: String )
+        ( implicit ctx: ExecutionContext )
+    : Future[FieldResult] = {
+        process(value).map(validated => {
+            if ( !validated.isValid ) {
+                throw new InvalidFormException( name() -> validated )
+            }
+            validated
+        })
     }
+
+    /** Presents the validated and filtered result as a future */
+    def value
+        ( value: String )
+        ( implicit ctx: ExecutionContext )
+    : Future[String]
+        = this.require(value).map(_.value)
 }
 
 /**
@@ -34,14 +48,14 @@ case class TextField (
     val validator: Validator = new Manual
 ) extends Field {
 
-    /**
-     * Runs validation against this form
-     */
-    override def process ( value: String ): FieldResult = {
-        val filtered = filter.filter( value )
-        FieldResult( this, value, filtered, validator.validate(filtered) )
+    /** {@inheritDoc} */
+    override def process
+        ( value: String )
+        ( implicit ctx: ExecutionContext )
+    : Future[FieldResult] = {
+        val filtered = filter.filter(value)
+        validator.validate(filtered).map(FieldResult(this, value, filtered, _))
     }
-
 }
 
 /**
@@ -70,12 +84,6 @@ case class FieldResult (
 
     /** Generates an Option based on the validation of this field */
     def option: Option[String] = if (isValid) Some(value) else None
-
-    /** Presents this results as a future */
-    def future: Future[String] = isValid match {
-        case true => Future.successful( value )
-        case false => Future.failed( new InvalidFormException(name -> this) )
-    }
 }
 
 

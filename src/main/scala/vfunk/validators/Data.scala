@@ -1,10 +1,7 @@
-/**
- * Validators for specific types of Data
- */
-
 package com.roundeights.vfunk.validate
 
 import com.roundeights.vfunk.{Validator, Err}
+import scala.concurrent.{Future, ExecutionContext}
 
 /**
  * Validates an email address
@@ -30,10 +27,12 @@ class Email extends Validator {
     ).mkString.r
 
     /** {@inheritDoc} */
-    override def getErrors ( value: String ) = {
-        regexp.findFirstIn( value ) match {
-            case None => List( Err("EMAIL", "Invalid e-mail address") )
-            case Some(_) => Nil
+    override def getErrors(value: String)(implicit ctx: ExecutionContext) = {
+        Future.successful {
+            regexp.findFirstIn( value ) match {
+                case None => List( Err("EMAIL", "Invalid e-mail address") )
+                case Some(_) => Nil
+            }
         }
     }
 
@@ -54,13 +53,17 @@ class IPv4 extends Validator {
         List( "^", byte, """(?:\.""" + byte + """){3}""", "$").mkString.r
     }
 
-    /** {@inheritDoc} */
-    override def getErrors ( value: String ) = {
+    /** Internally reports the errors for a value */
+    private [validate] def errorList ( value: String ) = {
         regexp.findFirstIn( value ) match {
             case None => List( Err("IPV4", "Invalid IP address") )
             case Some(_) => Nil
         }
     }
+
+    /** {@inheritDoc} */
+    override def getErrors ( value: String )( implicit ctx: ExecutionContext )
+        = Future.successful( errorList(value) )
 
     /** {@inheritDoc} */
     override def toString = "Validate(IPv4)"
@@ -90,13 +93,13 @@ class IPv6 extends Validator {
     ).mkString.r
 
     /** The validator for IPv4 addresses, which are valid IPv6 addresses */
-    private lazy val IPv4 = new IPv4
+    private lazy val ipv4 = new IPv4
 
     /** The error to return when an invalid IP is encountered */
     private lazy val err = Err("IPV6", "Invalid IP Address")
 
-    /** {@inheritDoc} */
-    override def getErrors ( value: String ) = {
+    /** Internal error fetching */
+    private def errorList ( value: String ): List[Err] = {
 
         // For localhost
         if ( value.length <= 2 ) {
@@ -117,10 +120,10 @@ class IPv6 extends Validator {
                 val (left, right) = value.splitAt(lastcolon)
                 if ( left.contains(".") )
                     List(err)
-                else if ( !IPv4.isValid( right.drop(1) ) )
+                else if ( ipv4.errorList( right.drop(1) ).length > 0 )
                     List(err)
                 else
-                    getErrors( left + ":0:0" )
+                    errorList( left + ":0:0" )
             }
         }
 
@@ -144,6 +147,11 @@ class IPv6 extends Validator {
             List(err)
         }
     }
+
+
+    /** {@inheritDoc} */
+    override def getErrors ( value: String )( implicit ctx: ExecutionContext )
+        = Future.successful( errorList(value) )
 
     /** {@inheritDoc} */
     override def toString = "Validate(IPv4)"

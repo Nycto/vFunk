@@ -1,12 +1,18 @@
 package test.roundeights.vfunk
 
 import org.specs2.mutable._
+import scala.concurrent._
+import scala.concurrent.duration._
 
 import com.roundeights.vfunk._
 import com.roundeights.vfunk.validate._
 import com.roundeights.vfunk.filter._
 
 class FieldTest extends Specification  {
+
+    /** Blocks while waiting for the given future */
+    def await[T] ( future: Future[T] ): T
+        = Await.result( future, Duration(1, "second") )
 
     "A Field" should {
 
@@ -20,7 +26,7 @@ class FieldTest extends Specification  {
         )
 
         "Validate and filter a passing value" in {
-            val result = field.process( "correct" )
+            val result = await( field.process( "correct" ) )
 
             result.field must_== field
             result.name must_== "fieldName"
@@ -32,7 +38,7 @@ class FieldTest extends Specification  {
         }
 
         "Validate and filter a failing value" in {
-            val result = field.process( "wrong" )
+            val result = await( field.process( "wrong" ) )
 
             result.field must_== field
             result.name must_== "fieldName"
@@ -44,31 +50,25 @@ class FieldTest extends Specification  {
         }
 
         "Produce an Either" in {
-            field.process("correct").either must_== Right("filtered")
-            field.process("wrong").either must_== Left(
+            await(field.process("correct")).either must_== Right("filtered")
+            await(field.process("wrong")).either must_== Left(
                 Validated( "fail", List(Err("OPTION", "Invalid Option")) )
             )
         }
 
         "Produce an Option" in {
-            field.process("correct").option must_== Some("filtered")
-            field.process("wrong").option must_== None
+            await(field.process("correct")).option must_== Some("filtered")
+            await(field.process("wrong")).option must_== None
         }
 
         "Require a value" in {
-            field.require("correct").option must_== Some("filtered")
-            field.require("wrong") must throwA[InvalidFormException]
-        }
-
-        "Require a value" in {
-            field.require("correct").option must_== Some("filtered")
-            field.require("wrong") must throwA[InvalidFormException]
+            await(field.require("correct")).value must_== "filtered"
+            await(field.require("wrong")) must throwA[InvalidFormException]
         }
 
         "Produce a future" in {
-            field.process("correct").future must ===("filtered").await
-            field.process("wrong").future.failed must
-                beAnInstanceOf[InvalidFormException].await
+            await(field.value("correct")) must_== "filtered"
+            await(field.value("wrong")) must throwA[InvalidFormException]
         }
     }
 

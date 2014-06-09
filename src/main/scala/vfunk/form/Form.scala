@@ -1,6 +1,7 @@
 package com.roundeights.vfunk
 
 import scala.collection.immutable.ListMap
+import scala.concurrent.{Future, ExecutionContext}
 
 /**
  * A companion for the Form class
@@ -38,17 +39,26 @@ case class Form (
     def + ( field: Field ): Form = add(field)
 
     /** Validates a map against this form */
-    def process ( values: Map[String,String] ): FormResults = {
-        fields.foldLeft( FormResults() ) {
-            (accum, pair) => accum + ((
-                pair._1,
-                pair._2.process( values.getOrElse( pair._1, "" ) )
-            ))
-        }
+    def process
+        ( values: Map[String, String] )
+        ( implicit ctx: ExecutionContext )
+    : Future[FormResults] = {
+
+        // Kick off requests to validate all the fields
+        val futures: Iterable[Future[(String, FieldResult)]] =
+            fields.map(pair => {
+                pair._2.process( values.getOrElse(pair._1, "") )
+                    .map( pair._1 -> _ )
+            })
+
+        Future.fold(futures)(FormResults())(_ + _)
     }
 
     /** Validates a list of tuples */
-    def process ( values: (String, String)* ): FormResults
+    def process
+        ( values: (String, String)* )
+        ( implicit ctx: ExecutionContext )
+    : Future[FormResults]
         = process( Map( values:_* ) )
 
     /** {@inheritDoc} */

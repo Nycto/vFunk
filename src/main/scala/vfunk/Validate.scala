@@ -1,12 +1,13 @@
 package com.roundeights.vfunk
 
+import scala.concurrent.{Future, ExecutionContext}
+import com.roundeights.vfunk.validate._
+import scala.util.matching.Regex
+
 /**
  * Builders for creating validators
  */
 object Validate {
-
-    import com.roundeights.vfunk.validate._
-    import scala.util.matching.Regex
 
     def email = new Email
     def ipv4 = new IPv4
@@ -151,7 +152,14 @@ trait Errable {
             throw InvalidValueException( this )
         this
     }
+}
 
+/** @see Validated */
+object Validated {
+
+    /** Creates a result from a validated value */
+    def apply( result: Boolean, message: => Err ): Future[List[Err]]
+        = Future.successful( if ( result ) Nil else List(message) )
 }
 
 /**
@@ -172,17 +180,26 @@ case class Validated (
 trait Validator {
 
     /** Returns the validation errors for a value */
-    def getErrors ( value: String ): List[Err]
+    def getErrors
+        ( value: String )
+        ( implicit ctx: ExecutionContext )
+    : Future[List[Err]]
 
     /** Validates a value and returns detailed results */
-    def validate ( value: String ): Validated
-        = Validated( value, getErrors(value) )
+    def validate
+        ( value: String )
+        ( implicit ctx: ExecutionContext )
+    : Future[Validated]
+        = getErrors(value).map( Validated( value, _ ) )
 
     /** Returns whether a value is valid or not */
-    def isValid ( value: String ): Boolean
-        = validate( value ).isValid
+    def isValid
+        ( value: String )
+        ( implicit ctx: ExecutionContext )
+    : Future[Boolean]
+        = validate( value ).map( _.isValid )
 
     /** Wraps this validator in a custom error message */
-    def message ( msg: String ) = Validate.errMessage( this, msg )
+    def message ( msg: String ): Validator = Validate.errMessage( this, msg )
 }
 

@@ -1,10 +1,8 @@
-/**
- * Numeric comparison validators
- */
-
 package com.roundeights.vfunk.validate
 
-import com.roundeights.vfunk.{Validator, Err}
+import com.roundeights.vfunk.{Validator, Validated, Err}
+import scala.concurrent.{Future, ExecutionContext}
+import scala.util.Try
 
 /**
  * A base class for validators that compare numeric values
@@ -16,18 +14,20 @@ protected abstract class NumericCompare (
 ) extends Validator {
 
     /** {@inheritDoc */
-    override def getErrors ( value: String ) = {
-        try {
-            predicate(value.toDouble, against.doubleValue) match {
-                case true => Nil
-                case false => List(err)
+    override def getErrors(value: String)(implicit ctx: ExecutionContext) = {
+        Future.fromTry(Try {
+            try {
+                if ( predicate(value.toDouble, against.doubleValue) ) {
+                    Nil
+                } else {
+                    List(err)
+                }
             }
-        }
-        catch {
-            case e:NumberFormatException => List(err)
-        }
+            catch {
+                case e: NumberFormatException => List(err)
+            }
+        })
     }
-
 }
 
 /**
@@ -38,7 +38,6 @@ class Equals ( vs: Number ) extends NumericCompare(
     Err("EQUALS", "Must equal " + vs),
     (actual: Double, vs: Double) => actual == vs
 ) {
-
     /** {@inheritDoc} */
     override def toString = "Validate(== %s)".format( vs )
 }
@@ -51,7 +50,6 @@ class LessThan ( vs: Number ) extends NumericCompare (
     Err("LESSTHAN", "Must be less than " + vs),
     (actual: Double, vs: Double) => actual < vs
 ) {
-
     /** {@inheritDoc} */
     override def toString = "Validate(< %s)".format( vs )
 }
@@ -64,7 +62,6 @@ class LessThanEquals ( vs: Number ) extends NumericCompare (
     Err("LESSTHANEQUALS", "Must be less than or equal to " + vs),
     (actual: Double, vs: Double) => actual <= vs
 ) {
-
     /** {@inheritDoc} */
     override def toString = "Validate(<= %s)".format( vs )
 }
@@ -77,7 +74,6 @@ class GreaterThan ( vs: Number ) extends NumericCompare (
     Err("GREATERTHAN", "Must be greater than " + vs),
     (actual: Double, vs: Double) => actual > vs
 ) {
-
     /** {@inheritDoc} */
     override def toString = "Validate(> %s)".format( vs )
 }
@@ -90,7 +86,6 @@ class GreaterThanEquals ( vs: Number ) extends NumericCompare (
     Err("GREATERTHANEQUALS", "Must be greater than or equal to " + vs),
     (actual: Double, vs: Double) => actual >= vs
 ) {
-
     /** {@inheritDoc} */
     override def toString = "Validate(>= %s)".format( vs )
 }

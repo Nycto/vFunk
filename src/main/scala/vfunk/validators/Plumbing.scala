@@ -1,10 +1,7 @@
-/**
- * Validators covering the plumbing
- */
-
 package com.roundeights.vfunk.validate
 
-import com.roundeights.vfunk.{Validator, Err}
+import com.roundeights.vfunk.{Validator, Validated, Err}
+import scala.concurrent.{Future, ExecutionContext}
 
 /**
  * Returns the given errors
@@ -17,7 +14,8 @@ class Manual (
     def this ( errors: Err* ) = this( errors )
 
     /** {@inheritDoc */
-    override def getErrors ( value: String ) = errors.toList
+    override def getErrors(value: String)(implicit ctx: ExecutionContext)
+        = Future.successful(errors.toList)
 
     /** {@inheritDoc} */
     override def toString
@@ -32,7 +30,8 @@ class Invoke (
 ) extends Validator {
 
     /** {@inheritDoc */
-    override def getErrors ( value: String ) = callback(value).toList
+    override def getErrors(value: String)(implicit ctx: ExecutionContext)
+        = Future.successful( callback(value).toList )
 
     /** {@inheritDoc} */
     override def toString = "Validate(Invoke(%s))".format( callback )
@@ -47,13 +46,8 @@ class In ( private val options: Set[String] ) extends Validator {
     def this ( options: String* ) = this( options.toSet )
 
     /** {@inheritDoc */
-    override def getErrors ( value: String ) = {
-        options.contains( value ) match {
-            case true => Nil
-            case false => List(Err("OPTION", "Invalid Option"))
-        }
-
-    }
+    override def getErrors(value: String)(implicit ctx: ExecutionContext)
+        = Validated( options.contains(value), Err("OPTION", "Invalid Option") )
 
     /** {@inheritDoc} */
     override def toString = "Validate(In(%s))".format( options.mkString(", ") )
@@ -68,12 +62,12 @@ class ErrMessage (
 ) extends Validator {
 
     /** {@inheritDoc */
-    override def getErrors ( value: String ) = {
-        inner.getErrors( value ) match {
+    override def getErrors(value: String)(implicit ctx: ExecutionContext) = {
+        inner.getErrors(value).map(_ match {
             case Nil => Nil
             case List( Err(code, _) ) => List(Err(code, error))
             case List( Err(code, _), _@_* ) => List(Err(code, error))
-        }
+        })
     }
 
     /** {@inheritDoc} */

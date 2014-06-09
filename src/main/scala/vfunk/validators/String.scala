@@ -1,11 +1,7 @@
-/**
- * Validators target specifically at strings
- */
-
 package com.roundeights.vfunk.validate
 
-import com.roundeights.vfunk.{Validator, Err}
-
+import com.roundeights.vfunk.{Validator, Validated, Err}
+import scala.concurrent.{Future, ExecutionContext}
 import scala.util.matching.Regex
 
 /**
@@ -14,13 +10,11 @@ import scala.util.matching.Regex
 class AlphaNum extends Validator {
 
     /** {@inheritDoc */
-    override def getErrors ( value: String ) = {
-        value.forall { Character.isLetterOrDigit(_) } match {
-            case true => Nil
-            case false => List(
-                Err("ALPHANUM", "Must only contain letters and numbers")
-            )
-        }
+    override def getErrors(value: String)(implicit ctx: ExecutionContext) = {
+        Validated(
+            value.forall( Character.isLetterOrDigit(_) ),
+            Err("ALPHANUM", "Must only contain letters and numbers")
+        )
     }
 
     /** {@inheritDoc} */
@@ -33,11 +27,11 @@ class AlphaNum extends Validator {
 class Alpha extends Validator {
 
     /** {@inheritDoc */
-    override def getErrors ( value: String ) = {
-        value.forall { Character.isLetter(_) } match {
-            case true => Nil
-            case false => List(Err("ALPHA", "Must only contain letters"))
-        }
+    override def getErrors(value: String)(implicit ctx: ExecutionContext) = {
+        Validated(
+            value.forall( Character.isLetter(_) ),
+            Err("ALPHA", "Must only contain letters")
+        )
     }
 
     /** {@inheritDoc} */
@@ -50,11 +44,11 @@ class Alpha extends Validator {
 class Digit extends Validator {
 
     /** {@inheritDoc */
-    override def getErrors ( value: String ) = {
-        value.forall { Character.isDigit(_) } match {
-            case true => Nil
-            case false => List(Err("DIGIT", "Must only contain numbers"))
-        }
+    override def getErrors(value: String)(implicit ctx: ExecutionContext) = {
+        Validated(
+            value.forall( Character.isDigit(_) ),
+            Err("DIGIT", "Must only contain numbers")
+        )
     }
 
     /** {@inheritDoc} */
@@ -68,20 +62,16 @@ class Same (
     private val versus: String, private val caseSensitive: Boolean = false
 ) extends Validator {
 
-    /**
-     * The precomputed comparison value
-     */
+    /** The precomputed comparison value */
     private val compare = if (caseSensitive) versus else versus.toLowerCase
 
     /** {@inheritDoc */
-    override def getErrors ( value: String ) = {
+    override def getErrors(value: String)(implicit ctx: ExecutionContext) = {
         val against = if (caseSensitive) value else value.toLowerCase
-        (against == compare) match {
-            case true => Nil
-            case false => List(
-                Err("SAME", "Must be equal to '%s'".format(versus))
-            )
-        }
+        Validated(
+            against == compare,
+            Err("SAME", "Must be equal to '%s'".format(versus))
+        )
     }
 
     /** {@inheritDoc} */
@@ -94,11 +84,11 @@ class Same (
 class NoWhitespace extends Validator {
 
     /** {@inheritDoc */
-    override def getErrors ( value: String ) = {
-        value.exists { Character.isWhitespace(_) } match {
-            case false => Nil
-            case true => List(Err("WHITESPACE", "Must not contain spaces"))
-        }
+    override def getErrors(value: String)(implicit ctx: ExecutionContext) = {
+        Validated(
+            !value.exists(Character.isWhitespace(_)),
+            Err("WHITESPACE", "Must not contain spaces")
+        )
     }
 
     /** {@inheritDoc} */
@@ -114,13 +104,13 @@ class RegExp ( private val regex: Regex ) extends Validator {
     def this ( regex: String ) = this( regex.r )
 
     /** {@inheritDoc */
-    override def getErrors ( value: String ) = {
-        regex.findFirstIn( value ) match {
+    override def getErrors(value: String)(implicit ctx: ExecutionContext) = {
+        Future.successful(regex.findFirstIn(value) match {
             case Some(_) => Nil
             case None => List(
                 Err("REGEX", "Must match the regular expression: " + regex)
             )
-        }
+        })
     }
 
     /** {@inheritDoc} */
@@ -133,12 +123,8 @@ class RegExp ( private val regex: Regex ) extends Validator {
 class NotBlank extends Validator {
 
     /** {@inheritDoc */
-    override def getErrors ( value: String ) = {
-        value.trim == "" match {
-            case false => Nil
-            case true => List( Err("NOTBLANK", "Must not be blank") )
-        }
-    }
+    override def getErrors(value: String)(implicit ctx: ExecutionContext)
+        = Validated( value.trim != "", Err("NOTBLANK", "Must not be blank") )
 
     /** {@inheritDoc} */
     override def toString = "Validate(NotBlank)"
@@ -150,11 +136,11 @@ class NotBlank extends Validator {
 class Hex extends Validator {
 
     /** {@inheritDoc */
-    override def getErrors ( value: String ) = {
-        value.forall { "0123456789abcdefABCDEF".indexOf(_) >= 0 } match {
-            case true => Nil
-            case false => List( Err("HEX", "Must be a hex string") )
-        }
+    override def getErrors(value: String)(implicit ctx: ExecutionContext) = {
+        Validated(
+            value.forall("0123456789abcdefABCDEF".indexOf(_) >= 0),
+            Err("HEX", "Must be a hex string")
+        )
     }
 
     /** {@inheritDoc} */
@@ -174,11 +160,11 @@ class Characters ( private val valid: Set[Char] ) extends Validator {
         = this( valid.foldLeft( Set[Char]() )( _ ++ _.toSet ) )
 
     /** {@inheritDoc */
-    override def getErrors ( value: String ) = {
-        value.forall { valid.contains(_) } match {
-            case true => Nil
-            case false => List( Err("CHARS", "Contains invalid characters") )
-        }
+    override def getErrors(value: String)(implicit ctx: ExecutionContext) = {
+        Validated(
+            value.forall(valid.contains(_)),
+            Err("CHARS", "Contains invalid characters")
+        )
     }
 
     /** {@inheritDoc} */
@@ -198,11 +184,11 @@ class Contains ( private val valid: Set[Char] ) extends Validator {
         = this( valid.foldLeft( Set[Char]() )( _ ++ _.toSet ) )
 
     /** {@inheritDoc */
-    override def getErrors ( value: String ) = {
-        value.exists( valid.contains(_) ) match {
-            case true => Nil
-            case false => List(Err("CONTAINS", "Missing required characters"))
-        }
+    override def getErrors(value: String)(implicit ctx: ExecutionContext) = {
+        Validated(
+            value.exists(valid.contains(_)),
+            Err("CONTAINS", "Missing required characters")
+        )
     }
 
     /** {@inheritDoc} */

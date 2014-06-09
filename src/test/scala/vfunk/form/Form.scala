@@ -1,10 +1,16 @@
 package test.roundeights.vfunk
 
 import org.specs2.mutable._
+import scala.concurrent._
+import scala.concurrent.duration._
 
 import com.roundeights.vfunk._
 
 class FormTest extends Specification  {
+
+    /** Blocks while waiting for the given future */
+    def await[T] ( future: Future[T] ): T
+        = Await.result( future, Duration(1, "second") )
 
     "A Form" should {
 
@@ -21,17 +27,17 @@ class FormTest extends Specification  {
             TextField( "three", Filter.numeric, Validate >= 0 )
         )
 
-        val valid = form.process(
+        val valid = await(form.process(
             "one" -> "unchanged",
             "two" -> "correct",
             "three" -> "123"
-        )
+        ))
 
-        val invalid = form.process(
+        val invalid = await(form.process(
             "one" -> "unchanged",
             "two" -> "wrong",
             "three" -> "-5"
-        )
+        ))
 
         "Preserve the order of its fields" in {
             val fields = form.toList
