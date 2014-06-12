@@ -61,6 +61,20 @@ case class Form (
     : Future[FormResults]
         = process( Map( values:_* ) )
 
+    /** Validates a map against this form and fails if it doesn't validate */
+    def require
+        ( values: Map[String, String] )
+        ( implicit ctx: ExecutionContext )
+    : Future[FormResults]
+        = process( values ).map( _.require )
+
+    /** Validates a map against this form and fails if it doesn't validate */
+    def require
+        ( values: (String, String)* )
+        ( implicit ctx: ExecutionContext )
+    : Future[FormResults]
+        = require( Map(values:_*) )
+
     /** {@inheritDoc} */
     def foreach[U] ( callback: Field => U ): Unit
         = fields.foreach( pair => callback( pair._2 ) )

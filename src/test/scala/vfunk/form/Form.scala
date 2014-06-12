@@ -166,6 +166,20 @@ class FormTest extends Specification  {
             valid.addError("oops", Err("ONE", "First")) must
                 throwA[NoSuchElementException]
         }
+
+        "Fail a future if it doesn't validate" in {
+            await(form.require(
+                "one" -> "unchanged",
+                "two" -> "correct",
+                "three" -> "123"
+            )).isValid must_== true
+
+            await(form.require(
+                "one" -> "unchanged",
+                "two" -> "wrong",
+                "three" -> "-5"
+            )) must throwA[InvalidFormException]
+        }
     }
 }
 
