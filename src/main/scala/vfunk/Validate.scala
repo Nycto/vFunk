@@ -50,6 +50,7 @@ object Validate {
 
     def manual( errors: List[Err] ) = new Manual( errors )
     def manual( errors: Err* ) = new Manual( errors )
+    def manual( code: String, message: String ) = new Manual(Err(code, message))
 
     def invoke (callback: (String) => Traversable[Err]) = new Invoke(callback)
 
