@@ -18,6 +18,21 @@ trait Field {
     /** Returns the validator applied to this field */
     def validator: Validator
 
+    /** Sets values in this field */
+    def set(
+        name: String = this.name,
+        filter: Filter = this.filter,
+        validator: Validator = this.validator
+    ): Field
+
+    /** 'Ands' another validator into this field */
+    def andValidator ( toAdd: Validator ): Field
+        = set( validator = Validate.and(validator, toAdd) )
+
+    /** 'Ands' another validator into this field */
+    def andFilter ( toAdd: Filter ): Field
+        = set( filter = Filter.chain(filter, toAdd) )
+
     /** The filteration and validation against this field */
     def process
         ( value: String )
@@ -53,6 +68,15 @@ case class TextField (
     override val filter: Filter = new Identity,
     override val validator: Validator = new Manual
 ) extends Field {
+
+    /** {@inheritDoc} */
+    override def set(
+        name: String = this.name,
+        filter: Filter = this.filter,
+        validator: Validator = this.validator
+    ): Field = {
+        TextField( name, filter, validator )
+    }
 
     /** {@inheritDoc} */
     override def process

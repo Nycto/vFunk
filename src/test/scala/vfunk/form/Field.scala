@@ -70,6 +70,19 @@ class FieldTest extends Specification  {
             await(field.value("correct")) must_== "filtered"
             await(field.value("wrong")) must throwA[InvalidFormException]
         }
+
+        "Allow filters and validators to be added" in {
+            val field = TextField("test")
+                .andFilter( Filter.callback(_ => "Test Value") )
+                .andFilter( Filter.upper )
+                .andValidator( Validate.in("TEST VALUE") )
+                .andValidator( Validate.manual("TEST", "Test Error") )
+                .andValidator( Validate.manual("TEST", "Second Error") )
+
+            val result = await(field.process("Something"))
+            result.value must_== "TEST VALUE"
+            result.firstMessage must_== Some("Test Error")
+        }
     }
 
 }
