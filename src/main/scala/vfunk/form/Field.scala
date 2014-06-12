@@ -10,7 +10,13 @@ import scala.concurrent.{Future, ExecutionContext}
 trait Field {
 
     /** Returns the name of this field */
-    def name(): String
+    def name: String
+
+    /** Returns the filter applied to this field */
+    def filter: Filter
+
+    /** Returns the validator applied to this field */
+    def validator: Validator
 
     /** The filteration and validation against this field */
     def process
@@ -25,7 +31,7 @@ trait Field {
     : Future[FieldResult] = {
         process(value).map(validated => {
             if ( !validated.isValid ) {
-                throw new InvalidFormException( name() -> validated )
+                throw new InvalidFormException( name -> validated )
             }
             validated
         })
@@ -43,9 +49,9 @@ trait Field {
  * A text field
  */
 case class TextField (
-    val name: String,
-    val filter: Filter = new Identity,
-    val validator: Validator = new Manual
+    override val name: String,
+    override val filter: Filter = new Identity,
+    override val validator: Validator = new Manual
 ) extends Field {
 
     /** {@inheritDoc} */
