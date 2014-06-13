@@ -82,6 +82,13 @@ object Validate {
         = new ErrMessage(validator, error)
 }
 
+/** @see Err */
+object Err {
+
+    /** Creates an error from a tuple */
+    def apply( tuple: (String, String) ): Err = new Err( tuple._1, tuple._2 )
+}
+
 /**
  * A validation error
  */
