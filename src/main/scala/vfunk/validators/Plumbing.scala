@@ -26,12 +26,12 @@ class Manual (
  * Invokes a callback as a validator
  */
 class Invoke (
-    private val callback: (String) => Traversable[Err]
+    private val callback: (String) => Future[Traversable[Err]]
 ) extends Validator {
 
     /** {@inheritDoc */
     override def getErrors(value: String)(implicit ctx: ExecutionContext)
-        = Future.successful( callback(value).toList )
+        = callback(value).map( _.toList )
 
     /** {@inheritDoc} */
     override def toString = "Validate(Invoke(%s))".format( callback )

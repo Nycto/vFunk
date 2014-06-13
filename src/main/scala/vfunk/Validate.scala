@@ -52,7 +52,14 @@ object Validate {
     def manual( errors: Err* ) = new Manual( errors )
     def manual( code: String, message: String ) = new Manual(Err(code, message))
 
-    def invoke (callback: (String) => Traversable[Err]) = new Invoke(callback)
+    def invoke (callback: (String) => Future[Traversable[Err]]): Validator
+        = new Invoke(callback)
+    def invokeList (callback: (String) => Traversable[Err]): Validator
+        = invoke( value => Future.successful(callback(value)) )
+    def invokeErr (callback: (String) => Err): Validator
+        = invokeList( value => Seq(callback(value)) )
+    def invokeTuple (callback: (String) => (String, String)): Validator
+        = invokeErr( value => Err(callback(value)) )
 
     def in ( options: Set[String] ) = new In( options )
     def in ( options: String* ) = new In( options:_* )

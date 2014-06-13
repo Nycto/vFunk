@@ -2,6 +2,7 @@ package test.roundeights.vfunk.validate
 
 import org.specs2.mutable._
 
+import com.roundeights.vfunk.Validate
 import com.roundeights.vfunk.validate._
 import com.roundeights.vfunk.Err
 
@@ -23,11 +24,11 @@ class ValidationPlumbingTests extends Specification {
 
     "An Invoke Validator" should {
         "Pass when the callback returns no errors" in {
-            val validator = new Invoke( _ => Nil )
+            val validator = Validate.invokeList( _ => Nil )
             validator must validateFor("data")
         }
         "Fail when the callback returns an error" in {
-            val validator = new Invoke( _ => List(Err("1", "one")) )
+            val validator = Validate.invokeErr( _ => Err("1", "one") )
             validator must notValidateFor("data")
         }
     }
