@@ -30,8 +30,16 @@ trait Field {
         = set( validator = Validate.and(validator, toAdd) )
 
     /** 'Ands' another validator into this field */
+    def andValidator ( callback: (String) => Future[Traversable[Err]] ): Field
+        = andValidator( Validate.invoke(callback) )
+
+    /** 'Ands' another validator into this field */
     def andFilter ( toAdd: Filter ): Field
         = set( filter = Filter.chain(filter, toAdd) )
+
+    /** 'Ands' another validator into this field */
+    def andFilter ( callback: (String) => String ): Field
+        = andFilter( Filter.callback(callback) )
 
     /** The filteration and validation against this field */
     def process
