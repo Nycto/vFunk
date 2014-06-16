@@ -139,29 +139,19 @@ case class InvalidValueException (
  */
 trait Errable {
 
-    /**
-     * Returns the errors for this field
-     */
+    /** Returns the errors for this field */
     def errors: Seq[Err]
 
-    /**
-     * Returns whether this field validated
-     */
+    /** Returns whether this field validated */
     def isValid: Boolean = errors.isEmpty
 
-    /**
-     * Returns the first error
-     */
+    /** Returns the first error */
     def firstError: Option[Err] = errors.headOption
 
-    /**
-     * Returns the first error message
-     */
+    /** Returns the first error message */
     def firstMessage: Option[String] = firstError.map( _.message )
 
-    /**
-     * Requires that this result be valid, otherwise throw an exception
-     */
+    /** Requires that this result be valid, otherwise throw an exception */
     def require: this.type = {
         if ( !isValid )
             throw InvalidValueException( this )
