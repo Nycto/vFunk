@@ -1,6 +1,5 @@
 package com.roundeights.vfunk
 
-import scala.concurrent.{Future, ExecutionContext}
 import com.roundeights.vfunk.validate._
 import scala.util.matching.Regex
 
@@ -52,12 +51,10 @@ object Validate {
     def manual( errors: Err* ) = new Manual( errors )
     def manual( code: String, message: String ) = new Manual(Err(code, message))
 
-    def invoke (callback: (String) => Future[Traversable[Err]]): Validator
+    def invoke (callback: (String) => Traversable[Err]): Validator
         = new Invoke(callback)
-    def invokeList (callback: (String) => Traversable[Err]): Validator
-        = invoke( value => Future.successful(callback(value)) )
     def invokeErr (callback: (String) => Err): Validator
-        = invokeList( value => Seq(callback(value)) )
+        = invoke( value => Seq(callback(value)) )
     def invokeTuple (callback: (String) => (String, String)): Validator
         = invokeErr( value => Err(callback(value)) )
 
@@ -157,14 +154,15 @@ trait Errable {
             throw InvalidValueException( this )
         this
     }
+
 }
 
 /** @see Validated */
 object Validated {
 
     /** Creates a result from a validated value */
-    def apply( result: Boolean, message: => Err ): Future[List[Err]]
-        = Future.successful( if ( result ) Nil else List(message) )
+    def apply( result: Boolean, message: => Err ): List[Err]
+        = if ( result ) Nil else List(message)
 }
 
 /**
@@ -185,26 +183,17 @@ case class Validated (
 trait Validator {
 
     /** Returns the validation errors for a value */
-    def getErrors
-        ( value: String )
-        ( implicit ctx: ExecutionContext )
-    : Future[List[Err]]
+    def getErrors ( value: String ): List[Err]
 
     /** Validates a value and returns detailed results */
-    def validate
-        ( value: String )
-        ( implicit ctx: ExecutionContext )
-    : Future[Validated]
-        = getErrors(value).map( Validated( value, _ ) )
+    def validate ( value: String ): Validated
+        = Validated( value, getErrors(value) )
 
     /** Returns whether a value is valid or not */
-    def isValid
-        ( value: String )
-        ( implicit ctx: ExecutionContext )
-    : Future[Boolean]
-        = validate( value ).map( _.isValid )
+    def isValid ( value: String ): Boolean
+        = validate( value ).isValid
 
     /** Wraps this validator in a custom error message */
-    def message ( msg: String ): Validator = Validate.errMessage( this, msg )
+    def message ( msg: String ) = Validate.errMessage( this, msg )
 }
 

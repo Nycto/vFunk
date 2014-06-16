@@ -2,7 +2,7 @@ package com.roundeights.vfunk
 
 import com.roundeights.vfunk.validate.Manual
 import com.roundeights.vfunk.filter.Identity
-import scala.concurrent.{Future, ExecutionContext}
+import scala.concurrent.Future
 
 /**
  * A field definition
@@ -30,7 +30,7 @@ trait Field {
         = set( validator = Validate.and(validator, toAdd) )
 
     /** 'Ands' another validator into this field */
-    def andValidator ( callback: (String) => Future[Traversable[Err]] ): Field
+    def andValidator ( callback: (String) => Traversable[Err] ): Field
         = andValidator( Validate.invoke(callback) )
 
     /** 'Ands' another validator into this field */
@@ -42,30 +42,16 @@ trait Field {
         = andFilter( Filter.callback(callback) )
 
     /** The filteration and validation against this field */
-    def process
-        ( value: String )
-        ( implicit ctx: ExecutionContext )
-    : Future[FieldResult]
+    def process ( value: String ): FieldResult
 
     /** Requires that this field is valid */
-    def require
-        ( value: String )
-        ( implicit ctx: ExecutionContext )
-    : Future[FieldResult] = {
-        process(value).map(validated => {
-            if ( !validated.isValid ) {
-                throw new InvalidFormException( name -> validated )
-            }
-            validated
-        })
+    def require ( value: String ): FieldResult = {
+        val validated = process(value)
+        if ( !validated.isValid ) {
+            throw new InvalidFormException( name -> validated )
+        }
+        validated
     }
-
-    /** Presents the validated and filtered result as a future */
-    def value
-        ( value: String )
-        ( implicit ctx: ExecutionContext )
-    : Future[String]
-        = this.require(value).map(_.value)
 }
 
 /**
@@ -87,13 +73,11 @@ case class TextField (
     }
 
     /** {@inheritDoc} */
-    override def process
-        ( value: String )
-        ( implicit ctx: ExecutionContext )
-    : Future[FieldResult] = {
-        val filtered = filter.filter(value)
-        validator.validate(filtered).map(FieldResult(this, value, filtered, _))
+    override def process ( value: String ): FieldResult = {
+        val filtered = filter.filter( value )
+        FieldResult( this, value, filtered, validator.validate(filtered) )
     }
+
 }
 
 /**
@@ -122,6 +106,12 @@ case class FieldResult (
 
     /** Generates an Option based on the validation of this field */
     def option: Option[String] = if (isValid) Some(value) else None
+
+    /** Presents this results as a future */
+    def future: Future[String] = isValid match {
+        case true => Future.successful( value )
+        case false => Future.failed( new InvalidFormException(name -> this) )
+    }
 }
 
 

@@ -1,7 +1,6 @@
 package com.roundeights.vfunk.validate
 
 import com.roundeights.vfunk.{Validator, Validated, Err}
-import scala.concurrent.{Future, ExecutionContext}
 
 /**
  * A helper class for validators that check the length of a string
@@ -16,7 +15,7 @@ protected abstract class LengthValidator (
     require( length >= 0, "Length must be greater than or equal to 0" )
 
     /** {@inheritDoc} */
-    override def getErrors(value: String)(implicit ctx: ExecutionContext) = {
+    override def getErrors ( value: String ) = {
         Validated(
             predicate( value.length, length ),
             Err( code, message.format(length, if (length > 1) "s" else "") )

@@ -1,7 +1,7 @@
 package com.roundeights.vfunk.validate
 
 import com.roundeights.vfunk.{Validator, Validated, Err}
-import scala.concurrent.{Future, ExecutionContext}
+
 import scala.util.matching.Regex
 
 /**
@@ -10,7 +10,7 @@ import scala.util.matching.Regex
 class AlphaNum extends Validator {
 
     /** {@inheritDoc */
-    override def getErrors(value: String)(implicit ctx: ExecutionContext) = {
+    override def getErrors ( value: String ) = {
         Validated(
             value.forall( Character.isLetterOrDigit(_) ),
             Err("ALPHANUM", "Must only contain letters and numbers")
@@ -27,7 +27,7 @@ class AlphaNum extends Validator {
 class Alpha extends Validator {
 
     /** {@inheritDoc */
-    override def getErrors(value: String)(implicit ctx: ExecutionContext) = {
+    override def getErrors ( value: String ) = {
         Validated(
             value.forall( Character.isLetter(_) ),
             Err("ALPHA", "Must only contain letters")
@@ -44,7 +44,7 @@ class Alpha extends Validator {
 class Digit extends Validator {
 
     /** {@inheritDoc */
-    override def getErrors(value: String)(implicit ctx: ExecutionContext) = {
+    override def getErrors ( value: String ) = {
         Validated(
             value.forall( Character.isDigit(_) ),
             Err("DIGIT", "Must only contain numbers")
@@ -66,7 +66,7 @@ class Same (
     private val compare = if (caseSensitive) versus else versus.toLowerCase
 
     /** {@inheritDoc */
-    override def getErrors(value: String)(implicit ctx: ExecutionContext) = {
+    override def getErrors ( value: String ) = {
         val against = if (caseSensitive) value else value.toLowerCase
         Validated(
             against == compare,
@@ -84,7 +84,7 @@ class Same (
 class NoWhitespace extends Validator {
 
     /** {@inheritDoc */
-    override def getErrors(value: String)(implicit ctx: ExecutionContext) = {
+    override def getErrors ( value: String ) = {
         Validated(
             !value.exists(Character.isWhitespace(_)),
             Err("WHITESPACE", "Must not contain spaces")
@@ -104,13 +104,13 @@ class RegExp ( private val regex: Regex ) extends Validator {
     def this ( regex: String ) = this( regex.r )
 
     /** {@inheritDoc */
-    override def getErrors(value: String)(implicit ctx: ExecutionContext) = {
-        Future.successful(regex.findFirstIn(value) match {
+    override def getErrors ( value: String ) = {
+        regex.findFirstIn( value ) match {
             case Some(_) => Nil
             case None => List(
                 Err("REGEX", "Must match the regular expression: " + regex)
             )
-        })
+        }
     }
 
     /** {@inheritDoc} */
@@ -123,7 +123,7 @@ class RegExp ( private val regex: Regex ) extends Validator {
 class NotBlank extends Validator {
 
     /** {@inheritDoc */
-    override def getErrors(value: String)(implicit ctx: ExecutionContext)
+    override def getErrors ( value: String )
         = Validated( value.trim != "", Err("NOTBLANK", "Must not be blank") )
 
     /** {@inheritDoc} */
@@ -136,7 +136,7 @@ class NotBlank extends Validator {
 class Hex extends Validator {
 
     /** {@inheritDoc */
-    override def getErrors(value: String)(implicit ctx: ExecutionContext) = {
+    override def getErrors ( value: String ) = {
         Validated(
             value.forall("0123456789abcdefABCDEF".indexOf(_) >= 0),
             Err("HEX", "Must be a hex string")
@@ -160,7 +160,7 @@ class Characters ( private val valid: Set[Char] ) extends Validator {
         = this( valid.foldLeft( Set[Char]() )( _ ++ _.toSet ) )
 
     /** {@inheritDoc */
-    override def getErrors(value: String)(implicit ctx: ExecutionContext) = {
+    override def getErrors ( value: String ) = {
         Validated(
             value.forall(valid.contains(_)),
             Err("CHARS", "Contains invalid characters")
@@ -184,7 +184,7 @@ class Contains ( private val valid: Set[Char] ) extends Validator {
         = this( valid.foldLeft( Set[Char]() )( _ ++ _.toSet ) )
 
     /** {@inheritDoc */
-    override def getErrors(value: String)(implicit ctx: ExecutionContext) = {
+    override def getErrors ( value: String ) = {
         Validated(
             value.exists(valid.contains(_)),
             Err("CONTAINS", "Missing required characters")

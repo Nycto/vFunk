@@ -3,7 +3,6 @@ package test.roundeights.vfunk.validate
 import org.specs2.mutable._
 
 import com.roundeights.vfunk._
-import scala.concurrent.{Future, ExecutionContext}
 
 class ValidationDefinitionTests extends Specification {
 
@@ -52,10 +51,7 @@ class ValidationDefinitionTests extends Specification {
     "A Validator" should {
 
         class MockValidator( result: List[Err] ) extends Validator {
-            override def getErrors
-                ( value: String )
-                ( implicit ctx: ExecutionContext )
-            : Future[List[Err]] = Future.successful( result )
+            override def getErrors( value: String ): List[Err] = result
         }
 
         "return as valid when there are errors" in {
@@ -67,8 +63,8 @@ class ValidationDefinitionTests extends Specification {
 
             validator must notValidateFor("something")
 
-            validator.validate("something") must
-                ===(Validated("something", List(Err("test", "error")))).await
+            validator.validate("something") must_==
+                Validated("something", List(Err("test", "error")))
         }
 
     }

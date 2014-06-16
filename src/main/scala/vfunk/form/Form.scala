@@ -1,7 +1,6 @@
 package com.roundeights.vfunk
 
 import scala.collection.immutable.ListMap
-import scala.concurrent.{Future, ExecutionContext}
 
 /**
  * A companion for the Form class
@@ -39,40 +38,25 @@ case class Form (
     def + ( field: Field ): Form = add(field)
 
     /** Validates a map against this form */
-    def process
-        ( values: Map[String, String] )
-        ( implicit ctx: ExecutionContext )
-    : Future[FormResults] = {
-
-        // Kick off requests to validate all the fields
-        val futures: Iterable[Future[(String, FieldResult)]] =
-            fields.map(pair => {
-                pair._2.process( values.getOrElse(pair._1, "") )
-                    .map( pair._1 -> _ )
-            })
-
-        Future.fold(futures)(FormResults())(_ + _)
+    def process ( values: Map[String,String] ): FormResults = {
+        fields.foldLeft( FormResults() ) {
+            (accum, pair) => accum + ((
+                pair._1,
+                pair._2.process( values.getOrElse( pair._1, "" ) )
+            ))
+        }
     }
 
     /** Validates a list of tuples */
-    def process
-        ( values: (String, String)* )
-        ( implicit ctx: ExecutionContext )
-    : Future[FormResults]
+    def process ( values: (String, String)* ): FormResults
         = process( Map( values:_* ) )
 
     /** Validates a map against this form and fails if it doesn't validate */
-    def require
-        ( values: Map[String, String] )
-        ( implicit ctx: ExecutionContext )
-    : Future[FormResults]
-        = process( values ).map( _.require )
+    def require ( values: Map[String, String] ): FormResults
+        = process( values ).require
 
     /** Validates a map against this form and fails if it doesn't validate */
-    def require
-        ( values: (String, String)* )
-        ( implicit ctx: ExecutionContext )
-    : Future[FormResults]
+    def require ( values: (String, String)* ): FormResults
         = require( Map(values:_*) )
 
     /** {@inheritDoc} */

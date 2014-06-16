@@ -1,8 +1,6 @@
 package com.roundeights.vfunk.validate
 
 import com.roundeights.vfunk.{Validator, Err}
-import scala.concurrent.{Future, ExecutionContext}
-import scala.util.Try
 
 /**
  * A base validator for numeric tests
@@ -13,19 +11,16 @@ protected abstract class NumericValidator (
 ) extends Validator {
 
     /** {@inheritDoc */
-    override def getErrors(value: String)(implicit ctx: ExecutionContext) = {
-        Future.fromTry(Try {
-            try {
-                if ( predicate(value.toDouble) ) {
-                    Nil
-                } else {
-                    List(err)
-                }
+    override def getErrors ( value: String ) = {
+        try {
+            predicate( value.toDouble ) match {
+                case true => Nil
+                case false => List(err)
             }
-            catch {
-                case e: NumberFormatException => List(err)
-            }
-        })
+        }
+        catch {
+            case e:NumberFormatException => List(err)
+        }
     }
 }
 

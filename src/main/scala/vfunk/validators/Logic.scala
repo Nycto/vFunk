@@ -1,7 +1,8 @@
 package com.roundeights.vfunk.validate
 
 import com.roundeights.vfunk.{Validator, Validated, Err}
-import scala.concurrent.{Future, ExecutionContext}
+
+import scala.annotation.tailrec
 
 /**
  * A validator that requires that all the validators it contains to pass
@@ -14,15 +15,19 @@ class And ( private val validators: List[Validator] ) extends Validator {
     def this ( validators: Validator* ) = this( validators.toList )
 
     /** {@inheritDoc */
-    override def getErrors(value: String)(implicit ctx: ExecutionContext) = {
+    override def getErrors ( value: String ) = {
 
-        def find ( remaining: List[Validator] ): Future[List[Err]] = {
+        @tailrec
+        def find ( remaining: List[Validator] ): List[Err] = {
             remaining match {
-                case Nil => Future.successful(Nil)
-                case head :: tail => head.getErrors(value).flatMap(_ match {
-                    case Nil => find(tail)
-                    case errs => Future.successful(errs)
-                })
+                case Nil => Nil
+                case head :: tail => {
+                    val errs = head.getErrors( value )
+                    errs.isEmpty match {
+                        case false => errs
+                        case true => find( tail )
+                    }
+                }
             }
         }
 
@@ -43,20 +48,21 @@ class Or ( private val validators: List[Validator] ) extends Validator {
     def this ( validators: Validator* ) = this( validators.toList )
 
     /** {@inheritDoc */
-    override def getErrors(value: String)(implicit ctx: ExecutionContext) = {
+    override def getErrors ( value: String ) = {
 
-        def find (
-            remaining: List[Validator], errs: List[Err]
-        ): Future[List[Err]] = {
+        @tailrec
+        def find ( remaining: List[Validator], errs: List[Err] ): List[Err] = {
             remaining match {
-                case Nil => Future.successful(errs)
-                case head :: tail => head.getErrors( value ).flatMap(_ match {
-                    case Nil => Future.successful(Nil)
-                    case currentErrs => find( tail, errs ::: currentErrs )
-                })
+                case Nil => errs
+                case head :: tail => {
+                    val currentErrs = head.getErrors( value )
+                    currentErrs.isEmpty match {
+                        case true => Nil
+                        case false => find( tail, errs ::: currentErrs )
+                    }
+                }
             }
         }
-
         find( validators, Nil )
     }
 
@@ -74,10 +80,8 @@ class Not (
 ) extends Validator {
 
     /** {@inheritDoc */
-    override def getErrors(value: String)(implicit ctx: ExecutionContext) = {
-        validator.isValid(value)
-            .flatMap(valid => Validated(!valid, Err("NOT", message)))
-    }
+    override def getErrors ( value: String )
+        = Validated(!validator.isValid(value), Err("NOT", message))
 
     /** {@inheritDoc} */
     override def toString = "Validate(Not(%s))".format( validator )

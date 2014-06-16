@@ -19,7 +19,7 @@ class ValidationLogicTests extends Specification {
             )
 
             validator must notValidateFor("data")
-            validator.getErrors("data") must ===(Err("1", "One") :: Nil).await
+            validator.getErrors("data") must_== Err("1", "One") :: Nil
         }
         "Pass when empty" in {
             val validator = new And
@@ -32,8 +32,8 @@ class ValidationLogicTests extends Specification {
             )
 
             validator must notValidateFor("data")
-            validator.getErrors("data") must
-                ===(Err("1", "One") :: Err("2", "Two") :: Nil).await
+            validator.getErrors("data") must_==
+                Err("1", "One") :: Err("2", "Two") :: Nil
         }
     }
 
@@ -60,9 +60,8 @@ class ValidationLogicTests extends Specification {
                 new Manual( Err("3", "Three") )
             )
             validator must notValidateFor("data")
-            validator.getErrors("data") must ===(
+            validator.getErrors("data") must_==
                 Err("1", "One") :: Err("2", "Two") :: Err("3", "Three") :: Nil
-            ).await
         }
     }
 
