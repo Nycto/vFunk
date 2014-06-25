@@ -2,7 +2,7 @@ package com.roundeights.vfunk
 
 import com.roundeights.vfunk.validate.Manual
 import com.roundeights.vfunk.filter.Identity
-import scala.concurrent.Future
+import scala.concurrent.{Future, ExecutionContext}
 
 /**
  * A field definition
@@ -52,6 +52,9 @@ trait Field {
         }
         validated
     }
+
+    /** Creates an asyc field from this field */
+    def async: AsyncField
 }
 
 /**
@@ -75,27 +78,105 @@ case class TextField (
     /** {@inheritDoc} */
     override def process ( value: String ): FieldResult = {
         val filtered = filter.filter( value )
-        FieldResult( this, value, filtered, validator.validate(filtered) )
+        FieldResult( name, value, filtered, validator.validate(filtered) )
     }
 
+    /** {@inheritDoc} */
+    override def async: AsyncField
+        = AsyncTextField( name, filter, validator.async )
 }
+
+/**
+ * A asyncrhonous field
+ */
+trait AsyncField {
+
+    /** Returns the name of this field */
+    def name: String
+
+    /** Returns the filter applied to this field */
+    def filter: Filter
+
+    /** Returns the validator applied to this field */
+    def validator: AsyncValidator
+
+    /** Sets values in this field */
+    def set(
+        name: String = this.name,
+        filter: Filter = this.filter,
+        validator: AsyncValidator = this.validator
+    ): AsyncField
+
+    /** Runs the filteration and validation against this field */
+    def process
+        ( value: String )
+        ( implicit ctx: ExecutionContext )
+    : Future[FieldResult]
+
+    /** Requires that this field is valid, failing the future if it isn't */
+    def require
+        ( value: String )
+        ( implicit ctx: ExecutionContext )
+    : Future[FieldResult] = {
+        process(value).map(validated => {
+            if ( !validated.isValid ) {
+                throw new InvalidFormException( name -> validated )
+            }
+            validated
+        })
+    }
+
+    /** Presents the validated and filtered result as a future */
+    def value
+        ( value: String )
+        ( implicit ctx: ExecutionContext )
+    : Future[String]
+        = this.require(value).map(_.value)
+}
+
+
+/**
+ * A text field
+ */
+case class AsyncTextField (
+    override val name: String,
+    override val filter: Filter = new Identity,
+    override val validator: AsyncValidator = (new Manual).async
+) extends AsyncField {
+
+    /** {@inheritDoc} */
+    override def set(
+        name: String = this.name,
+        filter: Filter = this.filter,
+        validator: AsyncValidator = this.validator
+    ): AsyncField = {
+        AsyncTextField( name, filter, validator )
+    }
+
+    /** {@inheritDoc} */
+    override def process
+        ( value: String )
+        ( implicit ctx: ExecutionContext )
+    : Future[FieldResult] = {
+        val filtered = filter.filter(value)
+        validator.validate(filtered).map(FieldResult(name, value, filtered, _))
+    }
+}
+
 
 /**
  * The results from an individual field
  */
 case class FieldResult (
-    val field: Field,
+    val name: String,
     val original: String,
     val value: String,
     val validated: Validated
 ) extends Errable {
 
-    /** Returns the name of the field */
-    def name: String = field.name
-
     /** Adds a new error to this result */
     def +: ( err: Err ): FieldResult
-        = FieldResult( field, original, value, err +: validated )
+        = FieldResult( name, original, value, err +: validated )
 
     /** {@inheritDoc} */
     def errors: Seq[Err] = validated.errors
