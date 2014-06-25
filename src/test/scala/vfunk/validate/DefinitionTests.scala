@@ -67,7 +67,14 @@ class ValidationDefinitionTests extends Specification {
                 Validated("something", List(Err("test", "error")))
         }
 
-    }
+        "Create an async validator" in {
+            new MockValidator(Nil).async
+                .getErrors("something") must ===( List[Err]() ).await
 
+            new MockValidator( List(Err("test", "error")) ).async
+                .getErrors("something")
+                .must( ===( List(Err("test", "error")) ).await )
+        }
+    }
 }
 

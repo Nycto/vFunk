@@ -2,6 +2,8 @@ package com.roundeights.vfunk
 
 import com.roundeights.vfunk.validate._
 import scala.util.matching.Regex
+import scala.util.Try
+import scala.concurrent.{Future, ExecutionContext}
 
 /**
  * Builders for creating validators
@@ -154,7 +156,6 @@ trait Errable {
             throw InvalidValueException( this )
         this
     }
-
 }
 
 /** @see Validated */
@@ -195,5 +196,43 @@ trait Validator {
 
     /** Wraps this validator in a custom error message */
     def message ( msg: String ) = Validate.errMessage( this, msg )
+
+    /** Turns any validator into an async validator */
+    def async: AsyncValidator = {
+        var self = this
+        new AsyncValidator {
+            override def getErrors
+                ( value: String )
+                ( implicit ctx: ExecutionContext )
+            : Future[List[Err]]
+                = Future.fromTry(Try { self.getErrors(value) })
+        }
+    }
+}
+
+/**
+ * Validates that a value matches a given rule
+ */
+trait AsyncValidator {
+
+    /** Returns the validation errors for a value */
+    def getErrors
+        ( value: String )
+        ( implicit ctx: ExecutionContext )
+    : Future[List[Err]]
+
+    /** Validates a value and returns detailed results */
+    def validate
+        ( value: String )
+        ( implicit ctx: ExecutionContext )
+    : Future[Validated]
+        = getErrors(value).map( Validated( value, _ ) )
+
+    /** Returns whether a value is valid or not */
+    def isValid
+        ( value: String )
+        ( implicit ctx: ExecutionContext )
+    : Future[Boolean]
+        = validate( value ).map( _.isValid )
 }
 
