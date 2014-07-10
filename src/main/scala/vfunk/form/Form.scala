@@ -8,34 +8,57 @@ import scala.collection.immutable.ListMap
 object Form {
 
     /** Creates a form from a list of fields */
+    private[vfunk] def toMap[F <: CommonField] (
+        fields: Traversable[F]
+    ): ListMap[String, F] = {
+        fields.foldLeft ( ListMap[String, F]() ) {
+            (accum, field) => accum + ((field.name, field))
+        }
+    }
+
+    /** Creates a form from a list of fields */
     def apply ( fields: Traversable[Field] ): Form = new Form( fields )
 
     /** Creates a form from a list of fields */
     def apply ( fields: Field* ): Form = new Form( fields )
 }
 
+
+/**
+ * Shared form methods
+ */
+abstract class CommonForm[S <: CommonForm[_, F], F <: CommonField] (
+    val fields: ListMap[String, F]
+) extends Traversable[F] {
+
+    /** Creates a new form including a new field */
+    def add( field: F ): S
+
+    /** Creates a new form including a new field */
+    def + ( field: F ): S = add(field)
+
+    /** {@inheritDoc} */
+    override def foreach[U] ( callback: F => U ): Unit
+        = fields.foreach( pair => callback( pair._2 ) )
+}
+
+
 /**
  * A form
  */
-case class Form (
-    val fields: ListMap[String, Field]
-) extends Traversable[Field] {
+class Form (
+    fields: ListMap[String, Field]
+) extends CommonForm[Form, Field](fields) {
 
     /** Creates a form from a list of fields */
-    def this ( fields: Traversable[Field] ) = this(
-        fields.foldLeft ( ListMap[String, Field]() ) {
-            (accum, field) => accum + ((field.name, field))
-        }
-    )
+    def this ( fields: Traversable[Field] ) = this( Form.toMap(fields) )
 
     /** Creates a form from a list of fields */
     def this ( fields: Field* ) = this( fields )
 
-    /** Creates a new form including a new field */
-    def add( field: Field ): Form = new Form( fields + ((field.name, field)) )
-
-    /** Creates a new form including a new field */
-    def + ( field: Field ): Form = add(field)
+    /** {@inheritDoc} */
+    override def add( field: Field ): Form
+        = new Form( fields + ((field.name, field)) )
 
     /** Validates a map against this form */
     def process ( values: Map[String,String] ): FormResults = {
@@ -60,7 +83,7 @@ case class Form (
         = require( Map(values:_*) )
 
     /** {@inheritDoc} */
-    def foreach[U] ( callback: Field => U ): Unit
+    override def foreach[U] ( callback: Field => U ): Unit
         = fields.foreach( pair => callback( pair._2 ) )
 }
 

@@ -5,15 +5,21 @@ import com.roundeights.vfunk.filter.Identity
 import scala.concurrent.{Future, ExecutionContext}
 
 /**
- * A field definition
+ * Methods shared between different types of fields
  */
-trait Field {
+trait CommonField {
 
     /** Returns the name of this field */
     def name: String
 
     /** Returns the filter applied to this field */
     def filter: Filter
+}
+
+/**
+ * A field definition
+ */
+trait Field extends CommonField {
 
     /** Returns the validator applied to this field */
     def validator: Validator
@@ -89,13 +95,7 @@ case class TextField (
 /**
  * A asyncrhonous field
  */
-trait AsyncField {
-
-    /** Returns the name of this field */
-    def name: String
-
-    /** Returns the filter applied to this field */
-    def filter: Filter
+trait AsyncField extends CommonField {
 
     /** Returns the validator applied to this field */
     def validator: AsyncValidator
