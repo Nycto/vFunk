@@ -14,6 +14,9 @@ trait CommonField {
 
     /** Returns the filter applied to this field */
     def filter: Filter
+
+    /** Converts this field into an async field */
+    def async: AsyncField
 }
 
 /**
@@ -58,9 +61,6 @@ trait Field extends CommonField {
         }
         validated
     }
-
-    /** Creates an asyc field from this field */
-    def async: AsyncField
 }
 
 /**
@@ -161,6 +161,9 @@ case class AsyncTextField (
         val filtered = filter.filter(value)
         validator.validate(filtered).map(FieldResult(name, value, filtered, _))
     }
+
+    /** {@inheritDoc} */
+    override def async: AsyncField = this
 }
 
 
