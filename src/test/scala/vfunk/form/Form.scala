@@ -1,25 +1,27 @@
 package test.roundeights.vfunk
 
 import org.specs2.mutable._
+import scala.concurrent._
+import scala.concurrent.duration._
 
 import com.roundeights.vfunk._
 
 class FormTest extends Specification  {
 
-    "A Form" should {
+    val form = Form(
+        TextField( "one" ),
+        TextField(
+            "two",
+            Filter callback( _ match {
+                case "correct" => "filtered"
+                case _ => "fail"
+            } ),
+            Validate in( "filtered" )
+        ),
+        TextField( "three", Filter.numeric, Validate >= 0 )
+    )
 
-        val form = Form(
-            TextField( "one" ),
-            TextField(
-                "two",
-                Filter callback( _ match {
-                    case "correct" => "filtered"
-                    case _ => "fail"
-                } ),
-                Validate in( "filtered" )
-            ),
-            TextField( "three", Filter.numeric, Validate >= 0 )
-        )
+    "A Form" should {
 
         val valid = form.process(
             "one" -> "unchanged",
@@ -173,6 +175,45 @@ class FormTest extends Specification  {
                 "two" -> "wrong",
                 "three" -> "-5"
             ) must throwA[InvalidFormException]
+        }
+    }
+
+    "An AsyncForm" should {
+
+        /** Blocks while waiting for the given future */
+        def await[T] ( future: Future[T] ): T
+            = Await.result( future, Duration(1, "second") )
+
+        "Process a valid set of data" in {
+            val result = await(form.async.process(
+                "one" -> "unchanged",
+                "two" -> "correct",
+                "three" -> "123"
+            ))
+
+            result.isValid must_== true
+        }
+
+        "Process an invalid sete of data" in {
+            val result = await(form.async.process(
+                "one" -> "unchanged",
+                "two" -> "wrong",
+                "three" -> "-5"
+            ))
+
+            result.isValid must_== false
+            result.errors must_== List(
+                Err("GREATERTHANEQUALS", "Must be greater than or equal to 0"),
+                Err("OPTION", "Invalid Option")
+            )
+        }
+
+        "Fail the future if a require fails" in {
+            await(form.async.require(
+                "one" -> "unchanged",
+                "two" -> "wrong",
+                "three" -> "-5"
+            )) must throwA[InvalidFormException]
         }
     }
 }

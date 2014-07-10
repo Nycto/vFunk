@@ -1,6 +1,8 @@
 package com.roundeights.vfunk
 
 import scala.collection.immutable.ListMap
+import scala.concurrent.{Future, ExecutionContext}
+
 
 /**
  * A companion for the Form class
@@ -40,6 +42,9 @@ abstract class CommonForm[S <: CommonForm[_, F], F <: CommonField] (
     /** {@inheritDoc} */
     override def foreach[U] ( callback: F => U ): Unit
         = fields.foreach( pair => callback( pair._2 ) )
+
+    /** Returns this form as an async form */
+    def async: AsyncForm
 }
 
 
@@ -83,8 +88,80 @@ class Form (
         = require( Map(values:_*) )
 
     /** {@inheritDoc} */
-    override def foreach[U] ( callback: Field => U ): Unit
-        = fields.foreach( pair => callback( pair._2 ) )
+    override def async: AsyncForm
+        = new AsyncForm( fields.map( pair => (pair._1 -> pair._2.async) ) )
+}
+
+
+/** @See AsyncForm */
+object AsyncForm {
+
+    /** Creates a form from a list of fields */
+    def apply ( fields: Traversable[CommonField] ): AsyncForm
+        = new AsyncForm(fields)
+
+    /** Creates a form from a list of fields */
+    def apply ( fields: CommonField* ): AsyncForm
+        = new AsyncForm( fields )
+}
+
+/**
+ * A form
+ */
+class AsyncForm (
+    fields: ListMap[String, AsyncField]
+) extends CommonForm[AsyncForm, AsyncField](fields) {
+
+    /** Creates a form from a list of fields */
+    def this ( fields: Traversable[CommonField] )
+        = this( Form.toMap( fields.map(_.async) ) )
+
+    /** Creates a form from a list of fields */
+    def this ( fields: CommonField* ) = this( fields )
+
+    /** {@inheritDoc} */
+    override def add( field: AsyncField ): AsyncForm
+        = new AsyncForm( fields + ((field.name, field)) )
+
+    /** Validates a map against this form */
+    def process
+        ( values: Map[String, String] )
+        ( implicit ctx: ExecutionContext )
+    : Future[FormResults] = {
+
+        // Kick off requests to validate all the fields
+        val futures: Iterable[Future[(String, FieldResult)]] =
+            fields.map(pair => {
+                pair._2.process( values.getOrElse(pair._1, "") )
+                    .map( pair._1 -> _ )
+            })
+
+        Future.fold(futures)(FormResults())(_ + _)
+    }
+
+    /** Validates a list of tuples */
+    def process
+        ( values: (String, String)* )
+        ( implicit ctx: ExecutionContext )
+    : Future[FormResults]
+        = process( Map( values:_* ) )
+
+    /** Validates a map against this form and fails if it doesn't validate */
+    def require
+        ( values: Map[String, String] )
+        ( implicit ctx: ExecutionContext )
+    : Future[FormResults]
+        = process( values ).map( _.require )
+
+    /** Validates a map against this form and fails if it doesn't validate */
+    def require
+        ( values: (String, String)* )
+        ( implicit ctx: ExecutionContext )
+    : Future[FormResults]
+        = require( Map(values:_*) )
+
+    /** {@inheritDoc} */
+    override def async: AsyncForm = this
 }
 
 /**
