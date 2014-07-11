@@ -179,9 +179,18 @@ case class Validated (
 }
 
 /**
+ * Methods common to both Validators and AsyncValidators
+ */
+trait CommonValidator {
+
+    /** Turns any validator into an async validator */
+    def async: AsyncValidator
+}
+
+/**
  * Validates that a value matches a given rule
  */
-trait Validator {
+trait Validator extends CommonValidator {
 
     /** Returns the validation errors for a value */
     def getErrors ( value: String ): List[Err]
@@ -197,8 +206,8 @@ trait Validator {
     /** Wraps this validator in a custom error message */
     def message ( msg: String ) = Validate.errMessage( this, msg )
 
-    /** Turns any validator into an async validator */
-    def async: AsyncValidator = {
+    /** {@inheritDoc} */
+    override def async: AsyncValidator = {
         var self = this
         new AsyncValidator {
             override def getErrors
@@ -213,7 +222,7 @@ trait Validator {
 /**
  * Validates that a value matches a given rule
  */
-trait AsyncValidator {
+trait AsyncValidator extends CommonValidator {
 
     /** Returns the validation errors for a value */
     def getErrors
@@ -234,5 +243,8 @@ trait AsyncValidator {
         ( implicit ctx: ExecutionContext )
     : Future[Boolean]
         = validate( value ).map( _.isValid )
+
+    /** {@inheritDoc} */
+    override def async: AsyncValidator = this
 }
 
