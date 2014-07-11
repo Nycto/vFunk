@@ -65,6 +65,12 @@ class Form (
     override def add( field: Field ): Form
         = new Form( fields + ((field.name, field)) )
 
+    /** Adds an async field and returns an async form */
+    def add( field: AsyncField ): AsyncForm = async.add(field)
+
+    /** Creates a new form including a new field */
+    def + ( field: AsyncField ): AsyncForm = add(field)
+
     /** Validates a map against this form */
     def process ( values: Map[String,String] ): FormResults = {
         fields.foldLeft( FormResults() ) {
