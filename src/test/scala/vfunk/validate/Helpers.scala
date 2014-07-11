@@ -2,6 +2,11 @@ package test.roundeights.vfunk.validate
 
 import com.roundeights.vfunk._
 
+import scala.concurrent.ExecutionContext
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent._
+import scala.concurrent.duration._
+
 import org.specs2.mutable._
 import org.specs2.matcher._
 
@@ -16,11 +21,19 @@ object validateFor {
 /**
  * A helper class for testing what a validator passes for
  */
-class validateFor ( against: Seq[String] ) extends Matcher[Validator]() {
-    def apply[S <: Validator](actual: Expectable[S]) = {
+class validateFor ( against: Seq[String] ) extends Matcher[CommonValidator]() {
+    def apply[S <: CommonValidator](actual: Expectable[S]) = {
         val mismatch = against.foldRight [Option[String]] ( None ) {
             (versus, error) => {
-                actual.value.isValid( versus ) match {
+                val isValid = actual.value match {
+                    case sync: Validator => sync.isValid(versus)
+                    case async: AsyncValidator => Await.result(
+                        async.isValid(versus),
+                        Duration(1, "second")
+                    )
+                }
+
+                isValid match {
                     case false => Some("pass for string: " + versus)
                     case true => error
                 }
@@ -47,11 +60,21 @@ object notValidateFor {
 /**
  * A helper class for testing what a validator passes for
  */
-class notValidateFor ( against: Seq[String] ) extends Matcher[Validator]() {
-    def apply[S <: Validator](actual: Expectable[S]) = {
+class notValidateFor (
+    against: Seq[String]
+) extends Matcher[CommonValidator]() {
+    def apply[S <: CommonValidator](actual: Expectable[S]) = {
         val mismatch = against.foldRight [Option[String]] ( None ) {
             (versus, error) => {
-                actual.value.isValid( versus ) match {
+                val isValid = actual.value match {
+                    case sync: Validator => sync.isValid(versus)
+                    case async: AsyncValidator => Await.result(
+                        async.isValid(versus),
+                        Duration(1, "second")
+                    )
+                }
+
+                isValid match {
                     case false => error
                     case true => Some("fail for string: " + versus)
                 }
