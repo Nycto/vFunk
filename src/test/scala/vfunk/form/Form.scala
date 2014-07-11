@@ -21,26 +21,19 @@ class FormTest extends Specification  {
         TextField( "three", Filter.numeric, Validate >= 0 )
     )
 
-    "A Form" should {
+    val valid = form.process(
+        "one" -> "unchanged",
+        "two" -> "correct",
+        "three" -> "123"
+    )
 
-        val valid = form.process(
-            "one" -> "unchanged",
-            "two" -> "correct",
-            "three" -> "123"
-        )
+    val invalid = form.process(
+        "one" -> "unchanged",
+        "two" -> "wrong",
+        "three" -> "-5"
+    )
 
-        val invalid = form.process(
-            "one" -> "unchanged",
-            "two" -> "wrong",
-            "three" -> "-5"
-        )
-
-        "Preserve the order of its fields" in {
-            val fields = form.toList
-            fields(0).name must_== "one"
-            fields(1).name must_== "two"
-            fields(2).name must_== "three"
-        }
+    "A FormResult" should {
 
         "provide access to whether a form is valid" in {
             valid.isValid must_== true
@@ -79,16 +72,7 @@ class FormTest extends Specification  {
             invalid.original("three") must_== Some("-5")
         }
 
-        "provide access to list of errors produced" in {
-            valid.errors must_== Nil
-
-            invalid.errors must_== List(
-                Err("GREATERTHANEQUALS", "Must be greater than or equal to 0"),
-                Err("OPTION", "Invalid Option")
-            )
-        }
-
-        "provide access to list of errors produced" in {
+        "provide access to a list of errors produced" in {
             valid.errors must_== Nil
 
             invalid.errors must_== List(
@@ -133,10 +117,6 @@ class FormTest extends Specification  {
             )
         }
 
-        "Throw an InvalidFormException" in {
-            invalid.require must throwA[InvalidFormException]
-        }
-
         "Allow errors to be added to specific fields" in {
             valid.addError("one", Err("ONE", "First")).fieldErrors must_== Map(
                 "one" -> List( Err("ONE", "First") )
@@ -161,6 +141,38 @@ class FormTest extends Specification  {
         "Throw when trying to add an error to a field that isn't defined" in {
             valid.addError("oops", Err("ONE", "First")) must
                 throwA[NoSuchElementException]
+        }
+    }
+
+    "A Form" should {
+
+        "Process a valid set of data" in {
+            form.process(
+                "one" -> "unchanged", "two" -> "correct", "three" -> "123"
+            ).isValid must_== true
+        }
+
+        "Process an invalid sete of data" in {
+            val result = form.process(
+                "one" -> "unchanged", "two" -> "wrong", "three" -> "-5"
+            )
+
+            result.isValid must_== false
+            result.errors must_== List(
+                Err("GREATERTHANEQUALS", "Must be greater than or equal to 0"),
+                Err("OPTION", "Invalid Option")
+            )
+        }
+
+        "Preserve the order of its fields" in {
+            val fields = form.toList
+            fields(0).name must_== "one"
+            fields(1).name must_== "two"
+            fields(2).name must_== "three"
+        }
+
+        "Throw an InvalidFormException" in {
+            invalid.require must throwA[InvalidFormException]
         }
 
         "Fail a future if it doesn't validate" in {
