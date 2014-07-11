@@ -1,11 +1,11 @@
 package com.roundeights.vfunk
 
+import com.roundeights.vfunk.filter._
+
 /**
  * Builders for generating filters
  */
 object Filter {
-
-    import com.roundeights.vfunk.filter._
 
     def email = new EMail
     def url = new URL
@@ -37,10 +37,10 @@ object Filter {
  */
 trait Filter {
 
-    /**
-     * Applies a transformation and returns the result
-     */
+    /** Applies a transformation and returns the result */
     def filter ( value: String ): String
 
+    /** Chains this filter into another filter */
+    def |> ( next: Filter ): Filter = new Chain(this, next)
 }
 

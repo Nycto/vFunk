@@ -3,6 +3,7 @@ package test.roundeights.vfunk.validate
 import org.specs2.mutable._
 
 import com.roundeights.vfunk.filter._
+import com.roundeights.vfunk.Filter
 
 class FilterPlumbingTests extends Specification {
 
@@ -31,6 +32,12 @@ class FilterPlumbingTests extends Specification {
                 new Callback(_ + ", two"),
                 new Callback(_ + ", three")
             )
+            filter.filter("data") must_== "data: one, two, three"
+        }
+        "Be easy to string together" in {
+            val filter = Filter.callback(_ + ": one") |>
+                Filter.callback(_ + ", two") |>
+                Filter.callback(_ + ", three")
             filter.filter("data") must_== "data: one, two, three"
         }
     }
