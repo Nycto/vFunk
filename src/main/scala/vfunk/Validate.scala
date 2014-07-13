@@ -192,11 +192,23 @@ trait CommonValidator[T <: CommonValidator[_]] {
     /** Joins this validator with another using an 'And' relationship */
     def && ( other: AsyncValidator ): AsyncValidator
 
+    /** Joins this validator with another using an 'And' relationship */
+    def and ( other: Validator ): T = &&(other)
+
+    /** Joins this validator with another using an 'And' relationship */
+    def and ( other: AsyncValidator ): AsyncValidator = &&(other)
+
     /** Joins this validator with another using an 'Or' relationship */
     def || ( other: Validator ): T
 
     /** Joins this validator with another using an 'Or' relationship */
     def || ( other: AsyncValidator ): AsyncValidator
+
+    /** Joins this validator with another using an 'Or' relationship */
+    def or ( other: Validator ): T = ||(other)
+
+    /** Joins this validator with another using an 'Or' relationship */
+    def or ( other: AsyncValidator ): AsyncValidator = ||(other)
 }
 
 /**
