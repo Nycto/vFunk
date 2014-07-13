@@ -37,6 +37,13 @@ class ValidationAsyncLogicTests extends Specification {
             validator.getErrors("data") must
                 ===(Err("1", "One") :: Err("2", "Two") :: Nil).await
         }
+
+        "Allow validators to be easily combined" in {
+            (new Manual && new Manual && new Manual) must validateFor("data")
+            (new Manual && new Manual &&
+                new Manual(Err("1", "One"), Err("2", "Two"))) must
+                notValidateFor("data")
+        }
     }
 
     "An Or Validator" should {
@@ -67,6 +74,20 @@ class ValidationAsyncLogicTests extends Specification {
             validator.getErrors("data") must ===(
                 Err("1", "One") :: Err("2", "Two") :: Err("3", "Three") :: Nil
             ).await
+        }
+
+        "Allow validators to be easily combined" in {
+            (
+                new Manual( Err("1", "One"), Err("2", "Two") ) ||
+                new Manual ||
+                new Manual( Err("3", "Three"), Err("4", "Four") )
+            ) must validateFor("data")
+
+            (
+                new Manual( Err("1", "One"), Err("2", "Two") ) ||
+                new Manual( Err("3", "Three") ) ||
+                new Manual( Err("4", "For") )
+            ) must notValidateFor("data")
         }
     }
 

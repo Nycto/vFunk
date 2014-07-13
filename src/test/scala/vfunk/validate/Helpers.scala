@@ -21,8 +21,10 @@ object validateFor {
 /**
  * A helper class for testing what a validator passes for
  */
-class validateFor ( against: Seq[String] ) extends Matcher[CommonValidator]() {
-    def apply[S <: CommonValidator](actual: Expectable[S]) = {
+class validateFor (
+    against: Seq[String]
+) extends Matcher[CommonValidator[_]]() {
+    def apply[S <: CommonValidator[_]](actual: Expectable[S]) = {
         val mismatch = against.foldRight [Option[String]] ( None ) {
             (versus, error) => {
                 val isValid = actual.value match {
@@ -62,8 +64,8 @@ object notValidateFor {
  */
 class notValidateFor (
     against: Seq[String]
-) extends Matcher[CommonValidator]() {
-    def apply[S <: CommonValidator](actual: Expectable[S]) = {
+) extends Matcher[CommonValidator[_]]() {
+    def apply[S <: CommonValidator[_]](actual: Expectable[S]) = {
         val mismatch = against.foldRight [Option[String]] ( None ) {
             (versus, error) => {
                 val isValid = actual.value match {

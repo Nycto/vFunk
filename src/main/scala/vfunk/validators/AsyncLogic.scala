@@ -14,7 +14,7 @@ class AsyncAnd (
 ) extends AsyncValidator {
 
     /** Constructor for fluently building validators */
-    def this ( validators: CommonValidator* )
+    def this ( validators: CommonValidator[_]* )
         = this( validators.map(_.async).toList )
 
     /** {@inheritDoc} */
@@ -46,7 +46,7 @@ class AsyncOr (
 ) extends AsyncValidator {
 
     /** Constructor for fluently building validators */
-    def this ( validators: CommonValidator* )
+    def this ( validators: CommonValidator[_]* )
         = this( validators.map(_.async).toList )
 
     /** {@inheritDoc} */

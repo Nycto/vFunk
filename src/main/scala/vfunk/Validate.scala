@@ -181,16 +181,28 @@ case class Validated (
 /**
  * Methods common to both Validators and AsyncValidators
  */
-trait CommonValidator {
+trait CommonValidator[T <: CommonValidator[_]] {
 
     /** Turns any validator into an async validator */
     def async: AsyncValidator
+
+    /** Joins this validator with another using an 'And' relationship */
+    def && ( other: Validator ): T
+
+    /** Joins this validator with another using an 'And' relationship */
+    def && ( other: AsyncValidator ): AsyncValidator
+
+    /** Joins this validator with another using an 'Or' relationship */
+    def || ( other: Validator ): T
+
+    /** Joins this validator with another using an 'Or' relationship */
+    def || ( other: AsyncValidator ): AsyncValidator
 }
 
 /**
  * Validates that a value matches a given rule
  */
-trait Validator extends CommonValidator {
+trait Validator extends CommonValidator[Validator] {
 
     /** Returns the validation errors for a value */
     def getErrors ( value: String ): List[Err]
@@ -217,12 +229,28 @@ trait Validator extends CommonValidator {
                 = Future.fromTry(Try { self.getErrors(value) })
         }
     }
+
+    /** {@inheritDoc} */
+    override def && ( other: Validator ): Validator
+        = new And(this, other)
+
+    /** {@inheritDoc} */
+    override def && ( other: AsyncValidator ): AsyncValidator
+        = new AsyncAnd(async, other)
+
+    /** {@inheritDoc} */
+    override def || ( other: Validator ): Validator
+        = new Or(this, other)
+
+    /** {@inheritDoc} */
+    override def || ( other: AsyncValidator ): AsyncValidator
+        = new AsyncOr(async, other)
 }
 
 /**
  * Validates that a value matches a given rule
  */
-trait AsyncValidator extends CommonValidator {
+trait AsyncValidator extends CommonValidator[AsyncValidator] {
 
     /** Returns the validation errors for a value */
     def getErrors
@@ -246,5 +274,21 @@ trait AsyncValidator extends CommonValidator {
 
     /** {@inheritDoc} */
     override def async: AsyncValidator = this
+
+    /** {@inheritDoc} */
+    override def && ( other: Validator ): AsyncValidator
+        = new AsyncAnd(this, other.async)
+
+    /** {@inheritDoc} */
+    override def && ( other: AsyncValidator ): AsyncValidator
+        = new AsyncAnd(this, other)
+
+    /** {@inheritDoc} */
+    override def || ( other: Validator ): AsyncValidator
+        = new AsyncOr(this, other.async)
+
+    /** {@inheritDoc} */
+    override def || ( other: AsyncValidator ): AsyncValidator
+        = new AsyncOr(this, other)
 }
 
