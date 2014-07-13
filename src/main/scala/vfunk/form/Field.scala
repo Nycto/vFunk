@@ -84,7 +84,7 @@ case class TextField (
     /** {@inheritDoc} */
     override def process ( value: String ): FieldResult = {
         val filtered = filter.filter( value )
-        FieldResult( name, value, filtered, validator.validate(filtered) )
+        FieldResult( name, value, validator.validate(filtered) )
     }
 
     /** {@inheritDoc} */
@@ -158,8 +158,9 @@ case class AsyncTextField (
         ( value: String )
         ( implicit ctx: ExecutionContext )
     : Future[FieldResult] = {
-        val filtered = filter.filter(value)
-        validator.validate(filtered).map(FieldResult(name, value, filtered, _))
+        validator
+            .validate(filter.filter(value))
+            .map(FieldResult(name, value, _))
     }
 
     /** {@inheritDoc} */
@@ -173,13 +174,15 @@ case class AsyncTextField (
 case class FieldResult (
     val name: String,
     val original: String,
-    val value: String,
     val validated: Validated
 ) extends Errable {
 
+    /** Returns the value of this field result */
+    def value = validated.value
+
     /** Adds a new error to this result */
     def +: ( err: Err ): FieldResult
-        = FieldResult( name, original, value, err +: validated )
+        = FieldResult( name, original, err +: validated )
 
     /** {@inheritDoc} */
     def errors: Seq[Err] = validated.errors
