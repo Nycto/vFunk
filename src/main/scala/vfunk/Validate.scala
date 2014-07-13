@@ -186,6 +186,15 @@ trait CommonValidator[T <: CommonValidator[_]] {
     /** Turns any validator into an async validator */
     def async: AsyncValidator
 
+    /** Returns an inverted version of this validator */
+    def not( err: Err ): T
+
+    /** Returns an inverted version of this validator */
+    def not( message: String ): T = not( Err("NOT", message) )
+
+    /** Returns an inverted version of this validator */
+    def not: T = not( "Failed validation" )
+
     /** Joins this validator with another using an 'And' relationship */
     def && ( other: Validator ): T
 
@@ -257,6 +266,9 @@ trait Validator extends CommonValidator[Validator] {
     /** {@inheritDoc} */
     override def || ( other: AsyncValidator ): AsyncValidator
         = new AsyncOr(async, other)
+
+    /** {@inheritDoc} */
+    override def not( err: Err ): Validator = new Not(this, err)
 }
 
 /**
@@ -302,5 +314,8 @@ trait AsyncValidator extends CommonValidator[AsyncValidator] {
     /** {@inheritDoc} */
     override def || ( other: AsyncValidator ): AsyncValidator
         = new AsyncOr(this, other)
+
+    /** {@inheritDoc} */
+    override def not( err: Err ): AsyncValidator = new AsyncNot(this, err)
 }
 
