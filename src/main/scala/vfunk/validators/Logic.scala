@@ -76,12 +76,18 @@ class Or ( private val validators: List[Validator] ) extends Validator {
  */
 class Not (
     private val validator: Validator,
-    private val message: String = "Value failed validation"
+    private val err: Err
 ) extends Validator {
+
+    /** Instantiates from a synchronous validator */
+    def this(
+        validator: Validator,
+        message: String = "Value failed validation"
+    ) = this( validator, Err("NOT", message) )
 
     /** {@inheritDoc */
     override def getErrors ( value: String )
-        = Validated(!validator.isValid(value), Err("NOT", message))
+        = Validated(!validator.isValid(value), err)
 
     /** {@inheritDoc} */
     override def toString = "Validate(Not(%s))".format( validator )

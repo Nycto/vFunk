@@ -76,26 +76,24 @@ class AsyncOr (
  * A validator that inverts the results of a contained validator
  */
 class AsyncNot (
-    private val validator: AsyncValidator,
-    private val message: String
+    validate: CommonValidator[_],
+    private val err: Err
 ) extends AsyncValidator {
 
     /** Instantiates from a synchronous validator */
-    def this( validator: AsyncValidator )
-        = this( validator.async,  "Value failed validation" )
+    def this( validator: CommonValidator[_], message: String )
+        = this( validator, Err("NOT", message) )
 
     /** Instantiates from a synchronous validator */
-    def this( validator: Validator, message: String )
-        = this( validator.async, message )
+    def this( validator: CommonValidator[_] )
+        = this( validator,  "Value failed validation" )
 
-    /** Instantiates from a synchronous validator */
-    def this( validator: Validator ) = this( validator.async )
+    /** The internal validator */
+    private val validator = validate.async
 
     /** {@inheritDoc} */
     override def getErrors(value: String)(implicit ctx: ExecutionContext) = {
-        validator
-            .isValid(value)
-            .map(valid => Validated(!valid, Err("NOT", message)))
+        validator.isValid(value).map(valid => Validated(!valid, err))
     }
 
     /** {@inheritDoc} */
