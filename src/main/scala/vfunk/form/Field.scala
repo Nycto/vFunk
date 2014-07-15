@@ -54,13 +54,7 @@ trait Field extends CommonField {
     def process ( value: String ): FieldResult
 
     /** Requires that this field is valid */
-    def require ( value: String ): FieldResult = {
-        val validated = process(value)
-        if ( !validated.isValid ) {
-            throw new InvalidFormException( name -> validated )
-        }
-        validated
-    }
+    def require ( value: String ): ValidFieldResult = process(value).require
 }
 
 /**
@@ -117,14 +111,8 @@ trait AsyncField extends CommonField {
     def require
         ( value: String )
         ( implicit ctx: ExecutionContext )
-    : Future[FieldResult] = {
-        process(value).map(validated => {
-            if ( !validated.isValid ) {
-                throw new InvalidFormException( name -> validated )
-            }
-            validated
-        })
-    }
+    : Future[ValidFieldResult]
+        = process(value).map(_.require)
 
     /** Presents the validated and filtered result as a future */
     def value
@@ -169,36 +157,105 @@ case class AsyncTextField (
 
 
 /**
+ * Represents a field guaranteed to be valid
+ */
+abstract class CommonFieldResult(
+    val name: String,
+    val original: String
+) {
+
+    /** Returns the value of this field result */
+    def value: String
+
+    /** Generates an Either based on the validation of this field */
+    def either: Either[Validated,String]
+
+    /** Generates an Option based on the validation of this field */
+    def option: Option[String]
+
+    /** Presents this results as a future */
+    def future: Future[String]
+
+    /** Requires that this result be valid, otherwise throw an exception */
+    def require: ValidFieldResult
+
+    /** Returns this field as an Errable field result */
+    def asFieldResult: FieldResult
+}
+
+/**
  * The results from an individual field
  */
 case class FieldResult (
-    val name: String,
-    val original: String,
+    fieldName: String,
+    originalValue: String,
     val validated: Validated
-) extends Errable {
+) extends CommonFieldResult( fieldName, originalValue ) with Errable {
 
-    /** Returns the value of this field result */
-    def value = validated.value
+    /** Instantiates a field result that doesn't have any errors */
+    def this( name: String, original: String, value: String )
+        = this(name, original, Validated(value, Seq()))
+
+    /** {@inheritDoc} */
+    override def value = validated.value
 
     /** Adds a new error to this result */
     def +: ( err: Err ): FieldResult
         = FieldResult( name, original, err +: validated )
 
     /** {@inheritDoc} */
-    def errors: Seq[Err] = validated.errors
+    override def errors: Seq[Err] = validated.errors
 
-    /** Generates an Either based on the validation of this field */
-    def either: Either[Validated,String]
+    /** {@inheritDoc} */
+    override def either: Either[Validated,String]
         = if (isValid) Right( value ) else Left( validated )
 
-    /** Generates an Option based on the validation of this field */
-    def option: Option[String] = if (isValid) Some(value) else None
+    /** {@inheritDoc} */
+    override def option: Option[String] = if (isValid) Some(value) else None
 
-    /** Presents this results as a future */
-    def future: Future[String] = isValid match {
+    /** {@inheritDoc} */
+    override def future: Future[String] = isValid match {
         case true => Future.successful( value )
         case false => Future.failed( new InvalidFormException(name -> this) )
     }
+
+    /** {@inheritDoc} */
+    override def require: ValidFieldResult = {
+        if ( !validated.isValid ) {
+            throw new InvalidFormException( name -> this )
+        }
+        ValidFieldResult(name, originalValue, validated.value)
+    }
+
+    /** {@inheritDoc} */
+    override def asFieldResult: FieldResult = this
+}
+
+/**
+ * The results from an individual field
+ */
+case class ValidFieldResult (
+    fieldName: String,
+    originalValue: String,
+    override val value: String
+) extends CommonFieldResult( fieldName, originalValue ) {
+
+    /** {@inheritDoc} */
+    override def either: Either[Validated,String] = Right(value)
+
+    /** {@inheritDoc} */
+    override def option: Option[String] = Some(value)
+
+    /** {@inheritDoc} */
+    override def future: Future[String]
+        = Future.successful( value )
+
+    /** {@inheritDoc} */
+    override def require: ValidFieldResult = this
+
+    /** {@inheritDoc} */
+    override def asFieldResult: FieldResult
+        = new FieldResult( name, original, value )
 }
 
 

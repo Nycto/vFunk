@@ -149,13 +149,6 @@ trait Errable {
 
     /** Returns the first error message */
     def firstMessage: Option[String] = firstError.map( _.message )
-
-    /** Requires that this result be valid, otherwise throw an exception */
-    def require: this.type = {
-        if ( !isValid )
-            throw InvalidValueException( this )
-        this
-    }
 }
 
 /** @see Validated */
@@ -176,6 +169,14 @@ case class Validated (
 
     /** Adds a new error to this result */
     def +: ( err: Err ): Validated = Validated(value, err +: errors)
+
+    /** Requires that this result be valid, otherwise throw an exception */
+    def require: String = {
+        if ( !isValid ) {
+            throw InvalidValueException( this )
+        }
+        value
+    }
 }
 
 /**

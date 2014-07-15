@@ -86,11 +86,11 @@ class Form (
         = process( Map( values:_* ) )
 
     /** Validates a map against this form and fails if it doesn't validate */
-    def require ( values: Map[String, String] ): FormResults
+    def require ( values: Map[String, String] ): ValidFormResults
         = process( values ).require
 
     /** Validates a map against this form and fails if it doesn't validate */
-    def require ( values: (String, String)* ): FormResults
+    def require ( values: (String, String)* ): ValidFormResults
         = require( Map(values:_*) )
 
     /** {@inheritDoc} */
@@ -156,14 +156,14 @@ class AsyncForm (
     def require
         ( values: Map[String, String] )
         ( implicit ctx: ExecutionContext )
-    : Future[FormResults]
+    : Future[ValidFormResults]
         = process( values ).map( _.require )
 
     /** Validates a map against this form and fails if it doesn't validate */
     def require
         ( values: (String, String)* )
         ( implicit ctx: ExecutionContext )
-    : Future[FormResults]
+    : Future[ValidFormResults]
         = require( Map(values:_*) )
 
     /** {@inheritDoc} */
@@ -189,26 +189,25 @@ case class InvalidFormException (
 }
 
 /**
- * The results of a validation run
+ * Common interface for form results
  */
-case class FormResults (
-    val results: ListMap[String,FieldResult] = ListMap()
-) extends Traversable[FieldResult] with Errable {
-
-    /** Constructs from a list of field tuples */
-    def this ( fields: (String, FieldResult)* ) = this( ListMap(fields:_*) )
+abstract class CommonFormResults[
+    F <: CommonFieldResult,
+    T <: CommonFormResults[_, _]
+] (
+    val results: ListMap[String, F]
+) extends Traversable[F] {
 
     /** {@inheritDoc} */
-    def foreach[U] ( callback: FieldResult => U ): Unit
+    override def foreach[U] ( callback: F => U ): Unit
         = results.foreach( value => callback( value._2 ) )
 
     /** Adds a new result to thie map */
-    def + ( newElem: (String, FieldResult) ): FormResults
-        = FormResults( results + newElem )
+    def + ( elem: (String, CommonFieldResult) ): T
 
-    /** {@inheritDoc} */
-    override def isValid: Boolean
-        = results.forall( result => result._2.isValid )
+    /** Returns the original value from a form */
+    def original ( field: String ): Option[String]
+        = results.get( field ).map( _.original )
 
     /** Returns the value of a field */
     def apply ( field: String ): String = results( field ).value
@@ -217,9 +216,30 @@ case class FormResults (
     def get ( field: String ): Option[String]
         = results.get( field ).map( _.value )
 
-    /** Returns the original value from a form */
-    def original ( field: String ): Option[String]
-        = results.get( field ).map( _.original )
+    /** Requires that this Form is valid */
+    def require: ValidFormResults
+
+    /** Returns whether this form is valid */
+    def isValid: Boolean
+}
+
+/**
+ * The results of a validation run
+ */
+case class FormResults (
+    resultMap: ListMap[String, FieldResult] = ListMap()
+) extends CommonFormResults[FieldResult, FormResults](resultMap) with Errable {
+
+    /** Constructs from a list of field tuples */
+    def this ( fields: (String, FieldResult)* ) = this( ListMap(fields:_*) )
+
+    /** {@inheritDoc} */
+    override def + ( elem: (String, CommonFieldResult) ): FormResults
+        = FormResults( results + (elem._1 -> elem._2.asFieldResult) )
+
+    /** {@inheritDoc} */
+    override def isValid: Boolean
+        = results.forall( result => result._2.isValid )
 
     /** Adds an error to this result set */
     def addError ( field: String, err: Err ): FormResults = {
@@ -260,11 +280,29 @@ case class FormResults (
         = fieldErrors.mapValues( _.view.map(_.message) )
 
     /** {@inheritDoc} */
-    override def require: this.type = {
+    override def require: ValidFormResults = {
         if ( !isValid )
             throw InvalidFormException( this )
-        this
+        new ValidFormResults( results.map(pair => pair._1 -> pair._2.require) )
     }
+}
+
+/**
+ * A valid form
+ */
+case class ValidFormResults(
+    resultMap: ListMap[String, ValidFieldResult] = ListMap()
+) extends CommonFormResults[ValidFieldResult, ValidFormResults](resultMap) {
+
+    /** {@inheritDoc} */
+    override def + ( elem: (String, CommonFieldResult) ): ValidFormResults
+        = ValidFormResults( results + (elem._1 -> elem._2.require) )
+
+    /** {@inheritDoc} */
+    override def require: ValidFormResults = this
+
+    /** {@inheritDoc} */
+    override def isValid: Boolean = true
 }
 
 
