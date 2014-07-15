@@ -35,10 +35,16 @@ abstract class CommonForm[S <: CommonForm[_, F], F <: CommonField] (
 ) extends Traversable[F] {
 
     /** Creates a new form including a new field */
-    def add( field: F ): S
+    def add( field: Field ): S
 
     /** Creates a new form including a new field */
-    def + ( field: F ): S = add(field)
+    def + ( field: Field ): S = add(field)
+
+    /** Creates a new form including a new field */
+    def add( field: AsyncField ): AsyncForm
+
+    /** Creates a new form including a new field */
+    def + ( field: AsyncField ): AsyncForm = add(field)
 
     /** {@inheritDoc} */
     override def foreach[U] ( callback: F => U ): Unit
@@ -66,11 +72,8 @@ class Form (
     override def add( field: Field ): Form
         = new Form( fields + ((field.name, field)) )
 
-    /** Adds an async field and returns an async form */
-    def add( field: AsyncField ): AsyncForm = async.add(field)
-
-    /** Creates a new form including a new field */
-    def + ( field: AsyncField ): AsyncForm = add(field)
+    /** {@inheritDoc} */
+    override def add( field: AsyncField ): AsyncForm = async.add(field)
 
     /** Validates a map against this form */
     def process ( values: Map[String,String] ): FormResults = {
@@ -129,6 +132,9 @@ class AsyncForm (
     /** {@inheritDoc} */
     override def add( field: AsyncField ): AsyncForm
         = new AsyncForm( fields + ((field.name, field)) )
+
+    /** {@inheritDoc} */
+    override def add( field: Field ): AsyncForm = add( field.async )
 
     /** Validates a map against this form */
     def process
