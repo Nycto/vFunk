@@ -2,6 +2,7 @@ package com.roundeights.vfunk
 
 import scala.collection.immutable.ListMap
 import scala.concurrent.{Future, ExecutionContext}
+import scala.util.Try
 
 
 /**
@@ -221,6 +222,9 @@ abstract class CommonFormResults[
 
     /** Returns whether this form is valid */
     def isValid: Boolean
+
+    /** Produces this form result as a future */
+    def future: Future[ValidFormResults]
 }
 
 /**
@@ -285,6 +289,10 @@ case class FormResults (
             throw InvalidFormException( this )
         new ValidFormResults( results.map(pair => pair._1 -> pair._2.require) )
     }
+
+    /** {@inheritDoc} */
+    override def future: Future[ValidFormResults]
+        = Future.fromTry(Try(require))
 }
 
 /**
@@ -303,6 +311,9 @@ case class ValidFormResults(
 
     /** {@inheritDoc} */
     override def isValid: Boolean = true
+
+    /** {@inheritDoc} */
+    override def future: Future[ValidFormResults] = Future.successful(this)
 }
 
 
