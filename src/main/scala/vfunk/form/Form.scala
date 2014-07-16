@@ -231,6 +231,21 @@ abstract class CommonFormResults[
 
     /** Produces this form result as a future */
     def future: Future[ValidFormResults]
+
+    /** A an error to this result set */
+    def addError ( field: String, err: Err ): FormResults = {
+        val updated = err +: results(field).asFieldResult
+        FormResults( results.foldLeft( ListMap[String,FieldResult]() )(
+            (accum, pair) => pair match {
+                case (name, _) if field == name => accum + (name -> updated)
+                case pair => accum + (pair._1 -> pair._2.asFieldResult)
+            }
+        ))
+    }
+
+    /** Adds an error to this result set */
+    def addError ( field: String, code: String, message: String ): FormResults
+        = addError( field, Err(code, message) )
 }
 
 /**
@@ -250,21 +265,6 @@ case class FormResults (
     /** {@inheritDoc} */
     override def isValid: Boolean
         = results.forall( result => result._2.isValid )
-
-    /** Adds an error to this result set */
-    def addError ( field: String, err: Err ): FormResults = {
-        val updated = err +: results( field )
-        FormResults( results.foldLeft( ListMap[String,FieldResult]() )(
-            (accum, pair) => pair match {
-                case (name, _) if field == name => accum + (name -> updated)
-                case pair => accum + pair
-            }
-        ))
-    }
-
-    /** Adds an error to this result set */
-    def addError ( field: String, code: String, message: String ): FormResults
-        = addError( field, Err(code, message) )
 
     /** Returns the results of the first invalid field */
     def firstInvalid: Option[FieldResult]
