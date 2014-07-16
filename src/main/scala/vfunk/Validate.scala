@@ -60,6 +60,23 @@ object Validate {
     def invokeTuple (callback: (String) => (String, String)): Validator
         = invokeErr( value => Err(callback(value)) )
 
+    def invokeAsync
+        ( callback: (String) => Future[Traversable[Err]] )
+        ( implicit ctx: ExecutionContext )
+    : AsyncValidator = new AsyncInvoke(callback)
+
+    def invokeAsyncErr
+        (callback: (String) => Future[Err])
+        ( implicit ctx: ExecutionContext )
+    : AsyncValidator
+        = invokeAsync( value => callback(value).map(Seq(_)) )
+
+    def invokeAsyncTuple
+        ( callback: (String) => Future[(String, String)] )
+        ( implicit ctx: ExecutionContext )
+    : AsyncValidator
+        = invokeAsyncErr( value => callback(value).map(Err(_)) )
+
     def in ( options: Set[String] ) = new In( options )
     def in ( options: String* ) = new In( options:_* )
 

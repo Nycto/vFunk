@@ -1,6 +1,7 @@
 package test.roundeights.vfunk.validate
 
 import org.specs2.mutable._
+import scala.concurrent.Future
 
 import com.roundeights.vfunk.Validate
 import com.roundeights.vfunk.validate._
@@ -30,6 +31,17 @@ class ValidationPlumbingTests extends Specification {
         "Fail when the callback returns an error" in {
             val validator = Validate.invokeErr( _ => Err("1", "one") )
             validator must notValidateFor("data")
+        }
+    }
+
+    "An AsyncInvoke Validator" should {
+        "Pass when the callback returns no errors" in {
+            Validate.invokeAsync( _ => Future.successful(Nil) ) must
+                validateFor("data")
+        }
+        "Fail when the callback returns an error" in {
+            Validate.invokeAsyncTuple(_ => Future.successful("1" -> "one")) must
+                notValidateFor("data")
         }
     }
 

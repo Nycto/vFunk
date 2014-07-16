@@ -1,6 +1,7 @@
 package com.roundeights.vfunk.validate
 
-import com.roundeights.vfunk.{Validator, Validated, Err}
+import com.roundeights.vfunk.{AsyncValidator, Validator, Validated, Err}
+import scala.concurrent.{Future, ExecutionContext}
 
 /**
  * Returns the given errors
@@ -29,6 +30,24 @@ class Invoke (
 
     /** {@inheritDoc */
     override def getErrors ( value: String ) = callback(value).toList
+
+    /** {@inheritDoc} */
+    override def toString = "Validate(Invoke(%s))".format( callback )
+}
+
+/**
+ * Invokes a callback as a validator
+ */
+class AsyncInvoke (
+    private val callback: (String) => Future[Traversable[Err]]
+) extends AsyncValidator {
+
+    /** {@inheritDoc */
+    override def getErrors
+        ( value: String )
+        ( implicit ctx: ExecutionContext )
+    : Future[List[Err]]
+        = callback(value).map(_.toList)
 
     /** {@inheritDoc} */
     override def toString = "Validate(Invoke(%s))".format( callback )
