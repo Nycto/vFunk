@@ -7,7 +7,7 @@ import scala.concurrent.{Future, ExecutionContext}
 /**
  * Methods shared between different types of fields
  */
-trait CommonField {
+trait CommonField[T <: CommonField[_]] {
 
     /** Returns the name of this field */
     def name: String
@@ -17,12 +17,61 @@ trait CommonField {
 
     /** Converts this field into an async field */
     def async: AsyncField
+
+
+    /** 'Ands' another validator into this field */
+    def andValidator ( toAdd: Validator ): T
+
+    /** 'Ands' another validator into this field */
+    def andValidator ( callback: (String) => Traversable[Err] ): T
+        = andValidator( Validate.invoke(callback) )
+
+    /** 'Ands' another validator into this field */
+    def andErrValidator ( callback: (String) => Err ): T
+        = andValidator( Validate.invokeErr(callback) )
+
+    /** 'Ands' another validator into this field */
+    def andTupleValidator ( callback: (String) => (String, String) ): T
+        = andValidator( Validate.invokeTuple(callback) )
+
+
+    /** 'Ands' another validator into this field */
+    def andAsync ( toAdd: AsyncValidator ): AsyncField
+
+    /** 'Ands' another validator into this field */
+    def andAsync
+        ( callback: (String) => Future[Traversable[Err]] )
+        ( implicit ctx: ExecutionContext )
+    : AsyncField
+        = andAsync( Validate.invokeAsync(callback) )
+
+    /** 'Ands' another validator into this field */
+    def andErrValidator
+        ( callback: (String) => Future[Err] )
+        ( implicit ctx: ExecutionContext )
+    : AsyncField
+        = andAsync( Validate.invokeAsyncErr(callback) )
+
+    /** 'Ands' another validator into this field */
+    def andTupleValidator
+        ( callback: (String) => Future[(String, String)] )
+        ( implicit ctx: ExecutionContext )
+    : AsyncField
+        = andAsync( Validate.invokeAsyncTuple(callback) )
+
+
+    /** 'Ands' another validator into this field */
+    def andFilter ( toAdd: Filter ): T
+
+    /** 'Ands' another validator into this field */
+    def andFilter ( callback: (String) => String ): T
+        = andFilter( Filter.callback(callback) )
 }
 
 /**
  * A field definition
  */
-trait Field extends CommonField {
+trait Field extends CommonField[Field] {
 
     /** Returns the validator applied to this field */
     def validator: Validator
@@ -34,21 +83,17 @@ trait Field extends CommonField {
         validator: Validator = this.validator
     ): Field
 
-    /** 'Ands' another validator into this field */
-    def andValidator ( toAdd: Validator ): Field
-        = set( validator = Validate.and(validator, toAdd) )
+    /** {@inheritDoc} */
+    override def andValidator ( toAdd: Validator ): Field
+        = set( validator = this.validator && toAdd )
 
-    /** 'Ands' another validator into this field */
-    def andValidator ( callback: (String) => Traversable[Err] ): Field
-        = andValidator( Validate.invoke(callback) )
+    /** {@inheritDoc} */
+    override def andAsync ( toAdd: AsyncValidator ): AsyncField
+        = async.andAsync(toAdd)
 
-    /** 'Ands' another validator into this field */
-    def andFilter ( toAdd: Filter ): Field
-        = set( filter = Filter.chain(filter, toAdd) )
-
-    /** 'Ands' another validator into this field */
-    def andFilter ( callback: (String) => String ): Field
-        = andFilter( Filter.callback(callback) )
+    /** {@inheritDoc} */
+    override def andFilter ( toAdd: Filter ): Field
+        = set( filter = this.filter |> toAdd )
 
     /** The filteration and validation against this field */
     def process ( value: String ): FieldResult
@@ -89,7 +134,7 @@ case class TextField (
 /**
  * A asyncrhonous field
  */
-trait AsyncField extends CommonField {
+trait AsyncField extends CommonField[AsyncField] {
 
     /** Returns the validator applied to this field */
     def validator: AsyncValidator
@@ -100,6 +145,20 @@ trait AsyncField extends CommonField {
         filter: Filter = this.filter,
         validator: AsyncValidator = this.validator
     ): AsyncField
+
+
+    /** {@inheritDoc} */
+    override def andValidator ( toAdd: Validator ): AsyncField
+        = set( validator = this.validator && toAdd )
+
+    /** {@inheritDoc} */
+    override def andAsync ( toAdd: AsyncValidator ): AsyncField
+        = set( validator = this.validator && toAdd )
+
+    /** {@inheritDoc} */
+    override def andFilter ( toAdd: Filter ): AsyncField
+        = set( filter = this.filter |> toAdd )
+
 
     /** Runs the filteration and validation against this field */
     def process

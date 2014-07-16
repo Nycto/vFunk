@@ -11,7 +11,7 @@ import scala.util.Try
 object Form {
 
     /** Creates a form from a list of fields */
-    private[vfunk] def toMap[F <: CommonField] (
+    private[vfunk] def toMap[F <: CommonField[_]] (
         fields: Traversable[F]
     ): ListMap[String, F] = {
         fields.foldLeft ( ListMap[String, F]() ) {
@@ -30,7 +30,7 @@ object Form {
 /**
  * Shared form methods
  */
-abstract class CommonForm[S <: CommonForm[_, F], F <: CommonField] (
+abstract class CommonForm[S <: CommonForm[_, F], F <: CommonField[_]] (
     val fields: ListMap[String, F]
 ) extends Traversable[F] {
 
@@ -107,11 +107,11 @@ class Form (
 object AsyncForm {
 
     /** Creates a form from a list of fields */
-    def apply ( fields: Traversable[CommonField] ): AsyncForm
+    def apply ( fields: Traversable[CommonField[_]] ): AsyncForm
         = new AsyncForm(fields)
 
     /** Creates a form from a list of fields */
-    def apply ( fields: CommonField* ): AsyncForm
+    def apply ( fields: CommonField[_]* ): AsyncForm
         = new AsyncForm( fields )
 }
 
@@ -123,11 +123,11 @@ class AsyncForm (
 ) extends CommonForm[AsyncForm, AsyncField](fields) {
 
     /** Creates a form from a list of fields */
-    def this ( fields: Traversable[CommonField] )
+    def this ( fields: Traversable[CommonField[_]] )
         = this( Form.toMap( fields.map(_.async) ) )
 
     /** Creates a form from a list of fields */
-    def this ( fields: CommonField* ) = this( fields )
+    def this ( fields: CommonField[_]* ) = this( fields )
 
     /** {@inheritDoc} */
     override def add( field: AsyncField ): AsyncForm
