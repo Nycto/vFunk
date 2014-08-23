@@ -4,7 +4,7 @@ organization := "com.roundeights"
 
 version := "1.1.0"
 
-scalaVersion := "2.11.1"
+scalaVersion := "2.11.2"
 
 // Compiler flags
 scalacOptions ++= Seq("-deprecation", "-feature")
